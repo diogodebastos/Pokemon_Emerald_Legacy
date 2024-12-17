@@ -531,7 +531,7 @@ Route119_EventScript_RanFromRaikou::
 Route119_Text_MayIntro:
 	.string "MAY: {PLAYER}{KUN}!\n"
 	.string "Where were you? I was looking for you!\p"
-	.string "I'e been so busy lately… You won't\n"
+	.string "I've been so busy lately… You won't\n"
 	.string "believe the amazing POKéMON I found!\l"
 	.string "But enough about that for now!\p"
 	.string "How much stronger have you gotten?\n"
@@ -572,7 +572,7 @@ Route119_Text_MayExplainFly:
 Route119_Text_BrendanIntro:
 	.string "BRENDAN: {PLAYER}! So this is where\n"
 	.string "you've been looking for POKéMON?\p"
-	.string "I'e been so busy lately… You won't\n"
+	.string "I've been so busy lately… You won't\n"
 	.string "believe the amazing POKéMON I found!\l"
 	.string "But enough about that for now!\p"
 	.string "Let me see how good you got.\n"
