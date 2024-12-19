@@ -4343,7 +4343,7 @@ u8 Script_TryGainNewFanFromCounter(void)
 }
 
 // Changes a Deoxys' form
-bool16 TryChangeDeoxysForm(void)
+void TryChangeDeoxysForm(void)
 {
     u16 baseSpecies = GetMonData(&gPlayerParty[gSpecialVar_0x8004], MON_DATA_SPECIES);
     u16 targetSpecies;
