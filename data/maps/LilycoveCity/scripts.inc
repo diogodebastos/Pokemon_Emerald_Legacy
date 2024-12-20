@@ -422,7 +422,7 @@ LilycoveCity_Text_MayShoppingLetsBattle:
 	.string "It's fascinating to see how they behave\n"
 	.string "in different environments.\p"
 	.string "But that's enough about me.\n"
-	.string "I'll battle with you, so you can show\n"
+	.string "I'll battle with you, so you can show\l"
 	.string "me your POKéMON, {PLAYER}{KUN}.$"
 
 LilycoveCity_Text_MayNotRaisingPokemon:
