@@ -486,7 +486,7 @@ BattleFrontier_ExchangeServiceCorner_EventScript_Salac::
 BattleFrontier_ExchangeServiceCorner_EventScript_Petaya::
 	msgbox BattleFrontier_ExchangeServiceCorner_Text_ConfirmPetaya, MSGBOX_YESNO
 	goto_if_eq VAR_RESULT, NO, BattleFrontier_ExchangeServiceCorner_EventScript_ChooseBerry
-	setvar VAR_0x8008, 3
+	setvar VAR_0x8008, 48
 	setvar VAR_0x8009, ITEM_PETAYA_BERRY
 	goto BattleFrontier_ExchangeServiceCorner_EventScript_TryPurchasePrize
 	end
@@ -494,7 +494,7 @@ BattleFrontier_ExchangeServiceCorner_EventScript_Petaya::
 BattleFrontier_ExchangeServiceCorner_EventScript_Apicot::
 	msgbox BattleFrontier_ExchangeServiceCorner_Text_ConfirmApicot, MSGBOX_YESNO
 	goto_if_eq VAR_RESULT, NO, BattleFrontier_ExchangeServiceCorner_EventScript_ChooseBerry
-	setvar VAR_0x8008, 3
+	setvar VAR_0x8008, 48
 	setvar VAR_0x8009, ITEM_APICOT_BERRY
 	goto BattleFrontier_ExchangeServiceCorner_EventScript_TryPurchasePrize
 	end
