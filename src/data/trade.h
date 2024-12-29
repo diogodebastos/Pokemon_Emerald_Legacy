@@ -1092,7 +1092,7 @@ static const struct InGameTrade sIngameTrades[] =
         .heldItem = ITEM_NONE,
         .mailNum = -1,
         .otName = _("BRENDAN"),
-        .otGender = FEMALE,
+        .otGender = MALE,
         .sheen = 10,
         .requestedSpecies = SPECIES_TREECKO
     },
@@ -1108,7 +1108,7 @@ static const struct InGameTrade sIngameTrades[] =
         .heldItem = ITEM_NONE,
         .mailNum = -1,
         .otName = _("BRENDAN"),
-        .otGender = FEMALE,
+        .otGender = MALE,
         .sheen = 10,
         .requestedSpecies = SPECIES_MUDKIP
     },
@@ -1156,7 +1156,7 @@ static const struct InGameTrade sIngameTrades[] =
         .heldItem = ITEM_NONE,
         .mailNum = -1,
         .otName = _("BRENDAN"),
-        .otGender = FEMALE,
+        .otGender = MALE,
         .sheen = 10,
         .requestedSpecies = SPECIES_TREECKO
     },
@@ -1172,7 +1172,7 @@ static const struct InGameTrade sIngameTrades[] =
         .heldItem = ITEM_NONE,
         .mailNum = -1,
         .otName = _("BRENDAN"),
-        .otGender = FEMALE,
+        .otGender = MALE,
         .sheen = 10,
         .requestedSpecies = SPECIES_TORCHIC
     },
@@ -1220,7 +1220,7 @@ static const struct InGameTrade sIngameTrades[] =
         .heldItem = ITEM_NONE,
         .mailNum = -1,
         .otName = _("BRENDAN"),
-        .otGender = FEMALE,
+        .otGender = MALE,
         .sheen = 10,
         .requestedSpecies = SPECIES_MUDKIP
     },
@@ -1236,7 +1236,7 @@ static const struct InGameTrade sIngameTrades[] =
         .heldItem = ITEM_NONE,
         .mailNum = -1,
         .otName = _("BRENDAN"),
-        .otGender = FEMALE,
+        .otGender = MALE,
         .sheen = 10,
         .requestedSpecies = SPECIES_TORCHIC
     },
