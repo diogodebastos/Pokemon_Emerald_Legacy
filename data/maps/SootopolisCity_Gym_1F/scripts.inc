@@ -47,7 +47,8 @@ SootopolisCity_Gym_1F_EventScript_TryRematchReward::
 	setvar 0x8005, TRAINER_JUAN_3
 	special HasRematchBeenFought
 	goto_if_eq VAR_RESULT, TRUE, SootopolisCity_Gym_1F_EventScript_GiveRematchReward
-	SootopolisCity_Gym_1F_EventScript_TryRematchRewardEnd::
+SootopolisCity_Gym_1F_EventScript_TryRematchRewardEnd::
+	ClearTrainerFlag TRAINER_JUAN_5
 	releaseall
 	end
 
