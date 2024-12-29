@@ -1277,7 +1277,7 @@ static const struct InGameTrade sIngameTrades[] =
         .nickname = _("ECHO"),
         .species = SPECIES_LOUDRED,
         .ivs = {16, 17, 13, 13, 13, 13},
-        .abilityNum = 0,
+        .abilityNum = 3,
         .otId = 73997,
         .conditions = {5, 5, 30, 5, 5},
         .personality = 0x8B,
@@ -1306,11 +1306,11 @@ static const u16 sIngameTradeMail[][MAIL_WORDS_COUNT + 1] =
         EC_WORD_I,
         EC_WORD_WILL,
         EC_WORD_MAKE,
-        EC_POKEMON(BAGON),
+        EC_POKEMON(RELICANTH),
         EC_WORD_TOUGH,
         EC_WORD_PLEASE,
         EC_WORD_TRAIN,
-        EC_POKEMON(HORSEA),
+        EC_POKEMON(BAGON),
         EC_WORD_WELL
     }, {
         EC_WORD_THANK_YOU,
@@ -1322,7 +1322,17 @@ static const u16 sIngameTradeMail[][MAIL_WORDS_COUNT + 1] =
         EC_WORD_A,
         EC_WORD_CUTE,
         EC_WORD_WAY
-    }
+    }, {
+        EC_WORD_BE,
+        EC_WORD_NICE,
+        EC_WORD_TO,
+        EC_POKEMON(LOUDRED),
+        EC_WORD_EXCL,
+        EC_POKEMON(KECLEON),
+        EC_WORD_WILL,
+        EC_WORD_BE,
+        EC_WORD_FANTASTIC
+    }, 
 };
 
 static const struct WindowTemplate sTradeSequenceWindowTemplates[] =
