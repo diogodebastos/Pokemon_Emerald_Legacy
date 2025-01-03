@@ -141,6 +141,7 @@ These videos also provide an overview of the hack and the ideology behind it:
 - Goppier - [Add zigzagoon scene back to the cable car](https://www.youtube.com/watch?v=7xdcbbfwEto)
 - takyon - [Always inherit nature when holding an Everstone​](https://www.pokecommunity.com/threads/simple-modifications-directory.416647/page-4#post-10160374)
 - myxto - Always inherit nature when holding an Everstone alternate implementation​
+- Jirachii - [Hidden Power type in summary screen](https://www.pokecommunity.com/threads/simple-modifications-directory.416647/page-11#post-10269132)
 
 
 ### Other Credits:

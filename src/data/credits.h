@@ -181,6 +181,7 @@ static const u8 sCreditsText_WiserVisor[]                    = _("WiserVisor");
 static const u8 sCreditsText_Goppier[]                       = _("Goppier");
 static const u8 sCreditsText_takyon[]                        = _("takyon");
 static const u8 sCreditsText_myxto[]                         = _("myxto");
+static const u8 sCreditsText_Jirachii[]                      = _("Jirachii");
 
 
 
@@ -430,6 +431,7 @@ static const struct CreditsEntry sCreditsEntry_WiserVisor                       
 static const struct CreditsEntry sCreditsEntry_Goppier                          = {12,  FALSE, sCreditsText_Goppier};
 static const struct CreditsEntry sCreditsEntry_takyon                           = {13,  FALSE, sCreditsText_takyon};
 static const struct CreditsEntry sCreditsEntry_myxto                            = {13,  FALSE, sCreditsText_myxto};
+static const struct CreditsEntry sCreditsEntry_Jirachii                         = {13,  FALSE, sCreditsText_Jirachii};
 
 static const struct CreditsEntry sCreditsEntry_PkmnEmeraldVersion               = { 7,  TRUE, sCreditsText_PkmnEmeraldVersion};
 static const struct CreditsEntry sCreditsEntry_Credits                          = {11,  TRUE, sCreditsText_Credits};
@@ -766,7 +768,7 @@ static const struct CreditsEntry *const sCreditsEntryPointerTable[PAGE_COUNT][EN
         &sCreditsEntry_Goppier,
         &sCreditsEntry_takyon,
         &sCreditsEntry_myxto,
-        _,
+        &sCreditsEntry_Jirachii,
     },
 
     [PAGE_TITLE] = {
