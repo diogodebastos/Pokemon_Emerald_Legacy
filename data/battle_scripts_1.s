@@ -4628,5 +4628,4 @@ BattleScript_PrintPlayerForfeitedLinkBattle::
 
 BattleScript_AttackBoostedByAbility::
 	printstring STRINGID_ATTACKBOOSTEDBYABILITY
-	waitmessage B_WAIT_TIME_LONG
 	end2
