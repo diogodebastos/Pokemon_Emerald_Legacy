@@ -392,7 +392,7 @@ If this works, then proceed to [Installation](#installation). Otherwise, ask for
 1. If pokeemerald is not already downloaded (some users may prefer to download pokeemerald via a git client like GitHub Desktop), run:
 
     ```bash
-    git clone https://github.com/pret/pokeemerald
+    git clone https://github.com/cRz-Shadows/Pokemon_Emerald_Legacy
     ```
 
     <details>
@@ -450,7 +450,7 @@ Now you're ready to [build **pokeemerald**](#build-pokeemerald)
 ## Build pokeemerald
 If you aren't in the pokeemerald directory already, then **change directory** to the pokeemerald folder:
 ```bash
-cd pokeemerald
+cd Pokemon_Emerald_Legacy
 ```
 To build **pokeemerald.gba** (Note: to speed up builds, see [Parallel builds](#parallel-builds)):
 ```bash
