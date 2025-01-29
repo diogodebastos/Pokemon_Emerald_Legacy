@@ -710,7 +710,7 @@ static const struct TrainerMon sParty_Dusty3[] = {
 static const struct TrainerMon sParty_Dusty4[] = {
     {
     .iv = 80,
-    .lvl = 36,
+    .lvl = 46,
     .species = SPECIES_SANDSLASH,
     .moves = {MOVE_DIG, MOVE_SLASH, MOVE_SAND_ATTACK, MOVE_POISON_STING}
     }
@@ -718,8 +718,13 @@ static const struct TrainerMon sParty_Dusty4[] = {
 
 static const struct TrainerMon sParty_Dusty5[] = {
     {
+    .iv = 50,
+    .lvl = 58,
+    .species = SPECIES_DUGTRIO,
+    },
+    {
     .iv = 90,
-    .lvl = 39,
+    .lvl = 59,
     .species = SPECIES_SANDSLASH,
     .moves = {MOVE_DIG, MOVE_SLASH, MOVE_SAND_ATTACK, MOVE_POISON_STING}
     }
@@ -2078,7 +2083,7 @@ static const struct TrainerMon sParty_GruntMtChimney1[] = {
 static const struct TrainerMon sParty_Steve2[] = {
     {
     .iv = 10,
-    .lvl = 29,
+    .lvl = 33,
     .species = SPECIES_SEVIPER
     }
 };
@@ -2086,12 +2091,12 @@ static const struct TrainerMon sParty_Steve2[] = {
 static const struct TrainerMon sParty_Steve3[] = {
     {
     .iv = 20,
-    .lvl = 31,
+    .lvl = 37,
     .species = SPECIES_SEVIPER,
     },
     {
     .iv = 20,
-    .lvl = 31,
+    .lvl = 39,
     .species = SPECIES_RHYHORN,
     }
 };
@@ -2099,12 +2104,12 @@ static const struct TrainerMon sParty_Steve3[] = {
 static const struct TrainerMon sParty_Steve4[] = {
     {
     .iv = 30,
-    .lvl = 36,
+    .lvl = 46,
     .species = SPECIES_SEVIPER,
     },
     {
     .iv = 30,
-    .lvl = 36,
+    .lvl = 47,
     .species = SPECIES_RHYHORN,
     }
 };
@@ -2112,12 +2117,12 @@ static const struct TrainerMon sParty_Steve4[] = {
 static const struct TrainerMon sParty_Steve5[] = {
     {
     .iv = 40,
-    .lvl = 40,
+    .lvl = 58,
     .species = SPECIES_SEVIPER,
     },
     {
     .iv = 40,
-    .lvl = 40,
+    .lvl = 59,
     .species = SPECIES_RHYDON,
     }
 };
@@ -6519,7 +6524,7 @@ static const struct TrainerMon sParty_Paula[] = {
 static const struct TrainerMon sParty_Cyndy2[] = {
     {
     .iv = 110,
-    .lvl = 28,
+    .lvl = 30,
     .species = SPECIES_MEDITITE,
     }
 };
@@ -6527,7 +6532,7 @@ static const struct TrainerMon sParty_Cyndy2[] = {
 static const struct TrainerMon sParty_Cyndy3[] = {
     {
     .iv = 120,
-    .lvl = 32,
+    .lvl = 44,
     .species = SPECIES_MEDICHAM,
     }
 };
@@ -6535,12 +6540,12 @@ static const struct TrainerMon sParty_Cyndy3[] = {
 static const struct TrainerMon sParty_Cyndy4[] = {
     {
     .iv = 130,
-    .lvl = 34,
+    .lvl = 51,
     .species = SPECIES_MEDICHAM,
     },
     {
     .iv = 130,
-    .lvl = 32,
+    .lvl = 51,
     .species = SPECIES_HARIYAMA,
     }
 };
@@ -6548,12 +6553,12 @@ static const struct TrainerMon sParty_Cyndy4[] = {
 static const struct TrainerMon sParty_Cyndy5[] = {
     {
     .iv = 140,
-    .lvl = 37,
+    .lvl = 60,
     .species = SPECIES_MEDICHAM,
     },
     {
     .iv = 140,
-    .lvl = 37,
+    .lvl = 60,
     .species = SPECIES_HARIYAMA,
     }
 };
@@ -6601,7 +6606,7 @@ static const struct TrainerMon sParty_Madeline2[] = {
 static const struct TrainerMon sParty_Madeline3[] = {
     {
     .iv = 20,
-    .lvl = 33,
+    .lvl = 42,
     .species = SPECIES_CAMERUPT,
     .moves = {MOVE_EMBER, MOVE_TAKE_DOWN, MOVE_MAGNITUDE, MOVE_SUNNY_DAY}
     }
@@ -6610,13 +6615,13 @@ static const struct TrainerMon sParty_Madeline3[] = {
 static const struct TrainerMon sParty_Madeline4[] = {
     {
     .iv = 30,
-    .lvl = 34,
+    .lvl = 51,
     .species = SPECIES_ROSELIA,
     .moves = {MOVE_LEECH_SEED, MOVE_MEGA_DRAIN, MOVE_GRASS_WHISTLE, MOVE_SUNNY_DAY}
     },
     {
     .iv = 30,
-    .lvl = 35,
+    .lvl = 51,
     .species = SPECIES_CAMERUPT,
     .moves = {MOVE_FLAMETHROWER, MOVE_TAKE_DOWN, MOVE_MAGNITUDE, MOVE_SUNNY_DAY}
     }
@@ -6625,13 +6630,13 @@ static const struct TrainerMon sParty_Madeline4[] = {
 static const struct TrainerMon sParty_Madeline5[] = {
     {
     .iv = 40,
-    .lvl = 37,
+    .lvl = 60,
     .species = SPECIES_ROSELIA,
     .moves = {MOVE_LEECH_SEED, MOVE_GIGA_DRAIN, MOVE_SOLAR_BEAM, MOVE_SUNNY_DAY}
     },
     {
     .iv = 40,
-    .lvl = 39,
+    .lvl = 63,
     .species = SPECIES_CAMERUPT,
     .moves = {MOVE_FLAMETHROWER, MOVE_TAKE_DOWN, MOVE_EARTHQUAKE, MOVE_SUNNY_DAY}
     }
