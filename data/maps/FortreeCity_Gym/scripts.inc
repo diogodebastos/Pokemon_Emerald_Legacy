@@ -80,13 +80,6 @@ FortreeCity_Gym_EventScript_GiveAerialAce::
 	return
 
 FortreeCity_Gym_EventScript_WinonaRematch::
-	playfanfare MUS_OBTAIN_ITEM
-	message LavaridgeTown_Text_ReceivedTheEgg
-	waitfanfare
-	giveegg SPECIES_TOGEPI
-	msgbox FortreeCity_Gym_Text_GaveReward, MSGBOX_DEFAULT
-	closemessage
-	end
 	goto_if_set FLAG_GOT_WINONA_REMATCH_REWARD, FortreeCity_Gym_EventScript_WinonaRematchContinue
 	setvar 0x8005, TRAINER_WINONA_3
 	special HasRematchBeenFought
