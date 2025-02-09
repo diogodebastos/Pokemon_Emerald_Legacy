@@ -296,7 +296,7 @@ MauvilleCity_Gym_EventScript_PorygonUpgradePrize::
 	waitmessage
 	checkcoins VAR_TEMP_2
 	goto_if_lt VAR_TEMP_2, PORYGON_COINS, MauvilleCity_GameCorner_EventScript_NotEnoughCoinsForPorygon
-	msgbox MauvilleCity_GameCorner_Text_GotEnoughCoins, MSGBOX_YESNO
+	msgbox MauvilleCity_GameCorner_Text_GotEnoughCoinsForUpgrade, MSGBOX_YESNO
 	goto_if_eq VAR_RESULT, NO, MauvilleCity_GameCorner_EventScript_CancelPokemonSelect
 	call MauvilleCity_GameCorner_EventScript_GiveUpgrade
 	removecoins PORYGON_COINS
@@ -903,8 +903,8 @@ MauvilleCity_GameCorner_Text_UpgradePrize:
 	.string "I see you've already claimed your\n"
 	.string "special PORYGON.\p"
 	.string "While you can't have another, there's an\n"
-	.string "exclusive UPGRADE waiting if you can muster\l"
-	.string "another 9999 COINS.\p"
+	.string "exclusive UPGRADE waiting if you can\l"
+	.string "muster another 9999 COINS.\p"
 	.string "Though, between us, I doubt you'll ever\n"
 	.string "hit that mark again…\p"
 
@@ -912,7 +912,8 @@ MauvilleCity_GameCorner_Text_GotEnoughCoinsForUpgrade:
 	.string "Another 9999 COINS, huh?\p"
 	.string "I... I can hardly believe it.\n"
 	.string "How did you even pull that off?\p"
-	.string "Well, here's your UPGRADE.$"
+	.string "Well, would you like to claim your\n"
+	.string "UPGRADE?$"
 
 MauvilleCity_GameCorner_Text_ClaimedUpgrade:
 	.string "Congratulations!\p"
