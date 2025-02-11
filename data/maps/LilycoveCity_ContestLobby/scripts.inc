@@ -1285,7 +1285,10 @@ LilycoveCity_ContestLobby_Text_ContestFeastForEyes:
 	.string "Wow, coming out to a CONTEST is\n"
 	.string "a feast for these eyes!\p"
 	.string "Would you look at all the POKéMON\n"
-	.string "that just scream to be painted?$"
+	.string "that just scream to be painted?\p"
+	.string "I wonder if the LILYCOVE MUSEUM would"
+	.string "appreciate these astounding works of"
+	.string "art?$"
 
 LilycoveCity_ContestLobby_Text_ToughContestIsExtreme:
 	.string "The TOUGHNESS CONTEST is like\n"
