@@ -265,7 +265,7 @@ RustboroCity_PokemonSchool_Text_TradingRightNow:
 
 RustboroCity_PokemonSchool_Text_AlwaysWantedSeedot:
 	.string "I always wanted SEEDOT, but I\n"
-	.string "can't go to ROUTE 103 alone\l"
+	.string "can't go to ROUTE 103 alone.\l"
 	.string "I'm finally getting one!$"
 
 RustboroCity_PokemonSchool_Text_PokemontCantUseManMadeItems:
@@ -291,7 +291,7 @@ RustboroCity_PokemonSchool_Text_PokemonHealItselfWithBerry:
 
 RustboroCity_PokemonSchool_Text_StudentsNotes:
 	.string "It's this student's notebook…\n"
-	.string "NORMAL, BUG, FLYING, GROUND\l"
+	.string "NORMAL, BUG, FLYING, GROUND,\l"
 	.string "ROCK, FIGHTING, POISON,\l"
 	.string "STEEL are PHYSICAL.\p"
 	.string "DARK-type uses PHYSICAL\n"
