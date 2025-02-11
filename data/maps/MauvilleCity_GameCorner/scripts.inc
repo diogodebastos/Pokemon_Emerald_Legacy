@@ -906,7 +906,7 @@ MauvilleCity_GameCorner_Text_UpgradePrize:
 	.string "exclusive UPGRADE waiting if you can\l"
 	.string "muster another 9999 COINS.\p"
 	.string "Though, between us, I doubt you'll ever\n"
-	.string "hit that mark again…\p"
+	.string "hit that mark again…$"
 
 MauvilleCity_GameCorner_Text_GotEnoughCoinsForUpgrade:
 	.string "Another 9999 COINS, huh?\p"
