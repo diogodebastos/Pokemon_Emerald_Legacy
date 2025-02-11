@@ -289,9 +289,9 @@ RustboroCity_PokemonSchool_Text_ConfusedPokemonAttacksItself:
 
 RustboroCity_PokemonSchool_Text_PokemonHealItselfWithBerry:
 	.string "POKéMON moves deal damage based\n"
-	.string "on the move's type...\p"
+	.string "on the move's type…\p"
 	.string "Some types are SPECIAL, while others\n"
-	.string "are PHYSICAL...\p"
+	.string "are PHYSICAL…\p"
 	.string "I still can't keep it all straight, I\n"
 	.string "should write them down again…$"
 

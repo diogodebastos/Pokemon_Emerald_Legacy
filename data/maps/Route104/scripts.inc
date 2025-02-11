@@ -1085,7 +1085,7 @@ Route104_Text_PrettyPetalFlowShop:
 
 Route104_Text_TrainerTipsDoubleBattles:
 	.string "TRAINER TIPS\p"
-	.string "In a Double Battle, some attacks can\n"
+	.string "In a DOUBLE BATTLE, some attacks can\n"
 	.string "hit both opponents at a time.\p"
 	.string "These multi-target attacks have their\n"
 	.string "damaged reduced by half.\p"

@@ -464,8 +464,8 @@ Route116_Text_TrainerTipsBToStopEvolution:
 Route116_Text_TrainerTipsBagHasPockets:
 	.string "TRAINER TIPS\p"
 	.string "Each POKéMON Nature increases one of\n"
-	.string "their stats by 10% and lowers another\n"
+	.string "their stats by 10% and lowers another\l"
 	.string "by the same amount.\p"
-	.string "When looking at their SUMMARY screen, the\n"
-	.string "raised stat is in RED and the lowered stat is\n"
-	.string "shown in BLUE.$"
+	.string "When looking at their SUMMARY screen,\n"
+	.string "the raised stat is shown in RED, while\l"
+	.string "the lowered stat will be BLUE.$"

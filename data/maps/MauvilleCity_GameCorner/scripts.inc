@@ -910,7 +910,7 @@ MauvilleCity_GameCorner_Text_UpgradePrize:
 
 MauvilleCity_GameCorner_Text_GotEnoughCoinsForUpgrade:
 	.string "Another 9999 COINS, huh?\p"
-	.string "I... I can hardly believe it.\n"
+	.string "I… I can hardly believe it.\n"
 	.string "How did you even pull that off?\p"
 	.string "Well, would you like to claim your\n"
 	.string "UPGRADE?$"

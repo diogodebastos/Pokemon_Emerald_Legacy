@@ -1286,8 +1286,8 @@ LilycoveCity_ContestLobby_Text_ContestFeastForEyes:
 	.string "a feast for these eyes!\p"
 	.string "Would you look at all the POKéMON\n"
 	.string "that just scream to be painted?\p"
-	.string "I wonder if the LILYCOVE MUSEUM would"
-	.string "appreciate these astounding works of"
+	.string "I wonder if the LILYCOVE MUSEUM would\n"
+	.string "appreciate these astounding works of\l"
 	.string "art?$"
 
 LilycoveCity_ContestLobby_Text_ToughContestIsExtreme:
@@ -1307,4 +1307,3 @@ LilycoveCity_ContestLobby_Text_MadePokeblocksWithFamily:
 	.string "Big Sister. They turned out great!\p"
 	.string "I bet you can make smoother, better\n"
 	.string "{POKEBLOCK}S if you have more people.$"
-

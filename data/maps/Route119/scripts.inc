@@ -678,6 +678,6 @@ Route119_Text_TrainerTipsDecoration:
 	.string "Some POKéMON find better cover in\n"
 	.string "certain weather.\p"
 	.string "A SANDSTORM increases the SP. DEF of a\n"
-	.string "ROCK-type POKéMON and those with SAND\l"
+	.string "ROCK type POKéMON and those with SAND\l"
 	.string "VEIL, while HAIL gives extra DEFENSE to\l"
 	.string "ICE types.$"
