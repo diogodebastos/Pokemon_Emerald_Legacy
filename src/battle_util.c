@@ -3583,19 +3583,19 @@ u8 ItemBattleEffects(u8 caseID, u8 battlerId, bool8 moveTurn)
                 break;
             case HOLD_EFFECT_CURE_ATTRACT:
                 CuredProblem = 0;
-                if (gDisableStructs[gBattlerAttacker].tauntTimer != 0)
+                if (gDisableStructs[battlerId].tauntTimer != 0)
                 {
-                    gDisableStructs[gBattlerAttacker].tauntTimer = 0;
+                    gDisableStructs[battlerId].tauntTimer = 0;
                     CuredProblem = 1;
                 }
-                if (gDisableStructs[gBattlerAttacker].encoreTimer != 0)
+                if (gDisableStructs[battlerId].encoreTimer != 0)
                 {
-                    gDisableStructs[gBattlerAttacker].encoreTimer = 0;
+                    gDisableStructs[battlerId].encoreTimer = 0;
                     CuredProblem = 1;
                 }
-                if (gDisableStructs[gBattlerAttacker].disableTimer != 0)
+                if (gDisableStructs[battlerId].disableTimer != 0)
                 {
-                    gDisableStructs[gBattlerAttacker].disableTimer = 0;
+                    gDisableStructs[battlerId].disableTimer = 0;
                     CuredProblem = 1;
                 }
                 if (gBattleMons[battlerId].status2 & STATUS2_TORMENT)
@@ -3712,19 +3712,19 @@ u8 ItemBattleEffects(u8 caseID, u8 battlerId, bool8 moveTurn)
                 break;
             case HOLD_EFFECT_CURE_ATTRACT:
                 CuredProblem = 0;
-                if (gDisableStructs[gBattlerAttacker].tauntTimer != 0)
+                if (gDisableStructs[battlerId].tauntTimer != 0)
                 {
-                    gDisableStructs[gBattlerAttacker].tauntTimer = 0;
+                    gDisableStructs[battlerId].tauntTimer = 0;
                     CuredProblem = 1;
                 }
-                if (gDisableStructs[gBattlerAttacker].encoreTimer != 0)
+                if (gDisableStructs[battlerId].encoreTimer != 0)
                 {
-                    gDisableStructs[gBattlerAttacker].encoreTimer = 0;
+                    gDisableStructs[battlerId].encoreTimer = 0;
                     CuredProblem = 1;
                 }
-                if (gDisableStructs[gBattlerAttacker].disableTimer != 0)
+                if (gDisableStructs[battlerId].disableTimer != 0)
                 {
-                    gDisableStructs[gBattlerAttacker].disableTimer = 0;
+                    gDisableStructs[battlerId].disableTimer = 0;
                     CuredProblem = 1;
                 }
                 if (gBattleMons[battlerId].status2 & STATUS2_TORMENT)
