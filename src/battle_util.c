@@ -3587,30 +3587,34 @@ u8 ItemBattleEffects(u8 caseID, u8 battlerId, bool8 moveTurn)
                 {
                     gDisableStructs[battlerId].tauntTimer = 0;
                     CuredProblem = 1;
+                    StringCopy(gBattleTextBuff1, gText_Taunt);
                 }
                 if (gDisableStructs[battlerId].encoreTimer != 0)
                 {
                     gDisableStructs[battlerId].encoreTimer = 0;
                     CuredProblem = 1;
+                    StringCopy(gBattleTextBuff1, gText_Encore);
                 }
                 if (gDisableStructs[battlerId].disableTimer != 0)
                 {
                     gDisableStructs[battlerId].disableTimer = 0;
                     CuredProblem = 1;
+                    StringCopy(gBattleTextBuff1, gText_Disable);
                 }
                 if (gBattleMons[battlerId].status2 & STATUS2_TORMENT)
                 {
                     gBattleMons[battlerId].status2 &= ~STATUS2_TORMENT;
                     CuredProblem = 1;
+                    StringCopy(gBattleTextBuff1, gText_Torment);
                 }
                 if (gBattleMons[battlerId].status2 & STATUS2_INFATUATION)
                 {
                     gBattleMons[battlerId].status2 &= ~STATUS2_INFATUATION;
                     CuredProblem = 1;
+                    StringCopy(gBattleTextBuff1, gStatusConditionString_LoveJpn);
                 }
                 if (CuredProblem != 0)
                 {
-                    StringCopy(gBattleTextBuff1, gStatusConditionString_LoveJpn);
                     BattleScriptExecute(BattleScript_BerryCureChosenStatusEnd2);
                     gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_CURED_PROBLEM;
                     effect = ITEM_EFFECT_OTHER;
@@ -3716,30 +3720,34 @@ u8 ItemBattleEffects(u8 caseID, u8 battlerId, bool8 moveTurn)
                 {
                     gDisableStructs[battlerId].tauntTimer = 0;
                     CuredProblem = 1;
+                    StringCopy(gBattleTextBuff1, gText_Taunt);
                 }
                 if (gDisableStructs[battlerId].encoreTimer != 0)
                 {
                     gDisableStructs[battlerId].encoreTimer = 0;
                     CuredProblem = 1;
+                    StringCopy(gBattleTextBuff1, gText_Encore);
                 }
                 if (gDisableStructs[battlerId].disableTimer != 0)
                 {
                     gDisableStructs[battlerId].disableTimer = 0;
                     CuredProblem = 1;
+                    StringCopy(gBattleTextBuff1, gText_Disable);
                 }
                 if (gBattleMons[battlerId].status2 & STATUS2_TORMENT)
                 {
                     gBattleMons[battlerId].status2 &= ~STATUS2_TORMENT;
                     CuredProblem = 1;
+                    StringCopy(gBattleTextBuff1, gText_Torment);
                 }
                 if (gBattleMons[battlerId].status2 & STATUS2_INFATUATION)
                 {
                     gBattleMons[battlerId].status2 &= ~STATUS2_INFATUATION;
                     CuredProblem = 1;
+                    StringCopy(gBattleTextBuff1, gStatusConditionString_LoveJpn);
                 }
                 if (CuredProblem != 0)
                 {
-                    StringCopy(gBattleTextBuff1, gStatusConditionString_LoveJpn);
                     BattleScriptPushCursor();
                     gBattleCommunication[MULTISTRING_CHOOSER] = B_MSG_CURED_PROBLEM;
                     gBattlescriptCurrInstr = BattleScript_BerryCureChosenStatusRet;
