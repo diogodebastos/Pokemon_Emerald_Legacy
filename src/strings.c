@@ -1866,6 +1866,7 @@ const u8 gText_Stats_Gender_75[]     = _("♀ 3/1 ♂");     //_("♀ 75 / 25 �
 const u8 gText_Stats_Gender_87_5[]   = _("♀ 7/1 ♂");
 const u8 gText_Stats_Gender_100[]    = _("♀");
 const u8 gText_Stats_CatchRate[]     = _("CATCH{0x5B}: ");
+const u8 gText_Stats_CatchRate_Number[]         = _("CATCH RATE: ");
 const u8 gText_Stats_CatchRate_Legend[]         = _("LEGENDARY");
 const u8 gText_Stats_CatchRate_VeryHard[]       = _("VERY HARD");
 const u8 gText_Stats_CatchRate_Difficult[]      = _("DIFFICULT");

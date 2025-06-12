@@ -561,6 +561,7 @@ extern const u8 gText_Stats_Gender_75[];
 extern const u8 gText_Stats_Gender_87_5[];
 extern const u8 gText_Stats_Gender_100[];
 extern const u8 gText_Stats_CatchRate[];
+extern const u8 gText_Stats_CatchRate_Number[];
 extern const u8 gText_Stats_CatchRate_Legend[];
 extern const u8 gText_Stats_CatchRate_VeryHard[];
 extern const u8 gText_Stats_CatchRate_Difficult[];

@@ -148,6 +148,9 @@ static const u8 sText_TenDashes2[] = _("----------");
 #define REVERSE_MOVES_DIRECTION 1 //0 false - default: Down on d-pad increments in list, 1 true - reversed: Up on d-pad increments list
 #define LOOP_MOVES_LIST 1 //0 false - default: List stops at 1 and at max moves, 1 true - looped: List continues infinitely
 
+// For modifying whether to use original numbers or summarised values
+#define CATCH_RATE_NUMBER 1 //0 false - default: Use text labels instead of numeric catch rate, 1 true - use numeric catch rate
+
 // For scrolling search parameter
 #define MAX_SEARCH_PARAM_ON_SCREEN   6
 #define MAX_SEARCH_PARAM_CURSOR_POS  (MAX_SEARCH_PARAM_ON_SCREEN - 1)
@@ -5817,20 +5820,31 @@ static void PrintStatsScreen_Left(u8 taskId)
         u32 catchRate = sPokedexView->sPokemonStats.catchRate;
         u32 growthRate = sPokedexView->sPokemonStats.growthRate;
 
-        //Catch rate
-        PrintStatsScreenTextSmall(WIN_STATS_LEFT, gText_Stats_CatchRate, base_x, base_y + base_y_offset*base_i);
-        if (catchRate <= 10)
-            PrintStatsScreenTextSmall(WIN_STATS_LEFT, gText_Stats_CatchRate_Legend, base_x + x_offset_column, base_y + base_y_offset*base_i);
-        else if (catchRate <= 70)
-            PrintStatsScreenTextSmall(WIN_STATS_LEFT, gText_Stats_CatchRate_VeryHard, base_x + x_offset_column, base_y + base_y_offset*base_i);
-        else if (catchRate <= 100)
-            PrintStatsScreenTextSmall(WIN_STATS_LEFT, gText_Stats_CatchRate_Difficult, base_x + x_offset_column, base_y + base_y_offset*base_i);
-        else if (catchRate <= 150)
-            PrintStatsScreenTextSmall(WIN_STATS_LEFT, gText_Stats_CatchRate_Medium, base_x + x_offset_column, base_y + base_y_offset*base_i);
-        else if (catchRate <= 200)
-            PrintStatsScreenTextSmall(WIN_STATS_LEFT, gText_Stats_CatchRate_Relaxed, base_x + x_offset_column, base_y + base_y_offset*base_i);
+        if(CATCH_RATE_NUMBER)
+        {
+            //Catch rate - Number
+            PrintStatsScreenTextSmall(WIN_STATS_LEFT, gText_Stats_CatchRate_Number, base_x, base_y + base_y_offset*base_i);
+            ConvertIntToDecimalStringN(gStringVar1, catchRate, STR_CONV_MODE_RIGHT_ALIGN, 3);
+            PrintStatsScreenTextSmall(WIN_STATS_LEFT, gStringVar1, base_x + base_x_offset, base_y + base_y_offset*base_i);
+        }
         else
-            PrintStatsScreenTextSmall(WIN_STATS_LEFT, gText_Stats_CatchRate_Easy, base_x + x_offset_column, base_y + base_y_offset*base_i);
+        {
+            //Catch rate - Text
+            PrintStatsScreenTextSmall(WIN_STATS_LEFT, gText_Stats_CatchRate, base_x, base_y + base_y_offset*base_i);
+            if (catchRate <= 10)
+                PrintStatsScreenTextSmall(WIN_STATS_LEFT, gText_Stats_CatchRate_Legend, base_x + x_offset_column, base_y + base_y_offset*base_i);
+            else if (catchRate <= 70)
+                PrintStatsScreenTextSmall(WIN_STATS_LEFT, gText_Stats_CatchRate_VeryHard, base_x + x_offset_column, base_y + base_y_offset*base_i);
+            else if (catchRate <= 100)
+                PrintStatsScreenTextSmall(WIN_STATS_LEFT, gText_Stats_CatchRate_Difficult, base_x + x_offset_column, base_y + base_y_offset*base_i);
+            else if (catchRate <= 150)
+                PrintStatsScreenTextSmall(WIN_STATS_LEFT, gText_Stats_CatchRate_Medium, base_x + x_offset_column, base_y + base_y_offset*base_i);
+            else if (catchRate <= 200)
+                PrintStatsScreenTextSmall(WIN_STATS_LEFT, gText_Stats_CatchRate_Relaxed, base_x + x_offset_column, base_y + base_y_offset*base_i);
+            else
+                PrintStatsScreenTextSmall(WIN_STATS_LEFT, gText_Stats_CatchRate_Easy, base_x + x_offset_column, base_y + base_y_offset*base_i);
+        }
+        
         base_i++;
 
         //Growth rate
