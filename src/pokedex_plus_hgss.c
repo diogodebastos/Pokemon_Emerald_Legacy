@@ -144,7 +144,9 @@ static const u8 sText_TenDashes2[] = _("----------");
 #define HGSS_DARK_MODE 0 //0 false, 1 true
 #define HGSS_HIDE_UNSEEN_EVOLUTION_NAMES 0 //0 false, 1 true
 
-
+// For modifying behaviour of the stats screen move list
+#define REVERSE_MOVES_DIRECTION 1 //0 false - default: Down on d-pad increments in list, 1 true - reversed: Up on d-pad increments list
+#define LOOP_MOVES_LIST 1 //0 false - default: List stops at 1 and at max moves, 1 true - looped: List continues infinitely
 
 // For scrolling search parameter
 #define MAX_SEARCH_PARAM_ON_SCREEN   6
@@ -5165,9 +5167,16 @@ static void Task_HandleStatsScreenInput(u8 taskId)
     }
 
     //Change moves
-    if (JOY_REPEAT(DPAD_UP) && sPokedexView->moveSelected > 0)
+    if ((JOY_REPEAT(DPAD_UP) && !REVERSE_MOVES_DIRECTION) || (JOY_REPEAT(DPAD_DOWN) && REVERSE_MOVES_DIRECTION))
     {
-        sPokedexView->moveSelected -= 1;
+        // Updated to loop the move list rather than stop at one end
+        if (sPokedexView->moveSelected > 0)
+            sPokedexView->moveSelected -= 1;
+        else if (LOOP_MOVES_LIST)
+            sPokedexView->moveSelected = sPokedexView->movesTotal -1;
+        else
+            return;
+
         PlaySE(SE_SELECT);
         FillWindowPixelBuffer(WIN_STATS_MOVES_TOP, PIXEL_FILL(0));
         PrintStatsScreen_DestroyMoveItemIcon(taskId);
@@ -5180,9 +5189,16 @@ static void Task_HandleStatsScreenInput(u8 taskId)
         FillWindowPixelRect(WIN_STATS_MOVES_BOTTOM, PIXEL_FILL(0), 120, 0, 20, 16);
         PrintStatsScreen_Moves_Bottom(taskId);
     }
-    if (JOY_REPEAT(DPAD_DOWN) && sPokedexView->moveSelected < sPokedexView->movesTotal -1 )
+    if ((JOY_REPEAT(DPAD_DOWN) && !REVERSE_MOVES_DIRECTION) || (JOY_REPEAT(DPAD_UP) && REVERSE_MOVES_DIRECTION))
     {
-        sPokedexView->moveSelected = sPokedexView->moveSelected + 1;
+        // Updated to loop the move list rather than stop at one end
+        if (sPokedexView->moveSelected < sPokedexView->movesTotal -1)
+            sPokedexView->moveSelected = sPokedexView->moveSelected + 1;
+        else if (LOOP_MOVES_LIST)
+            sPokedexView->moveSelected = 0;
+        else
+            return;
+        
         PlaySE(SE_SELECT);
         FillWindowPixelBuffer(WIN_STATS_MOVES_TOP, PIXEL_FILL(0));
         PrintStatsScreen_DestroyMoveItemIcon(taskId);
