@@ -570,6 +570,7 @@ extern const u8 gText_Stats_CatchRate_Relaxed[];
 extern const u8 gText_Stats_CatchRate_Easy[];
 extern const u8 gText_Stats_ExpYield[];
 extern const u8 gText_Stats_EggCycles[];
+extern const u8 gText_Stats_EggCycles_HatchSteps[];
 extern const u8 gText_Stats_EggCycles_VeryFast[];
 extern const u8 gText_Stats_EggCycles_Fast[];
 extern const u8 gText_Stats_EggCycles_Normal[];

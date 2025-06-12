@@ -150,6 +150,8 @@ static const u8 sText_TenDashes2[] = _("----------");
 
 // For modifying whether to use original numbers or summarised values
 #define CATCH_RATE_NUMBER 1 //0 false - default: Use text labels instead of numeric catch rate, 1 true - use numeric catch rate
+#define FRIENDSHIP_BASE_NUMBER 1 //0 false - default: Use emoji instead of numeric base friendship rate, 1 true - use numeric friendship rate
+#define EGG_CYCLES_NUMBER 1 //0 false - default: Use egg icons instead of numeric egg cycles rate, 1 true - use numeric egg cycles
 
 // For scrolling search parameter
 #define MAX_SEARCH_PARAM_ON_SCREEN   6
@@ -5881,6 +5883,9 @@ static void PrintStatsScreen_Left(u8 taskId)
     }
     else
     {
+        u32 friendshipBase = sPokedexView->sPokemonStats.friendship;
+        u32 eggCycles = sPokedexView->sPokemonStats.eggCycles;
+
         //Exp Yield
         PrintStatsScreenTextSmall(WIN_STATS_LEFT, gText_Stats_ExpYield, base_x, base_y + base_y_offset*base_i);
         ConvertIntToDecimalStringN(gStringVar1, sPokedexView->sPokemonStats.expYield, STR_CONV_MODE_RIGHT_ALIGN, 3);
@@ -5889,29 +5894,39 @@ static void PrintStatsScreen_Left(u8 taskId)
 
         //Friendship
         PrintStatsScreenTextSmall(WIN_STATS_LEFT, gText_Stats_Friendship, base_x, base_y + base_y_offset*base_i);
-        switch (sPokedexView->sPokemonStats.friendship)
+        if (FRIENDSHIP_BASE_NUMBER)
         {
-        case 35:
-            StringCopy(strEV, gText_Stats_Friendship_BigAnger);
-            break;
-        case 70:
-            StringCopy(strEV, gText_Stats_Friendship_Neutral);
-            break;
-        case 90:
-            StringCopy(strEV, gText_Stats_Friendship_Happy);
-            break;
-        case 100:
-            StringCopy(strEV, gText_Stats_Friendship_Happy);
-            break;
-        case 140:
-            StringCopy(strEV, gText_Stats_Friendship_BigSmile);
-            break;
-        default:
-            ConvertIntToDecimalStringN(strEV, sPokedexView->sPokemonStats.friendship, STR_CONV_MODE_RIGHT_ALIGN, 3);
-            break;
+            ConvertIntToDecimalStringN(strEV, friendshipBase, STR_CONV_MODE_RIGHT_ALIGN, 3);
+            align_x = GetStringRightAlignXOffset(0, strEV, total_x);
+            PrintStatsScreenTextSmall(WIN_STATS_LEFT, strEV, align_x, base_y + base_y_offset*base_i);
         }
-        align_x = GetStringRightAlignXOffset(0, strEV, total_x);
-        PrintStatsScreenTextSmall(WIN_STATS_LEFT, strEV, align_x, base_y + base_y_offset*base_i);
+        else
+        {
+            switch (friendshipBase)
+            {
+            case 35:
+                StringCopy(strEV, gText_Stats_Friendship_BigAnger);
+                break;
+            case 70:
+                StringCopy(strEV, gText_Stats_Friendship_Neutral);
+                break;
+            case 90:
+                StringCopy(strEV, gText_Stats_Friendship_Happy);
+                break;
+            case 100:
+                StringCopy(strEV, gText_Stats_Friendship_Happy);
+                break;
+            case 140:
+                StringCopy(strEV, gText_Stats_Friendship_BigSmile);
+                break;
+            default:
+                ConvertIntToDecimalStringN(strEV, friendshipBase, STR_CONV_MODE_RIGHT_ALIGN, 3);
+                break;
+            }
+            align_x = GetStringRightAlignXOffset(0, strEV, total_x);
+            PrintStatsScreenTextSmall(WIN_STATS_LEFT, strEV, align_x, base_y + base_y_offset*base_i);
+        }
+
         base_i++;
 
         //Egg cycles
@@ -5920,20 +5935,27 @@ static void PrintStatsScreen_Left(u8 taskId)
             PrintStatsScreenTextSmall(WIN_STATS_LEFT, gText_Stats_EggCycles, base_x, base_y + base_y_offset*base_i);
             PrintStatsScreenTextSmall(WIN_STATS_LEFT, gText_ThreeDashes, 78, base_y + base_y_offset*base_i);
         }
-        else
+        else if (EGG_CYCLES_NUMBER)
         {
             PrintStatsScreenTextSmall(WIN_STATS_LEFT, gText_Stats_EggCycles, base_x, base_y + base_y_offset*base_i);
-            if (sPokedexView->sPokemonStats.eggCycles <= 10)
+            ConvertIntToDecimalStringN(strEV, eggCycles, STR_CONV_MODE_RIGHT_ALIGN, 2);
+            align_x = GetStringRightAlignXOffset(0, strEV, total_x);
+            PrintStatsScreenTextSmall(WIN_STATS_LEFT, strEV, align_x, base_y + base_y_offset*base_i);
+        }
+        else
+        {
+            PrintStatsScreenTextSmall(WIN_STATS_LEFT, gText_Stats_EggCycles_HatchSteps, base_x, base_y + base_y_offset*base_i);
+            if (eggCycles <= 10)
             {
                 StringCopy(strEV, gText_Stats_EggCycles_VeryFast);
                 align_x = 76;
             }
-            else if (sPokedexView->sPokemonStats.eggCycles <= 20)
+            else if (eggCycles <= 20)
             {
                 StringCopy(strEV, gText_Stats_EggCycles_Fast);
                 align_x = 85;
             }
-            else if (sPokedexView->sPokemonStats.eggCycles <= 30)
+            else if (eggCycles <= 30)
             {
                 StringCopy(strEV, gText_Stats_EggCycles_Normal);
                 align_x = 76;
