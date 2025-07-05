@@ -2063,8 +2063,9 @@ static void Cmd_resultmessage(void)
         gBattleCommunication[MSG_DISPLAY] = 1;
     }
     else
-    {        
-        if (gBattleMons[gBattlerAttacker].hp <= (gBattleMons[gBattlerAttacker].maxHP / 3) && !gCheckedMoveBoostedByAbility)
+    {   
+        // Added check for Overgrow, Blaze, Torrent and Swarm to provide a message if activated     
+        if (gBattleMons[gBattlerAttacker].hp <= (gBattleMons[gBattlerAttacker].maxHP / 3) && !gBattleStruct->checkedMoveBoostedByAbility)
         {
             switch (ability)
             {
@@ -2101,7 +2102,7 @@ static void Cmd_resultmessage(void)
                     }
                     break;
             }
-            gCheckedMoveBoostedByAbility = TRUE;
+            gBattleStruct->checkedMoveBoostedByAbility = TRUE;
             return;
         }
         gBattleCommunication[MSG_DISPLAY] = 1;
@@ -4257,7 +4258,7 @@ static void Cmd_moveend(void)
     u8 endMode, endState;
     u16 originallyUsedMove;
 
-    gCheckedMoveBoostedByAbility = FALSE;
+    gBattleStruct->checkedMoveBoostedByAbility = FALSE;
 
     if (gChosenMove == MOVE_UNAVAILABLE)
         originallyUsedMove = MOVE_NONE;

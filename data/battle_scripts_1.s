@@ -4628,4 +4628,4 @@ BattleScript_PrintPlayerForfeitedLinkBattle::
 
 BattleScript_AttackBoostedByAbility::
 	printstring STRINGID_ATTACKBOOSTEDBYABILITY
-	end2
+	return
