@@ -2059,7 +2059,17 @@ static void Cmd_resultmessage(void)
         gBattleCommunication[MSG_DISPLAY] = 1;
     }
     else
-    {
+    {   
+        
+        // Added check for Magma Armor to provide a message if activated
+        if (gBattleMons[gBattlerTarget].ability == ABILITY_MAGMA_ARMOR && moveType == TYPE_WATER && !gBattleStruct->checkedMagmaArmor)
+        {
+            BattleScriptPushCursor();
+            gBattleCommunication[MSG_DISPLAY] = 1;
+            gBattlescriptCurrInstr = BattleScript_MagmaArmorActivated;
+            gBattleStruct->checkedMagmaArmor = TRUE;
+            return;
+        }
         gBattleCommunication[MSG_DISPLAY] = 1;
         switch (gMoveResultFlags & (u8)(~MOVE_RESULT_MISSED))
         {
@@ -2237,7 +2247,7 @@ void SetMoveEffect(bool8 primary, u8 certain)
     bool32 statusChanged = FALSE;
     u8 affectsUser = 0; // 0x40 otherwise
     bool32 noSunCanFreeze = TRUE;
-
+    
     if (gBattleCommunication[MOVE_EFFECT_BYTE] & MOVE_EFFECT_AFFECTS_USER)
     {
         gEffectBattler = gBattlerAttacker; // battlerId that effects get applied on
@@ -4212,6 +4222,8 @@ static void Cmd_moveend(void)
     u16 *choicedMoveAtk = NULL;
     u8 endMode, endState;
     u16 originallyUsedMove;
+
+    gBattleStruct->checkedMagmaArmor = FALSE;
 
     if (gChosenMove == MOVE_UNAVAILABLE)
         originallyUsedMove = MOVE_NONE;
