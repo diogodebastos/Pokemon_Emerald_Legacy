@@ -888,11 +888,56 @@
 #define TRAINER_SIDNEY_2_SINGLE             884
 #define TRAINER_PHOEBE_2_SINGLE             885
 
-// NOTE: Because each Trainer uses a flag to determine when they are defeated, there is only space for 9 additional trainers before trainer flag space overflows
-//       More space can be made by shifting flags around in constants/flags.h or changing how trainer flags are handled
-//       MAX_TRAINERS_COUNT can be increased but will take up additional saveblock space
+// Battle Royale frontier trainers
+#define TRAINER_FRONTIER_LEON               886
+#define TRAINER_FRONTIER_AVA                887
+#define TRAINER_FRONTIER_NELSON             888
+#define TRAINER_FRONTIER_HUGO               889
+#define TRAINER_FRONTIER_BRYCE              890
+#define TRAINER_FRONTIER_OSCAR              891
+#define TRAINER_FRONTIER_MIRIAM             892
+#define TRAINER_FRONTIER_STELLA             893
+#define TRAINER_FRONTIER_MADDOX             894
+#define TRAINER_FRONTIER_SHANIA             895
+#define TRAINER_FRONTIER_TYLER              896
+#define TRAINER_FRONTIER_CARRIE             897
+#define TRAINER_FRONTIER_CHAZ               898
+#define TRAINER_FRONTIER_DORINE             899
+#define TRAINER_FRONTIER_RAUL               900
+#define TRAINER_FRONTIER_JAXON              901
+#define TRAINER_FRONTIER_EMILEE             902
+#define TRAINER_FRONTIER_ARMANDO            903
+#define TRAINER_FRONTIER_JOSIE              904
+#define TRAINER_FRONTIER_PEDRO              905
+#define TRAINER_FRONTIER_ELAINE             906
+#define TRAINER_FRONTIER_GAVIN              907
+#define TRAINER_FRONTIER_TODD               908
+#define TRAINER_FRONTIER_RUTH               909
+#define TRAINER_FRONTIER_MELODY             910
+#define TRAINER_FRONTIER_SKYLER             911
+#define TRAINER_FRONTIER_ERICK              912
+#define TRAINER_FRONTIER_JOYCE              913
+#define TRAINER_FRONTIER_MALORY             914
+#define TRAINER_FRONTIER_ESTHER             915
+#define TRAINER_FRONTIER_WILSON             916
+#define TRAINER_FRONTIER_CLARE              917
+#define TRAINER_FRONTIER_TESS               918
+#define TRAINER_FRONTIER_VINCE              919
+#define TRAINER_FRONTIER_BRYON              920
+#define TRAINER_FRONTIER_GILLIAN            921
+#define TRAINER_FRONTIER_DAVIN              922
+#define TRAINER_FRONTIER_TREVON             923
+#define TRAINER_FRONTIER_MATEO              924
+#define TRAINER_BRENDAN_EVERGRANDE_MUDKIP   925
+#define TRAINER_BRENDAN_EVERGRANDE_TREECKO  926
+#define TRAINER_BRENDAN_EVERGRANDE_TORCHIC  927
+#define TRAINER_MAY_EVERGRANDE_MUDKIP       928
+#define TRAINER_MAY_EVERGRANDE_TREECKO      929
+#define TRAINER_MAY_EVERGRANDE_TORCHIC      930
+#define TRAINER_GRINDING_NURSE              931
 
-#define TRAINERS_COUNT                      886
+#define TRAINERS_COUNT                      932
 #define MAX_TRAINERS_COUNT                  960
+#define TRAINER_BATTLE_ROYALE_COUNT         500
 
 #endif  // GUARD_CONSTANTS_OPPONENTS_H

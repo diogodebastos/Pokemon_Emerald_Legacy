@@ -1,18 +1,13 @@
 SlateportCity_PokemonFanClub_EventScript_SwaggerTutor::
 	lock
 	faceplayer
-	goto_if_set FLAG_IS_CHAMPION, MoveTutor_EventScript_Swagger_MakeUnlimited
-	goto_if_set FLAG_MOVE_TUTOR_TAUGHT_SWAGGER, MoveTutor_EventScript_SwaggerTaught
 MoveTutor_EventScript_Swagger_MakeUnlimited::
 	msgbox MoveTutor_Text_SwaggerTeach, MSGBOX_YESNO
-	goto_if_eq VAR_RESULT, NO, MoveTutor_EventScript_SwaggerDeclined
-	call MoveTutor_EventScript_CanOnlyBeLearnedOnce
 	goto_if_eq VAR_RESULT, NO, MoveTutor_EventScript_SwaggerDeclined
 	msgbox MoveTutor_Text_SwaggerWhichMon, MSGBOX_DEFAULT
 	setvar VAR_0x8005, TUTOR_MOVE_SWAGGER
 	call MoveTutor_EventScript_OpenPartyMenu
 	goto_if_eq VAR_RESULT, 0, MoveTutor_EventScript_SwaggerDeclined
-	setflag FLAG_MOVE_TUTOR_TAUGHT_SWAGGER
 	goto MoveTutor_EventScript_SwaggerTaught
 	end
 
@@ -29,18 +24,13 @@ MoveTutor_EventScript_SwaggerTaught::
 MauvilleCity_EventScript_RolloutTutor::
 	lock
 	faceplayer
-	goto_if_set FLAG_IS_CHAMPION, MoveTutor_EventScript_Rollout_MakeUnlimited
-	goto_if_set FLAG_MOVE_TUTOR_TAUGHT_ROLLOUT, MoveTutor_EventScript_RolloutTaught
 MoveTutor_EventScript_Rollout_MakeUnlimited::
 	msgbox MoveTutor_Text_RolloutTeach, MSGBOX_YESNO
-	goto_if_eq VAR_RESULT, NO, MoveTutor_EventScript_RolloutDeclined
-	call MoveTutor_EventScript_CanOnlyBeLearnedOnce
 	goto_if_eq VAR_RESULT, NO, MoveTutor_EventScript_RolloutDeclined
 	msgbox MoveTutor_Text_RolloutWhichMon, MSGBOX_DEFAULT
 	setvar VAR_0x8005, TUTOR_MOVE_ROLLOUT
 	call MoveTutor_EventScript_OpenPartyMenu
 	goto_if_eq VAR_RESULT, 0, MoveTutor_EventScript_RolloutDeclined
-	setflag FLAG_MOVE_TUTOR_TAUGHT_ROLLOUT
 	goto MoveTutor_EventScript_RolloutTaught
 	end
 
@@ -57,18 +47,13 @@ MoveTutor_EventScript_RolloutTaught::
 VerdanturfTown_PokemonCenter_1F_EventScript_FuryCutterTutor::
 	lock
 	faceplayer
-	goto_if_set FLAG_IS_CHAMPION, MoveTutor_EventScript_FuryCutter_MakeUnlimited
-	goto_if_set FLAG_MOVE_TUTOR_TAUGHT_FURY_CUTTER, MoveTutor_EventScript_FuryCutterTaught
 MoveTutor_EventScript_FuryCutter_MakeUnlimited::
 	msgbox MoveTutor_Text_FuryCutterTeach, MSGBOX_YESNO
-	goto_if_eq VAR_RESULT, NO, MoveTutor_EventScript_FuryCutterDeclined
-	call MoveTutor_EventScript_CanOnlyBeLearnedOnce
 	goto_if_eq VAR_RESULT, NO, MoveTutor_EventScript_FuryCutterDeclined
 	msgbox MoveTutor_Text_FuryCutterWhichMon, MSGBOX_DEFAULT
 	setvar VAR_0x8005, TUTOR_MOVE_FURY_CUTTER
 	call MoveTutor_EventScript_OpenPartyMenu
 	goto_if_eq VAR_RESULT, 0, MoveTutor_EventScript_FuryCutterDeclined
-	setflag FLAG_MOVE_TUTOR_TAUGHT_FURY_CUTTER
 	goto MoveTutor_EventScript_FuryCutterTaught
 	end
 
@@ -85,18 +70,13 @@ MoveTutor_EventScript_FuryCutterTaught::
 LavaridgeTown_House_EventScript_MimicTutor::
 	lock
 	faceplayer
-	goto_if_set FLAG_IS_CHAMPION, MoveTutor_EventScript_Mimic_MakeUnlimited
-	goto_if_set FLAG_MOVE_TUTOR_TAUGHT_MIMIC, MoveTutor_EventScript_MimicTaught
 MoveTutor_EventScript_Mimic_MakeUnlimited::
 	msgbox MoveTutor_MimicTeach, MSGBOX_YESNO
-	goto_if_eq VAR_RESULT, NO, MoveTutor_EventScript_MimicDeclined
-	call MoveTutor_EventScript_CanOnlyBeLearnedOnce
 	goto_if_eq VAR_RESULT, NO, MoveTutor_EventScript_MimicDeclined
 	msgbox MoveTutor_Text_MimicWhichMon, MSGBOX_DEFAULT
 	setvar VAR_0x8005, TUTOR_MOVE_MIMIC
 	call MoveTutor_EventScript_OpenPartyMenu
 	goto_if_eq VAR_RESULT, 0, MoveTutor_EventScript_MimicDeclined
-	setflag FLAG_MOVE_TUTOR_TAUGHT_MIMIC
 	goto MoveTutor_EventScript_MimicTaught
 	end
 
@@ -113,18 +93,13 @@ MoveTutor_EventScript_MimicTaught::
 FallarborTown_Mart_EventScript_MetronomeTutor::
 	lock
 	faceplayer
-	goto_if_set FLAG_IS_CHAMPION, MoveTutor_EventScript_Metronome_MakeUnlimited
-	goto_if_set FLAG_MOVE_TUTOR_TAUGHT_METRONOME, MoveTutor_EventScript_MetronomeTaught
 MoveTutor_EventScript_Metronome_MakeUnlimited::
 	msgbox MoveTutor_Text_MetronomeTeach, MSGBOX_YESNO
-	goto_if_eq VAR_RESULT, NO, MoveTutor_EventScript_MetronomeDeclined
-	call MoveTutor_EventScript_CanOnlyBeLearnedOnce
 	goto_if_eq VAR_RESULT, NO, MoveTutor_EventScript_MetronomeDeclined
 	msgbox MoveTutor_Text_MetronomeWhichMon, MSGBOX_DEFAULT
 	setvar VAR_0x8005, TUTOR_MOVE_METRONOME
 	call MoveTutor_EventScript_OpenPartyMenu
 	goto_if_eq VAR_RESULT, 0, MoveTutor_EventScript_MetronomeDeclined
-	setflag FLAG_MOVE_TUTOR_TAUGHT_METRONOME
 	goto MoveTutor_EventScript_MetronomeTaught
 	end
 
@@ -141,18 +116,13 @@ MoveTutor_EventScript_MetronomeTaught::
 FortreeCity_House2_EventScript_SleepTalkTutor::
 	lock
 	faceplayer
-	goto_if_set FLAG_IS_CHAMPION, MoveTutor_EventScript_SleepTalk_MakeUnlimited
-	goto_if_set FLAG_MOVE_TUTOR_TAUGHT_SLEEP_TALK, MoveTutor_EventScript_SleepTalkTaught
 MoveTutor_EventScript_SleepTalk_MakeUnlimited::
 	msgbox MoveTutor_Text_SleepTalkTeach, MSGBOX_YESNO
-	goto_if_eq VAR_RESULT, NO, MoveTutor_EventScript_SleepTalkDeclined
-	call MoveTutor_EventScript_CanOnlyBeLearnedOnce
 	goto_if_eq VAR_RESULT, NO, MoveTutor_EventScript_SleepTalkDeclined
 	msgbox MoveTutor_Text_SleepTalkWhichMon, MSGBOX_DEFAULT
 	setvar VAR_0x8005, TUTOR_MOVE_SLEEP_TALK
 	call MoveTutor_EventScript_OpenPartyMenu
 	goto_if_eq VAR_RESULT, 0, MoveTutor_EventScript_SleepTalkDeclined
-	setflag FLAG_MOVE_TUTOR_TAUGHT_SLEEP_TALK
 	goto MoveTutor_EventScript_SleepTalkTaught
 	end
 
@@ -169,18 +139,13 @@ MoveTutor_EventScript_SleepTalkTaught::
 LilycoveCity_DepartmentStoreRooftop_EventScript_SubstituteTutor::
 	lock
 	faceplayer
-	goto_if_set FLAG_IS_CHAMPION, MoveTutor_EventScript_Substitute_MakeUnlimited
-	goto_if_set FLAG_MOVE_TUTOR_TAUGHT_SUBSTITUTE, MoveTutor_EventScript_SubstituteTaught
 MoveTutor_EventScript_Substitute_MakeUnlimited::
 	msgbox MoveTutor_Text_SubstituteTeach, MSGBOX_YESNO
-	goto_if_eq VAR_RESULT, NO, MoveTutor_EventScript_SubstituteDeclined
-	call MoveTutor_EventScript_CanOnlyBeLearnedOnce
 	goto_if_eq VAR_RESULT, NO, MoveTutor_EventScript_SubstituteDeclined
 	msgbox MoveTutor_Text_SubstituteWhichMon, MSGBOX_DEFAULT
 	setvar VAR_0x8005, TUTOR_MOVE_SUBSTITUTE
 	call MoveTutor_EventScript_OpenPartyMenu
 	goto_if_eq VAR_RESULT, 0, MoveTutor_EventScript_SubstituteDeclined
-	setflag FLAG_MOVE_TUTOR_TAUGHT_SUBSTITUTE
 	goto MoveTutor_EventScript_SubstituteTaught
 	end
 
@@ -197,18 +162,13 @@ MoveTutor_EventScript_SubstituteTaught::
 MossdeepCity_EventScript_DynamicPunchTutor::
 	lock
 	faceplayer
-	goto_if_set FLAG_IS_CHAMPION, MoveTutor_EventScript_DynamicPunch_MakeUnlimited
-	goto_if_set FLAG_MOVE_TUTOR_TAUGHT_DYNAMICPUNCH, MoveTutor_EventScript_DynamicPunchTaught
 MoveTutor_EventScript_DynamicPunch_MakeUnlimited::
 	msgbox MoveTutor_Text_DynamicPunchTeach, MSGBOX_YESNO
-	goto_if_eq VAR_RESULT, NO, MoveTutor_EventScript_DynamicPunchDeclined
-	call MoveTutor_EventScript_CanOnlyBeLearnedOnce
 	goto_if_eq VAR_RESULT, NO, MoveTutor_EventScript_DynamicPunchDeclined
 	msgbox MoveTutor_Text_DynamicPunchWhichMon, MSGBOX_DEFAULT
 	setvar VAR_0x8005, TUTOR_MOVE_DYNAMIC_PUNCH
 	call MoveTutor_EventScript_OpenPartyMenu
 	goto_if_eq VAR_RESULT, 0, MoveTutor_EventScript_DynamicPunchDeclined
-	setflag FLAG_MOVE_TUTOR_TAUGHT_DYNAMICPUNCH
 	goto MoveTutor_EventScript_DynamicPunchTaught
 	end
 
@@ -225,18 +185,13 @@ MoveTutor_EventScript_DynamicPunchTaught::
 SootopolisCity_PokemonCenter_1F_EventScript_DoubleEdgeTutor::
 	lock
 	faceplayer
-	goto_if_set FLAG_IS_CHAMPION, MoveTutor_EventScript_DoubleEdge_MakeUnlimited
-	goto_if_set FLAG_MOVE_TUTOR_TAUGHT_DOUBLE_EDGE, MoveTutor_EventScript_DoubleEdgeTaught
 MoveTutor_EventScript_DoubleEdge_MakeUnlimited::
 	msgbox MoveTutor_Text_DoubleEdgeTeach, MSGBOX_YESNO
-	goto_if_eq VAR_RESULT, NO, MoveTutor_EventScript_DoubleEdgeDeclined
-	call MoveTutor_EventScript_CanOnlyBeLearnedOnce
 	goto_if_eq VAR_RESULT, NO, MoveTutor_EventScript_DoubleEdgeDeclined
 	msgbox MoveTutor_Text_DoubleEdgeWhichMon, MSGBOX_DEFAULT
 	setvar VAR_0x8005, TUTOR_MOVE_DOUBLE_EDGE
 	call MoveTutor_EventScript_OpenPartyMenu
 	goto_if_eq VAR_RESULT, 0, MoveTutor_EventScript_DoubleEdgeDeclined
-	setflag FLAG_MOVE_TUTOR_TAUGHT_DOUBLE_EDGE
 	goto MoveTutor_EventScript_DoubleEdgeTaught
 	end
 
@@ -253,18 +208,13 @@ MoveTutor_EventScript_DoubleEdgeTaught::
 PacifidlogTown_PokemonCenter_1F_EventScript_ExplosionTutor::
 	lock
 	faceplayer
-	goto_if_set FLAG_IS_CHAMPION, MoveTutor_EventScript_Explosion_MakeUnlimited
-	goto_if_set FLAG_MOVE_TUTOR_TAUGHT_EXPLOSION, MoveTutor_EventScript_ExplosionTaught
 MoveTutor_EventScript_Explosion_MakeUnlimited::
 	msgbox MoveTutor_Text_ExplosionTeach, MSGBOX_YESNO
-	goto_if_eq VAR_RESULT, NO, MoveTutor_EventScript_ExplosionDeclined
-	call MoveTutor_EventScript_CanOnlyBeLearnedOnce
 	goto_if_eq VAR_RESULT, NO, MoveTutor_EventScript_ExplosionDeclined
 	msgbox MoveTutor_Text_ExplosionWhichMon, MSGBOX_DEFAULT
 	setvar VAR_0x8005, TUTOR_MOVE_EXPLOSION
 	call MoveTutor_EventScript_OpenPartyMenu
 	goto_if_eq VAR_RESULT, 0, MoveTutor_EventScript_ExplosionDeclined
-	setflag FLAG_MOVE_TUTOR_TAUGHT_EXPLOSION
 	goto MoveTutor_EventScript_ExplosionTaught
 	end
 

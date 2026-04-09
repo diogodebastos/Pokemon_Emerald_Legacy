@@ -424,3 +424,8 @@ Route120_Text_RouteSignFortree:
 Route120_Text_RouteSign121:
 	.string "{RIGHT_ARROW} ROUTE 121\n"
 	.string "{LEFT_ARROW} ROUTE 120$"
+
+Route120_EventScript_Spenser::
+	trainerbattle_single TRAINER_SPENSER, BattleRoyale_Text_SpenserIntro, BattleRoyale_Text_SpenserDefeated
+	msgbox BattleRoyale_Text_SpenserPostBattle, MSGBOX_AUTOCLOSE
+	end

@@ -190,3 +190,8 @@ Route121_Text_SafariZoneSign:
 	.string "“Filled with rare POKéMON!”\n"
 	.string "SAFARI ZONE$"
 
+
+Route121_EventScript_Lucy::
+	trainerbattle_single TRAINER_LUCY, BattleRoyale_Text_LucyIntro, BattleRoyale_Text_LucyDefeated
+	msgbox BattleRoyale_Text_LucyPostBattle, MSGBOX_AUTOCLOSE
+	end

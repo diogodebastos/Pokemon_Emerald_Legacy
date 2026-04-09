@@ -27,6 +27,7 @@ enum {
     TAG_VERSION = 1000,
     TAG_PRESS_START_COPYRIGHT,
     TAG_LOGO_SHINE,
+    TAG_SOLO_LEVELING,
 };
 
 #define VERSION_BANNER_RIGHT_TILEOFFSET 64
@@ -34,6 +35,10 @@ enum {
 #define VERSION_BANNER_RIGHT_X 162
 #define VERSION_BANNER_Y 2
 #define VERSION_BANNER_Y_GOAL 66
+#define SL_BANNER_LEFT_X 89
+#define SL_BANNER_RIGHT_X 153
+#define SL_BANNER_Y 12
+#define SL_BANNER_Y_GOAL 98
 #define START_BANNER_X 128
 
 #define CLEAR_SAVE_BUTTON_COMBO (B_BUTTON | SELECT_BUTTON | DPAD_UP)
@@ -56,6 +61,8 @@ static void SpriteCB_VersionBannerLeft(struct Sprite *sprite);
 static void SpriteCB_VersionBannerRight(struct Sprite *sprite);
 static void SpriteCB_PressStartCopyrightBanner(struct Sprite *sprite);
 static void SpriteCB_PokemonLogoShine(struct Sprite *sprite);
+static void SpriteCB_SoloLevelingLeft(struct Sprite *sprite);
+static void SpriteCB_SoloLevelingRight(struct Sprite *sprite);
 
 // const rom data
 static const u16 sUnusedUnknownPal[] = INCBIN_U16("graphics/title_screen/unused.gbapal");
@@ -190,6 +197,94 @@ static const struct CompressedSpriteSheet sSpriteSheet_EmeraldVersion[] =
         .data = gTitleScreenEmeraldVersionGfx,
         .size = 0x1000,
         .tag = TAG_VERSION
+    },
+    {},
+};
+
+static const struct OamData sSoloLevelingLeftOamData =
+{
+    .y = DISPLAY_HEIGHT,
+    .affineMode = ST_OAM_AFFINE_OFF,
+    .objMode = ST_OAM_OBJ_NORMAL,
+    .mosaic = FALSE,
+    .bpp = ST_OAM_8BPP,
+    .shape = SPRITE_SHAPE(64x32),
+    .x = 0,
+    .matrixNum = 0,
+    .size = SPRITE_SIZE(64x32),
+    .tileNum = 0,
+    .priority = 0,
+    .paletteNum = 0,
+    .affineParam = 0,
+};
+
+static const struct OamData sSoloLevelingRightOamData =
+{
+    .y = DISPLAY_HEIGHT,
+    .affineMode = ST_OAM_AFFINE_OFF,
+    .objMode = ST_OAM_OBJ_NORMAL,
+    .mosaic = FALSE,
+    .bpp = ST_OAM_8BPP,
+    .shape = SPRITE_SHAPE(64x32),
+    .x = 0,
+    .matrixNum = 0,
+    .size = SPRITE_SIZE(64x32),
+    .tileNum = 0,
+    .priority = 0,
+    .paletteNum = 0,
+    .affineParam = 0,
+};
+
+static const union AnimCmd sSoloLevelingLeftAnimSequence[] =
+{
+    ANIMCMD_FRAME(0, 30),
+    ANIMCMD_END,
+};
+
+static const union AnimCmd sSoloLevelingRightAnimSequence[] =
+{
+    ANIMCMD_FRAME(VERSION_BANNER_RIGHT_TILEOFFSET, 30),
+    ANIMCMD_END,
+};
+
+static const union AnimCmd *const sSoloLevelingLeftAnimTable[] =
+{
+    sSoloLevelingLeftAnimSequence,
+};
+
+static const union AnimCmd *const sSoloLevelingRightAnimTable[] =
+{
+    sSoloLevelingRightAnimSequence,
+};
+
+static const struct SpriteTemplate sSoloLevelingLeftSpriteTemplate =
+{
+    .tileTag = TAG_SOLO_LEVELING,
+    .paletteTag = TAG_VERSION,
+    .oam = &sSoloLevelingLeftOamData,
+    .anims = sSoloLevelingLeftAnimTable,
+    .images = NULL,
+    .affineAnims = gDummySpriteAffineAnimTable,
+    .callback = SpriteCB_SoloLevelingLeft,
+};
+
+static const struct SpriteTemplate sSoloLevelingRightSpriteTemplate =
+{
+    .tileTag = TAG_SOLO_LEVELING,
+    .paletteTag = TAG_VERSION,
+    .oam = &sSoloLevelingRightOamData,
+    .anims = sSoloLevelingRightAnimTable,
+    .images = NULL,
+    .affineAnims = gDummySpriteAffineAnimTable,
+    .callback = SpriteCB_SoloLevelingRight,
+};
+
+static const struct CompressedSpriteSheet sSpriteSheet_SoloLeveling[] =
+{
+    {
+        .data = gTitleScreenSoloLevelingGfx,
+        .size = 0x1000,
+        .tag = TAG_SOLO_LEVELING
     },
     {},
 };
@@ -402,6 +497,36 @@ static void SpriteCB_VersionBannerRight(struct Sprite *sprite)
     }
 }
 
+#define sSlParentTaskId data[0]
+
+static void SpriteCB_SoloLevelingLeft(struct Sprite *sprite)
+{
+    if (gTasks[sprite->sSlParentTaskId].tSkipToNext)
+    {
+        sprite->oam.objMode = ST_OAM_OBJ_NORMAL;
+        sprite->y = SL_BANNER_Y_GOAL;
+    }
+    else if (sprite->y != SL_BANNER_Y_GOAL)
+    {
+        sprite->y++;
+    }
+}
+
+static void SpriteCB_SoloLevelingRight(struct Sprite *sprite)
+{
+    if (gTasks[sprite->sSlParentTaskId].tSkipToNext)
+    {
+        sprite->oam.objMode = ST_OAM_OBJ_NORMAL;
+        sprite->y = SL_BANNER_Y_GOAL;
+    }
+    else if (sprite->y != SL_BANNER_Y_GOAL)
+    {
+        sprite->y++;
+    }
+}
+
+#undef sSlParentTaskId
+
 // Sprite data for SpriteCB_PressStartCopyrightBanner
 #define sAnimate data[0]
 #define sTimer   data[1]
@@ -611,6 +736,7 @@ void CB2_InitTitleScreen(void)
         FreeAllSpritePalettes();
         gReservedSpritePaletteCount = 9;
         LoadCompressedSpriteSheet(&sSpriteSheet_EmeraldVersion[0]);
+        LoadCompressedSpriteSheet(&sSpriteSheet_SoloLeveling[0]);
         LoadCompressedSpriteSheet(&sSpriteSheet_PressStart[0]);
         LoadCompressedSpriteSheet(&sPokemonLogoShineSpriteSheet[0]);
         LoadPalette(gTitleScreenEmeraldVersionPal, OBJ_PLTT_ID(0), PLTT_SIZE_4BPP);
@@ -719,6 +845,12 @@ static void Task_TitleScreenPhase1(u8 taskId)
         // Create right side of version banner
         spriteId = CreateSprite(&sVersionBannerRightSpriteTemplate, VERSION_BANNER_RIGHT_X, VERSION_BANNER_Y, 0);
         gSprites[spriteId].sParentTaskId = taskId;
+
+        spriteId = CreateSprite(&sSoloLevelingLeftSpriteTemplate, SL_BANNER_LEFT_X, SL_BANNER_Y, 0);
+        gSprites[spriteId].data[0] = taskId;
+
+        spriteId = CreateSprite(&sSoloLevelingRightSpriteTemplate, SL_BANNER_RIGHT_X, SL_BANNER_Y, 0);
+        gSprites[spriteId].data[0] = taskId;
 
         gTasks[taskId].tCounter = 144;
         gTasks[taskId].func = Task_TitleScreenPhase2;

@@ -154,3 +154,8 @@ FortreeCity_Text_GymSign:
 	.string "“The bird user taking flight into\n"
 	.string "the world.”$"
 
+
+FortreeCity_EventScript_FrontierShania::
+	trainerbattle_single TRAINER_FRONTIER_SHANIA, BattleRoyale_Text_GenericIntro, BattleRoyale_Text_GenericDefeated
+	msgbox BattleRoyale_Text_GenericPostBattle, MSGBOX_AUTOCLOSE
+	end

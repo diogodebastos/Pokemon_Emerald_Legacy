@@ -52,3 +52,8 @@ Route107_EventScript_Camron::
 	msgbox Route107_Text_CamronPostBattle, MSGBOX_AUTOCLOSE
 	end
 
+
+Route107_EventScript_Kaylee::
+	trainerbattle_single TRAINER_KAYLEE, BattleRoyale_Text_GenericIntro, BattleRoyale_Text_GenericDefeated
+	msgbox BattleRoyale_Text_GenericPostBattle, MSGBOX_AUTOCLOSE
+	end

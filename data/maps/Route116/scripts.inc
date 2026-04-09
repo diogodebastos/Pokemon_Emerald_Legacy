@@ -469,3 +469,8 @@ Route116_Text_TrainerTipsBagHasPockets:
 	.string "When looking at their SUMMARY screen,\n"
 	.string "the raised stat is shown in RED, while\l"
 	.string "the lowered stat will be BLUE.$"
+
+Route116_EventScript_FrontierSkyler::
+	trainerbattle_single TRAINER_FRONTIER_SKYLER, BattleRoyale_Text_GenericIntro, BattleRoyale_Text_GenericDefeated
+	msgbox BattleRoyale_Text_GenericPostBattle, MSGBOX_AUTOCLOSE
+	end

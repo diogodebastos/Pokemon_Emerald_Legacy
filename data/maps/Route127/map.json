@@ -190,14 +190,23 @@
       "trainer_sight_or_berry_tree_id": "0",
       "script": "DesertUnderpass_EventScript_DomeFossil",
       "flag": "FLAG_HIDE_DOME_FOSSIL"
+    },
+    {
+      "graphics_id": "OBJ_EVENT_GFX_SWIMMER_F",
+      "x": 25,
+      "y": 12,
+      "elevation": 3,
+      "movement_type": "MOVEMENT_TYPE_FACE_UP",
+      "movement_range_x": 0,
+      "movement_range_y": 0,
+      "trainer_type": "TRAINER_TYPE_NORMAL",
+      "trainer_sight_or_berry_tree_id": "4",
+      "script": "Route127_EventScript_FrontierClare",
+      "flag": "FLAG_HIDE_BATTLE_ROYALE_TRAINERS"
     }
   ],
-  "warp_events": [
-
-  ],
-  "coord_events": [
-
-  ],
+  "warp_events": [],
+  "coord_events": [],
   "bg_events": [
     {
       "type": "secret_base",

@@ -727,3 +727,8 @@ Route111_Text_TrainerHillSign:
 	.string "“Scale the heights, you hot-blooded\n"
 	.string "TRAINERS!”$"
 
+
+Route111_EventScript_Tucker::
+	trainerbattle_single TRAINER_TUCKER, BattleRoyale_Text_TuckerIntro, BattleRoyale_Text_TuckerDefeated
+	msgbox BattleRoyale_Text_TuckerPostBattle, MSGBOX_AUTOCLOSE
+	end

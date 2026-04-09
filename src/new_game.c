@@ -25,6 +25,7 @@
 #include "overworld.h"
 #include "mail.h"
 #include "battle_records.h"
+#include "battle_royale.h"
 #include "item.h"
 #include "pokedex.h"
 #include "apprentice.h"
@@ -206,6 +207,8 @@ void NewGameInitData(void)
     WipeTrainerNameRecords();
     ResetTrainerHillResults();
     ResetContestLinkResults();
+    ResetBattleRoyaleTransientState();
+    FlagSet(FLAG_HIDE_BATTLE_ROYALE_TRAINERS);
     nuzlockePrev ? FlagSet(FLAG_NUZLOCKE) : FlagClear(FLAG_NUZLOCKE);
     hardPrev ? FlagSet(FLAG_HARD) : FlagClear(FLAG_HARD);
 }

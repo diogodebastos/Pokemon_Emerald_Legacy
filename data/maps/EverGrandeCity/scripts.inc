@@ -35,3 +35,33 @@ EverGrandeCity_Text_CitySign:
 	.string "“The paradise of flowers, the sea,\n"
 	.string "and POKéMON.”$"
 
+EverGrandeCity_EventScript_GrindingNurse::
+	lock
+	faceplayer
+	cleartrainerflag TRAINER_GRINDING_NURSE
+	trainerbattle_single TRAINER_GRINDING_NURSE, EverGrandeCity_Text_NurseIntro, EverGrandeCity_Text_NurseDefeat, EverGrandeCity_EventScript_NursePostBattle
+	release
+	end
+
+EverGrandeCity_EventScript_NursePostBattle::
+	msgbox EverGrandeCity_Text_NurseReady, MSGBOX_DEFAULT
+	release
+	end
+
+EverGrandeCity_Text_NurseIntro:
+	.string "I'm here to help you train!\n"
+	.string "My BLISSEY team is ready!$"
+
+EverGrandeCity_Text_NurseDefeat:
+	.string "Great work! Your POKéMON are\n"
+	.string "getting stronger!$"
+
+EverGrandeCity_Text_NurseReady:
+	.string "Your POKéMON are looking good!\n"
+	.string "I'm ready whenever you are!$"
+
+EverGrandeCity_EventScript_FrontierRaul::
+	trainerbattle_single TRAINER_FRONTIER_RAUL, BattleRoyale_Text_GenericIntro, BattleRoyale_Text_GenericDefeated
+	msgbox BattleRoyale_Text_GenericPostBattle, MSGBOX_AUTOCLOSE
+	end
+

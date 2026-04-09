@@ -1192,3 +1192,8 @@ Route104_Text_BrendanPostBattle:
 	.string "become friends with your POKéMON.\p"
 	.string "I'm going to stick around RUSTBORO\n"
     .string "for a while and look for more POKéMON.$"
+
+Route104_EventScript_FrontierJosie::
+	trainerbattle_single TRAINER_FRONTIER_JOSIE, BattleRoyale_Text_GenericIntro, BattleRoyale_Text_GenericDefeated
+	msgbox BattleRoyale_Text_GenericPostBattle, MSGBOX_AUTOCLOSE
+	end

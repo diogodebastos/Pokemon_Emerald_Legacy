@@ -32,7 +32,18 @@ LilycoveCity_DepartmentStore_5F_Pokemart_Dolls:
 	.2byte DECOR_PICHU_DOLL
 	.2byte DECOR_PIKACHU_DOLL
 	.2byte DECOR_MARILL_DOLL
+	.2byte DECOR_TOGEPI_DOLL
+	.2byte DECOR_CYNDAQUIL_DOLL
+	.2byte DECOR_CHIKORITA_DOLL
+	.2byte DECOR_TOTODILE_DOLL
 	.2byte DECOR_JIGGLYPUFF_DOLL
+	.2byte DECOR_MEOWTH_DOLL
+	.2byte DECOR_CLEFAIRY_DOLL
+	.2byte DECOR_DITTO_DOLL
+	.2byte DECOR_SMOOCHUM_DOLL
+	.2byte DECOR_TREECKO_DOLL
+	.2byte DECOR_TORCHIC_DOLL
+	.2byte DECOR_MUDKIP_DOLL
 	.2byte DECOR_DUSKULL_DOLL
 	.2byte DECOR_WYNAUT_DOLL
 	.2byte DECOR_BALTOY_DOLL
@@ -41,6 +52,18 @@ LilycoveCity_DepartmentStore_5F_Pokemart_Dolls:
 	.2byte DECOR_SKITTY_DOLL
 	.2byte DECOR_SWABLU_DOLL
 	.2byte DECOR_GULPIN_DOLL
+	.2byte DECOR_LOTAD_DOLL
+	.2byte DECOR_SEEDOT_DOLL
+	.2byte DECOR_SNORLAX_DOLL
+	.2byte DECOR_RHYDON_DOLL
+	.2byte DECOR_LAPRAS_DOLL
+	.2byte DECOR_VENUSAUR_DOLL
+	.2byte DECOR_CHARIZARD_DOLL
+	.2byte DECOR_BLASTOISE_DOLL
+	.2byte DECOR_WAILMER_DOLL
+	.2byte DECOR_REGIROCK_DOLL
+	.2byte DECOR_REGICE_DOLL
+	.2byte DECOR_REGISTEEL_DOLL
 	.2byte DECOR_NONE
 	release
 	end
@@ -59,6 +82,7 @@ LilycoveCity_DepartmentStore_5F_EventScript_ClerkMidLeft::
 LilycoveCity_DepartmentStore_5F_Pokemart_Cushions:
 	.2byte DECOR_PIKA_CUSHION
 	.2byte DECOR_ROUND_CUSHION
+	.2byte DECOR_KISS_CUSHION
 	.2byte DECOR_ZIGZAG_CUSHION
 	.2byte DECOR_SPIN_CUSHION
 	.2byte DECOR_DIAMOND_CUSHION
@@ -91,6 +115,7 @@ LilycoveCity_DepartmentStore_5F_Pokemart_Posters:
 	.2byte DECOR_LONG_POSTER
 	.2byte DECOR_SEA_POSTER
 	.2byte DECOR_SKY_POSTER
+	.2byte DECOR_KISS_POSTER
 	.2byte DECOR_NONE
 	release
 	end
@@ -107,6 +132,17 @@ LilycoveCity_DepartmentStore_5F_EventScript_ClerkFarRight::
 
 	.align 2
 LilycoveCity_DepartmentStore_5F_Pokemart_Mats:
+	.2byte DECOR_GLITTER_MAT
+	.2byte DECOR_JUMP_MAT
+	.2byte DECOR_SPIN_MAT
+	.2byte DECOR_C_LOW_NOTE_MAT
+	.2byte DECOR_D_NOTE_MAT
+	.2byte DECOR_E_NOTE_MAT
+	.2byte DECOR_F_NOTE_MAT
+	.2byte DECOR_G_NOTE_MAT
+	.2byte DECOR_A_NOTE_MAT
+	.2byte DECOR_B_NOTE_MAT
+	.2byte DECOR_C_HIGH_NOTE_MAT
 	.2byte DECOR_SURF_MAT
 	.2byte DECOR_THUNDER_MAT
 	.2byte DECOR_FIRE_BLAST_MAT
@@ -114,15 +150,45 @@ LilycoveCity_DepartmentStore_5F_Pokemart_Mats:
 	.2byte DECOR_ATTRACT_MAT
 	.2byte DECOR_FISSURE_MAT
 	.2byte DECOR_SPIKES_MAT
-	.2byte DECOR_GLITTER_MAT
-	.2byte DECOR_JUMP_MAT
-	.2byte DECOR_SPIN_MAT
 	.2byte DECOR_NONE
 	release
 	end
 
 LilycoveCity_DepartmentStore_5F_EventScript_PokefanF::
-	msgbox LilycoveCity_DepartmentStore_5F_Text_PlaceFullOfCuteDolls, MSGBOX_NPC
+	lock
+	faceplayer
+	message gText_HowMayIServeYou
+	waitmessage
+	pokemartdecoration2 LilycoveCity_DepartmentStore_5F_Pokemart_Furniture
+	msgbox gText_PleaseComeAgain, MSGBOX_DEFAULT
+	release
+	end
+
+	.align 2
+LilycoveCity_DepartmentStore_5F_Pokemart_Furniture:
+	.2byte DECOR_SMALL_DESK
+	.2byte DECOR_POKEMON_DESK
+	.2byte DECOR_HEAVY_DESK
+	.2byte DECOR_RAGGED_DESK
+	.2byte DECOR_COMFORT_DESK
+	.2byte DECOR_PRETTY_DESK
+	.2byte DECOR_BRICK_DESK
+	.2byte DECOR_CAMP_DESK
+	.2byte DECOR_HARD_DESK
+	.2byte DECOR_SMALL_CHAIR
+	.2byte DECOR_POKEMON_CHAIR
+	.2byte DECOR_HEAVY_CHAIR
+	.2byte DECOR_PRETTY_CHAIR
+	.2byte DECOR_COMFORT_CHAIR
+	.2byte DECOR_RAGGED_CHAIR
+	.2byte DECOR_BRICK_CHAIR
+	.2byte DECOR_CAMP_CHAIR
+	.2byte DECOR_HARD_CHAIR
+	.2byte DECOR_TV
+	.2byte DECOR_ROUND_TV
+	.2byte DECOR_CUTE_TV
+	.2byte DECOR_NONE
+	release
 	end
 
 LilycoveCity_DepartmentStore_5F_EventScript_Woman::
@@ -149,17 +215,46 @@ LilycoveCity_DepartmentStore_5F_EventScript_WomanLegendaryWeather::
 	end
 
 LilycoveCity_DepartmentStore_5F_EventScript_LittleGirl::
-	msgbox LilycoveCity_DepartmentStore_5F_Text_GettingDollInsteadOfPokemon, MSGBOX_NPC
+	lock
+	faceplayer
+	message gText_HowMayIServeYou
+	waitmessage
+	pokemartdecoration2 LilycoveCity_DepartmentStore_5F_Pokemart_Misc
+	msgbox gText_PleaseComeAgain, MSGBOX_DEFAULT
+	release
 	end
 
-LilycoveCity_DepartmentStore_5F_Text_PlaceFullOfCuteDolls:
-	.string "This place is full of cute DOLLS.\p"
-	.string "I should buy some for me, instead of\n"
-	.string "just for my children.$"
-
-LilycoveCity_DepartmentStore_5F_Text_GettingDollInsteadOfPokemon:
-	.string "I'm not big enough to raise POKéMON,\n"
-	.string "so I'm getting a cute DOLL instead.$"
+	.align 2
+LilycoveCity_DepartmentStore_5F_Pokemart_Misc:
+	.2byte DECOR_RED_PLANT
+	.2byte DECOR_TROPICAL_PLANT
+	.2byte DECOR_PRETTY_FLOWERS
+	.2byte DECOR_COLORFUL_PLANT
+	.2byte DECOR_BIG_PLANT
+	.2byte DECOR_GORGEOUS_PLANT
+	.2byte DECOR_RED_BRICK
+	.2byte DECOR_YELLOW_BRICK
+	.2byte DECOR_BLUE_BRICK
+	.2byte DECOR_RED_BALLOON
+	.2byte DECOR_BLUE_BALLOON
+	.2byte DECOR_YELLOW_BALLOON
+	.2byte DECOR_RED_TENT
+	.2byte DECOR_BLUE_TENT
+	.2byte DECOR_SOLID_BOARD
+	.2byte DECOR_SLIDE
+	.2byte DECOR_FENCE_LENGTH
+	.2byte DECOR_FENCE_WIDTH
+	.2byte DECOR_TIRE
+	.2byte DECOR_STAND
+	.2byte DECOR_MUD_BALL
+	.2byte DECOR_BREAKABLE_DOOR
+	.2byte DECOR_SAND_ORNAMENT
+	.2byte DECOR_SILVER_SHIELD
+	.2byte DECOR_GOLD_SHIELD
+	.2byte DECOR_GLASS_ORNAMENT
+	.2byte DECOR_NONE
+	release
+	end
 
 LilycoveCity_DepartmentStore_5F_Text_SellManyCuteMatsHere:
 	.string "They sell many cute MATS here.\p"
@@ -169,3 +264,4 @@ LilycoveCity_DepartmentStore_5F_Text_SellManyCuteMatsHere:
 LilycoveCity_DepartmentStore_5F_Text_ClosedRooftopForWeather:
 	.string "I think they closed the rooftop\n"
 	.string "because the weather is wild today.$"
+

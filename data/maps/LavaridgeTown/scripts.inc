@@ -464,3 +464,8 @@ LavaridgeTown_Text_HerbShopSign:
 	.string "POKéMON HERB SHOP\n"
 	.string "“Bitter taste--better cure!”$"
 
+
+LavaridgeTown_EventScript_FrontierMaddox::
+	trainerbattle_single TRAINER_FRONTIER_MADDOX, BattleRoyale_Text_GenericIntro, BattleRoyale_Text_GenericDefeated
+	msgbox BattleRoyale_Text_GenericPostBattle, MSGBOX_AUTOCLOSE
+	end

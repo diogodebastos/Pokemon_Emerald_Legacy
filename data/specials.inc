@@ -543,3 +543,11 @@ gSpecials::
 	def_special CheckFoundAllKecleon
 	def_special CheckGotAllKantoStarters
 	def_special UpdateGymLeaderRematch
+	def_special ActivateBattleRoyaleMode
+	def_special DeactivateBattleRoyaleMode
+	def_special ShowNatureChanger
+	def_special ChangeMonNature
+	def_special BufferNatureChangerMonAndNature
+	def_special MaximizePartyFriendship
+	def_special MakeMonShiny
+	def_special BufferShinyMonName

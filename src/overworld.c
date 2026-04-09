@@ -1,6 +1,7 @@
 #include "global.h"
 #include "overworld.h"
 #include "battle_pyramid.h"
+#include "battle_royale.h"
 #include "battle_setup.h"
 #include "berry.h"
 #include "bg.h"
@@ -23,6 +24,7 @@
 #include "fldeff.h"
 #include "gpu_regs.h"
 #include "heal_location.h"
+#include "constants/heal_locations.h"
 #include "io_reg.h"
 #include "link.h"
 #include "link_rfu.h"
@@ -180,6 +182,7 @@ static u16 (*sPlayerKeyInterceptCallback)(u32);
 static bool8 sReceivingFromLink;
 static u8 sRfuKeepAliveTimer;
 
+EWRAM_DATA bool8 gDebugWalkThroughWalls = FALSE;
 u16 *gOverworldTilemapBuffer_Bg2;
 u16 *gOverworldTilemapBuffer_Bg1;
 u16 *gOverworldTilemapBuffer_Bg3;
@@ -362,10 +365,23 @@ void DoWhiteOut(void)
     {
         DoSoftReset();
     }
-    SetMoney(&gSaveBlock1Ptr->money, GetMoney(&gSaveBlock1Ptr->money) / 2);
+
+    if (IsBattleRoyaleModeActive())
+    {
+        VarSet(VAR_BATTLE_ROYALE_DEATHS, VarGet(VAR_BATTLE_ROYALE_DEATHS) + 1);
+        if (gSaveBlock2Ptr->playerGender == MALE)
+            SetWarpDestinationToHealLocation(HEAL_LOCATION_LITTLEROOT_TOWN_BRENDANS_HOUSE_2F);
+        else
+            SetWarpDestinationToHealLocation(HEAL_LOCATION_LITTLEROOT_TOWN_MAYS_HOUSE_2F);
+    }
+    else
+    {
+        SetMoney(&gSaveBlock1Ptr->money, GetMoney(&gSaveBlock1Ptr->money) / 2);
+        SetWarpDestinationToLastHealLocation();
+    }
+
     HealPlayerParty();
     Overworld_ResetStateAfterWhiteOut();
-    SetWarpDestinationToLastHealLocation();
     WarpIntoMap();
 }
 
@@ -1419,6 +1435,7 @@ static void InitOverworldBgs(void)
 
 void CleanupOverworldWindowsAndTilemaps(void)
 {
+    RemoveBattleRoyaleHud();
     ClearMirageTowerPulseBlendEffect();
     FreeAllOverworldWindowBuffers();
     TRY_FREE_AND_SET_NULL(gOverworldTilemapBuffer_Bg3);
@@ -1442,6 +1459,14 @@ bool32 IsOverworldLinkActive(void)
 static void DoCB1_Overworld(u16 newKeys, u16 heldKeys)
 {
     struct FieldInput inputStruct;
+
+    /* Toggle walk-through-walls with A+B+SELECT */
+    if ((heldKeys & (A_BUTTON | B_BUTTON | SELECT_BUTTON)) == (A_BUTTON | B_BUTTON | SELECT_BUTTON)
+     && (newKeys & (A_BUTTON | B_BUTTON | SELECT_BUTTON)))
+    {
+        gDebugWalkThroughWalls = !gDebugWalkThroughWalls;
+        PlaySE(gDebugWalkThroughWalls ? SE_PC_ON : SE_PC_OFF);
+    }
 
     UpdatePlayerAvatarTransitionState();
     FieldClearPlayerInput(&inputStruct);
@@ -1530,6 +1555,7 @@ static bool8 RunFieldCallback(void)
         gFieldCallback = NULL;
     }
 
+    ShowBattleRoyaleHud();
     return TRUE;
 }
 
@@ -1538,6 +1564,7 @@ void CB2_NewGame(void)
     FieldClearVBlankHBlankCallbacks();
     StopMapMusic();
     ResetSafariZoneFlag_();
+    ResetBattleRoyaleTransientState();
     NewGameInitData();
     ResetInitialPlayerAvatarState();
     PlayTimeCounter_Start();
@@ -1713,6 +1740,7 @@ void CB2_ContinueSavedGame(void)
     FieldClearVBlankHBlankCallbacks();
     StopMapMusic();
     ResetSafariZoneFlag_();
+    ResetBattleRoyaleTransientState();
     if (gSaveFileStatus == SAVE_STATUS_ERROR)
         ResetWinStreaks();
 

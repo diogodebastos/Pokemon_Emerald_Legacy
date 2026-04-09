@@ -172,3 +172,8 @@ Route113_Text_GlassWorkshopSign:
 	.string "GLASS WORKSHOP\n"
 	.string "“Turning Volcanic Ash into Glass Items”$"
 
+
+Route113_EventScript_FrontierTodd::
+	trainerbattle_single TRAINER_FRONTIER_TODD, BattleRoyale_Text_GenericIntro, BattleRoyale_Text_GenericDefeated
+	msgbox BattleRoyale_Text_GenericPostBattle, MSGBOX_AUTOCLOSE
+	end

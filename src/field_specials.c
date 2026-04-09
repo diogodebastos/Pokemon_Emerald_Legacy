@@ -4472,3 +4472,18 @@ void CheckGotAllKantoStarters(void)
         return;
     }
 }
+
+void MaximizePartyFriendship(void)
+{
+    u8 i;
+    u8 friendship;
+
+    for (i = 0; i < PARTY_SIZE; i++)
+    {
+        if (GetMonData(&gPlayerParty[i], MON_DATA_SPECIES) != SPECIES_NONE)
+        {
+            friendship = MAX_FRIENDSHIP;
+            SetMonData(&gPlayerParty[i], MON_DATA_FRIENDSHIP, &friendship);
+        }
+    }
+}

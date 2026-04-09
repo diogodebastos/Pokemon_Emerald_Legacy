@@ -81,3 +81,8 @@ Route125_EventScript_Auron::
 	msgbox Route125_Text_AuronPostBattle, MSGBOX_AUTOCLOSE
 	end
 
+
+Route125_EventScript_FrontierEsther::
+	trainerbattle_single TRAINER_FRONTIER_ESTHER, BattleRoyale_Text_GenericIntro, BattleRoyale_Text_GenericDefeated
+	msgbox BattleRoyale_Text_GenericPostBattle, MSGBOX_AUTOCLOSE
+	end

@@ -239,10 +239,10 @@
 #define VAR_PETALBURG_WOODS_WILD_SET                     0x40DB
 #define VAR_RUSTURF_TUNNEL_WILD_SET                      0x40DC
 #define VAR_GIFT_PICHU_SLOT                              0x40DD
-#define VAR_GIFT_UNUSED_1                                0x40DE // Var is written to, but never read
-#define VAR_GIFT_UNUSED_2                                0x40DF // Var is written to, but never read
-#define VAR_GIFT_UNUSED_3                                0x40E0 // Var is written to, but never read
-#define VAR_GIFT_UNUSED_4                                0x40E1 // Var is written to, but never read
+#define VAR_BATTLE_ROYALE_MODE                           0x40DE
+#define VAR_BATTLE_ROYALE_REMAINING                      0x40DF
+#define VAR_BATTLE_ROYALE_TOTAL                          0x40E0
+#define VAR_BATTLE_ROYALE_DEATHS                         0x40E1
 #define VAR_GIFT_UNUSED_5                                0x40E2 // Var is written to, but never read
 #define VAR_GIFT_UNUSED_6                                0x40E3 // Var is written to, but never read
 #define VAR_GIFT_UNUSED_7                                0x40E4 // var is written to, but never read
