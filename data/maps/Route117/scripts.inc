@@ -206,3 +206,8 @@ Route117_Text_DayCareSign:
 	.string "POKéMON DAY CARE\n"
 	.string "“Let us raise your POKéMON.”$"
 
+
+Route117_EventScript_FrontierErick::
+	trainerbattle_single TRAINER_FRONTIER_ERICK, BattleRoyale_Text_GenericIntro, BattleRoyale_Text_GenericDefeated
+	msgbox BattleRoyale_Text_GenericPostBattle, MSGBOX_AUTOCLOSE
+	end

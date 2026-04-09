@@ -51,3 +51,8 @@ Route134_EventScript_Kelvin::
 	msgbox Route134_Text_KelvinPostBattle, MSGBOX_AUTOCLOSE
 	end
 
+
+Route134_EventScript_FrontierMateo::
+	trainerbattle_single TRAINER_FRONTIER_MATEO, BattleRoyale_Text_GenericIntro, BattleRoyale_Text_GenericDefeated
+	msgbox BattleRoyale_Text_GenericPostBattle, MSGBOX_AUTOCLOSE
+	end

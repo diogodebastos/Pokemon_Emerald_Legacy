@@ -55,3 +55,8 @@ Route131_EventScript_Kevin::
 	msgbox Route131_Text_KevinPostBattle, MSGBOX_AUTOCLOSE
 	end
 
+
+Route131_EventScript_FrontierGillian::
+	trainerbattle_single TRAINER_FRONTIER_GILLIAN, BattleRoyale_Text_GenericIntro, BattleRoyale_Text_GenericDefeated
+	msgbox BattleRoyale_Text_GenericPostBattle, MSGBOX_AUTOCLOSE
+	end

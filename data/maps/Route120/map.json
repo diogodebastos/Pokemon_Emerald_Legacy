@@ -596,6 +596,19 @@
       "trainer_sight_or_berry_tree_id": "0",
       "script": "Route120_EventScript_ItemRevive",
       "flag": "FLAG_ITEM_ROUTE_120_REVIVE"
+    },
+    {
+      "graphics_id": "OBJ_EVENT_GFX_SPENSER",
+      "x": 7,
+      "y": 58,
+      "elevation": 3,
+      "movement_type": "MOVEMENT_TYPE_WANDER_AROUND",
+      "movement_range_x": 10,
+      "movement_range_y": 10,
+      "trainer_type": "TRAINER_TYPE_NORMAL",
+      "trainer_sight_or_berry_tree_id": "1",
+      "script": "Route120_EventScript_Spenser",
+      "flag": "FLAG_HIDE_BATTLE_ROYALE_TRAINERS"
     }
   ],
   "warp_events": [

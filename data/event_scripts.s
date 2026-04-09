@@ -825,6 +825,7 @@ Common_EventScript_PlayerHandedOverTheItem::
 	return
 
 	.include "data/scripts/elite_four.inc"
+	.include "data/scripts/battle_royale.inc"
 	.include "data/scripts/movement.inc"
 	.include "data/scripts/check_furniture.inc"
 	.include "data/text/record_mix.inc"

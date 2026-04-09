@@ -125,3 +125,8 @@ VerdanturfTown_Text_RusturfTunnelSign:
 	.string "“The tunnel project has been\n"
 	.string "canceled.”$"
 
+
+VerdanturfTown_EventScript_FrontierMiriam::
+	trainerbattle_single TRAINER_FRONTIER_MIRIAM, BattleRoyale_Text_GenericIntro, BattleRoyale_Text_GenericDefeated
+	msgbox BattleRoyale_Text_GenericPostBattle, MSGBOX_AUTOCLOSE
+	end

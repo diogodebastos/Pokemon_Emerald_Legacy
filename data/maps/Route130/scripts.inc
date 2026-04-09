@@ -210,3 +210,8 @@ Route130_EventScript_Santiago::
 	msgbox Route130_Text_SantiagoPostBattle, MSGBOX_AUTOCLOSE
 	end
 
+Route130_EventScript_Leaf::
+	trainerbattle_single TRAINER_LEAF, LittlerootTown_Text_LeafIntro, LittlerootTown_Text_LeafDefeated
+	msgbox LittlerootTown_Text_LeafPostBattle, MSGBOX_AUTOCLOSE
+	end
+

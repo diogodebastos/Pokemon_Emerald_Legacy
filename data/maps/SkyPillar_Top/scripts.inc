@@ -261,3 +261,72 @@ SkyPillar_Top_Text_ZinniaPostBattle3:
 
 SkyPillar_Top_Text_Whismur:
 	.string "Mur, Mur!$"
+
+SkyPillar_Top_EventScript_ShinyConverter::
+	lock
+	faceplayer
+	msgbox SkyPillar_Top_Text_ShinyIntro, MSGBOX_YESNO
+	goto_if_eq VAR_RESULT, NO, SkyPillar_Top_EventScript_ShinyDecline
+	goto SkyPillar_Top_EventScript_ShinyChooseMon
+
+SkyPillar_Top_EventScript_ShinyChooseMon::
+	msgbox SkyPillar_Top_Text_ShinyWhichMon, MSGBOX_DEFAULT
+	special ChoosePartyMon
+	waitstate
+	goto_if_eq VAR_0x8004, PARTY_NOTHING_CHOSEN, SkyPillar_Top_EventScript_ShinyDecline
+	special IsSelectedMonEgg
+	goto_if_eq VAR_RESULT, TRUE, SkyPillar_Top_EventScript_ShinyEgg
+	special BufferShinyMonName
+	msgbox SkyPillar_Top_Text_ShinyConfirm, MSGBOX_YESNO
+	goto_if_eq VAR_RESULT, NO, SkyPillar_Top_EventScript_ShinyChooseMon
+	special MakeMonShiny
+	goto_if_eq VAR_RESULT, FALSE, SkyPillar_Top_EventScript_ShinyAlready
+	playfanfare MUS_OBTAIN_ITEM
+	waitfanfare
+	msgbox SkyPillar_Top_Text_ShinyDone, MSGBOX_DEFAULT
+	release
+	end
+
+SkyPillar_Top_EventScript_ShinyAlready::
+	msgbox SkyPillar_Top_Text_ShinyAlready, MSGBOX_DEFAULT
+	goto SkyPillar_Top_EventScript_ShinyChooseMon
+
+SkyPillar_Top_EventScript_ShinyEgg::
+	msgbox SkyPillar_Top_Text_ShinyCantEgg, MSGBOX_DEFAULT
+	release
+	end
+
+SkyPillar_Top_EventScript_ShinyDecline::
+	msgbox SkyPillar_Top_Text_ShinyBye, MSGBOX_DEFAULT
+	release
+	end
+
+SkyPillar_Top_Text_ShinyIntro:
+	.string "The stars shine brightest at\n"
+	.string "the top of this tower.\p"
+	.string "I can make your POKéMON shine\n"
+	.string "just as bright.\p"
+	.string "Want me to make one of your\n"
+	.string "POKéMON shiny?$"
+
+SkyPillar_Top_Text_ShinyWhichMon:
+	.string "Which POKéMON should I make\n"
+	.string "shine?$"
+
+SkyPillar_Top_Text_ShinyConfirm:
+	.string "Make {STR_VAR_1} shiny?$"
+
+SkyPillar_Top_Text_ShinyDone:
+	.string "Done! Your POKéMON now\n"
+	.string "sparkles with a special light!$"
+
+SkyPillar_Top_Text_ShinyAlready:
+	.string "That POKéMON is already shiny!$"
+
+SkyPillar_Top_Text_ShinyCantEgg:
+	.string "I'm sorry, I can't do that\n"
+	.string "to an EGG.$"
+
+SkyPillar_Top_Text_ShinyBye:
+	.string "The stars will be here whenever\n"
+	.string "you're ready.$"

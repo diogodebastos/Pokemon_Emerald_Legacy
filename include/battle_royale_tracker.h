@@ -1,0 +1,6 @@
+#ifndef GUARD_BATTLE_ROYALE_TRACKER_H
+#define GUARD_BATTLE_ROYALE_TRACKER_H
+
+void CB2_InitBattleRoyaleTracker(void);
+
+#endif /* GUARD_BATTLE_ROYALE_TRACKER_H */

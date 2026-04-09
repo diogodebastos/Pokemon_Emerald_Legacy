@@ -992,3 +992,8 @@ Route110_Text_KeepAnEyeOutForRival:
 	.string "Well, I had better get going.\n"
 	.string "See you again, {PLAYER}{KUN}!$"
 
+
+Route110_EventScript_Noland::
+	trainerbattle_single TRAINER_NOLAND, BattleRoyale_Text_NolandIntro, BattleRoyale_Text_NolandDefeated
+	msgbox BattleRoyale_Text_NolandPostBattle, MSGBOX_AUTOCLOSE
+	end

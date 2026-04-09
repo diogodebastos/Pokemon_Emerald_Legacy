@@ -143,3 +143,8 @@ Route115_Text_MeteorFallsSign:
 	.string "METEOR FALLS\n"
 	.string "FALLARBOR TOWN THROUGH HERE$"
 
+
+Route115_EventScript_FrontierMelody::
+	trainerbattle_single TRAINER_FRONTIER_MELODY, BattleRoyale_Text_GenericIntro, BattleRoyale_Text_GenericDefeated
+	msgbox BattleRoyale_Text_GenericPostBattle, MSGBOX_AUTOCLOSE
+	end

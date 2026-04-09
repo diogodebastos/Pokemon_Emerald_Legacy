@@ -7,6 +7,7 @@
 #include "battle_interface.h"
 #include "battle_pike.h"
 #include "battle_pyramid.h"
+#include "pokemon_stat_editor.h"
 #include "battle_pyramid_bag.h"
 #include "bg.h"
 #include "contest.h"
@@ -95,6 +96,7 @@ enum {
     MENU_TRADE1,
     MENU_TRADE2,
     MENU_TOSS,
+    MENU_EDIT_STATS,
     MENU_FIELD_MOVES
 };
 
@@ -478,6 +480,7 @@ static void CursorCb_Register(u8);
 static void CursorCb_Trade1(u8);
 static void CursorCb_Trade2(u8);
 static void CursorCb_Toss(u8);
+static void CursorCb_EditStats(u8);
 static void CursorCb_FieldMove(u8);
 static bool8 SetUpFieldMove_Surf(void);
 static bool8 SetUpFieldMove_Fly(void);
@@ -2616,6 +2619,7 @@ static void SetPartyMonFieldSelectionActions(struct Pokemon *mons, u8 slotId)
 
     sPartyMenuInternal->numActions = 0;
     AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, MENU_SUMMARY);
+    AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, MENU_EDIT_STATS);
 
     // Add field moves to action list
     for (i = 0; i < MAX_MON_MOVES; i++)
@@ -2797,6 +2801,12 @@ static void CB2_ReturnToPartyMenuFromSummaryScreen(void)
 {
     gPaletteFade.bufferTransferDisabled = TRUE;
     gPartyMenu.slotId = gLastViewedMonIndex;
+    InitPartyMenu(gPartyMenu.menuType, KEEP_PARTY_LAYOUT, gPartyMenu.action, TRUE, PARTY_MSG_DO_WHAT_WITH_MON, Task_TryCreateSelectionWindow, gPartyMenu.exitCallback);
+}
+
+void CB2_ReturnToPartyMenuFromStatEditor(void)
+{
+    gPaletteFade.bufferTransferDisabled = TRUE;
     InitPartyMenu(gPartyMenu.menuType, KEEP_PARTY_LAYOUT, gPartyMenu.action, TRUE, PARTY_MSG_DO_WHAT_WITH_MON, Task_TryCreateSelectionWindow, gPartyMenu.exitCallback);
 }
 
@@ -3325,6 +3335,13 @@ static void CursorCb_Toss(u8 taskId)
         DisplayPartyMenuMessage(gStringVar4, TRUE);
         gTasks[taskId].func = Task_TossHeldItemYesNo;
     }
+}
+
+static void CursorCb_EditStats(u8 taskId)
+{
+    PlaySE(SE_SELECT);
+    sPartyMenuInternal->exitCallback = CB2_ShowStatEditor;
+    Task_ClosePartyMenu(taskId);
 }
 
 static void Task_TossHeldItemYesNo(u8 taskId)

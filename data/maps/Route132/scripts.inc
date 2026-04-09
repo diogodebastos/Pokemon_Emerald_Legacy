@@ -41,3 +41,8 @@ Route132_EventScript_Makayla::
 	msgbox Route132_Text_MakaylaPostBattle, MSGBOX_AUTOCLOSE
 	end
 
+
+Route132_EventScript_FrontierDavin::
+	trainerbattle_single TRAINER_FRONTIER_DAVIN, BattleRoyale_Text_GenericIntro, BattleRoyale_Text_GenericDefeated
+	msgbox BattleRoyale_Text_GenericPostBattle, MSGBOX_AUTOCLOSE
+	end

@@ -1,0 +1,6 @@
+#ifndef GUARD_POKEMON_STAT_EDITOR_H
+#define GUARD_POKEMON_STAT_EDITOR_H
+
+void CB2_ShowStatEditor(void);
+
+#endif /* GUARD_POKEMON_STAT_EDITOR_H */

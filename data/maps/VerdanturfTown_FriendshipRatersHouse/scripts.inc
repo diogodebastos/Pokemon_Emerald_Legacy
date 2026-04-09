@@ -19,37 +19,37 @@ VerdanturfTown_FriendshipRatersHouse_EventScript_FriendshipRater::
 
 VerdanturfTown_FriendshipRatersHouse_EventScript_DetestsYou::
 	msgbox VerdanturfTown_FriendshipRatersHouse_Text_DetestsYou, MSGBOX_DEFAULT
-	release
+	goto VerdanturfTown_FriendshipRatersHouse_EventScript_AskMaxFriendship
 	end
 
 VerdanturfTown_FriendshipRatersHouse_EventScript_VeryWary::
 	msgbox VerdanturfTown_FriendshipRatersHouse_Text_VeryWary, MSGBOX_DEFAULT
-	release
+	goto VerdanturfTown_FriendshipRatersHouse_EventScript_AskMaxFriendship
 	end
 
 VerdanturfTown_FriendshipRatersHouse_EventScript_NotUsedToYou::
 	msgbox VerdanturfTown_FriendshipRatersHouse_Text_NotUsedToYou, MSGBOX_DEFAULT
-	release
+	goto VerdanturfTown_FriendshipRatersHouse_EventScript_AskMaxFriendship
 	end
 
 VerdanturfTown_FriendshipRatersHouse_EventScript_GettingUsedToYou::
 	msgbox VerdanturfTown_FriendshipRatersHouse_Text_GettingUsedToYou, MSGBOX_DEFAULT
-	release
+	goto VerdanturfTown_FriendshipRatersHouse_EventScript_AskMaxFriendship
 	end
 
 VerdanturfTown_FriendshipRatersHouse_EventScript_LikesYouQuiteALot::
 	msgbox VerdanturfTown_FriendshipRatersHouse_Text_LikesYouQuiteALot, MSGBOX_DEFAULT
-	release
+	goto VerdanturfTown_FriendshipRatersHouse_EventScript_AskMaxFriendship
 	end
 
 VerdanturfTown_FriendshipRatersHouse_EventScript_VeryHappy::
 	msgbox VerdanturfTown_FriendshipRatersHouse_Text_VeryHappy, MSGBOX_DEFAULT
-	release
+	goto VerdanturfTown_FriendshipRatersHouse_EventScript_AskMaxFriendship
 	end
 
 VerdanturfTown_FriendshipRatersHouse_EventScript_AdoresYou::
 	msgbox VerdanturfTown_FriendshipRatersHouse_Text_AdoresYou, MSGBOX_DEFAULT
-	release
+	goto VerdanturfTown_FriendshipRatersHouse_EventScript_AskMaxFriendship
 	end
 
 VerdanturfTown_FriendshipRatersHouse_EventScript_Pikachu::
@@ -101,4 +101,33 @@ VerdanturfTown_FriendshipRatersHouse_Text_DetestsYou:
 
 VerdanturfTown_FriendshipRatersHouse_Text_Pikachu:
 	.string "PIKACHU: Pika pika!$"
+
+VerdanturfTown_FriendshipRatersHouse_EventScript_AskMaxFriendship::
+	msgbox VerdanturfTown_FriendshipRatersHouse_Text_WantMaxFriendship, MSGBOX_YESNO
+	goto_if_eq VAR_RESULT, NO, VerdanturfTown_FriendshipRatersHouse_EventScript_DeclineMaxFriendship
+	special MaximizePartyFriendship
+	msgbox VerdanturfTown_FriendshipRatersHouse_Text_MaxFriendshipDone, MSGBOX_DEFAULT
+	release
+	end
+
+VerdanturfTown_FriendshipRatersHouse_EventScript_DeclineMaxFriendship::
+	msgbox VerdanturfTown_FriendshipRatersHouse_Text_DeclineMaxFriendship, MSGBOX_DEFAULT
+	release
+	end
+
+VerdanturfTown_FriendshipRatersHouse_Text_WantMaxFriendship:
+	.string "By the way, I can also help all\n"
+	.string "your POKéMON become as friendly\l"
+	.string "as possible!\p"
+	.string "Would you like me to do that?$"
+
+VerdanturfTown_FriendshipRatersHouse_Text_MaxFriendshipDone:
+	.string "There! All your POKéMON now\n"
+	.string "love you to the max!\p"
+	.string "They must be so happy!$"
+
+VerdanturfTown_FriendshipRatersHouse_Text_DeclineMaxFriendship:
+	.string "That's fine. The bond between\n"
+	.string "you and your POKéMON will grow\l"
+	.string "naturally in time.$"
 

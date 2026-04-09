@@ -905,9 +905,28 @@ LittlerootTown_EventScript_GiveRunningShoes::
 	setflag FLAG_RECEIVED_RUNNING_SHOES
 	msgbox LittlerootTown_Text_ExplainRunningShoes, MSGBOX_DEFAULT
 	msgbox LittlerootTown_Text_ComeHomeIfAnythingHappens, MSGBOX_DEFAULT
+	msgbox LittlerootTown_Text_BattleRoyaleIntro, MSGBOX_YESNO
+	goto_if_eq VAR_RESULT, YES, LittlerootTown_EventScript_StartBattleRoyale
 	closemessage
 	delay 30
 	return
+
+LittlerootTown_EventScript_StartBattleRoyale::
+	special ActivateBattleRoyaleMode
+	msgbox PlayersHouse_1F_Text_MomBattleRoyaleStarted, MSGBOX_DEFAULT
+	closemessage
+	delay 30
+	return
+
+LittlerootTown_Text_BattleRoyaleIntro:
+	.string "MOM: One more thing, {PLAYER}!\p"
+	.string "Are you up for a BATTLE ROYALE\n"
+	.string "challenge?\p"
+	.string "Defeat every TRAINER in HOENN without\n"
+	.string "losing once!\p"
+	.string "If you lose, all TRAINERS come back\n"
+	.string "and you start over from here.\p"
+	.string "Want to try?$"
 
 LittlerootTown_Text_OurNewHomeLetsGoInside:
 	.string "MOM: {PLAYER}, we're here, honey!\p"
@@ -1019,3 +1038,8 @@ LittlerootTown_Text_BirchSomethingToShowYouAtLab:
 	.string "I have something to show you.\n"
 	.string "Let's go to my LAB.$"
 
+
+LittlerootTown_EventScript_Brandon::
+	trainerbattle_single TRAINER_BRANDON, BattleRoyale_Text_BrandonIntro, BattleRoyale_Text_BrandonDefeated
+	msgbox BattleRoyale_Text_BrandonPostBattle, MSGBOX_AUTOCLOSE
+	end

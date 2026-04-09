@@ -681,3 +681,8 @@ Route119_Text_TrainerTipsDecoration:
 	.string "ROCK type POKéMON and those with SAND\l"
 	.string "VEIL, while HAIL gives extra DEFENSE to\l"
 	.string "ICE types.$"
+
+Route119_EventScript_Anabel::
+	trainerbattle_single TRAINER_ANABEL, BattleRoyale_Text_AnabelIntro, BattleRoyale_Text_AnabelDefeated
+	msgbox BattleRoyale_Text_AnabelPostBattle, MSGBOX_AUTOCLOSE
+	end

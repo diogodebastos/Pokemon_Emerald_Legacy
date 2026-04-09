@@ -329,6 +329,8 @@ PlayersHouse_1F_Movement_MomReturnToSeatFemale:
 PlayersHouse_1F_EventScript_Mom::
 	lock
 	faceplayer
+	goto_if_eq VAR_BATTLE_ROYALE_MODE, 1, PlayersHouse_1F_EventScript_MomDeactivateBR
+	goto_if_eq VAR_BATTLE_ROYALE_MODE, 2, PlayersHouse_1F_EventScript_MomDeactivateBR
 	goto_if_eq VAR_LITTLEROOT_HOUSES_STATE_MAY, 4, PlayersHouse_1F_EventScript_DontPushYourselfTooHard
 	goto_if_eq VAR_LITTLEROOT_HOUSES_STATE_BRENDAN, 4, PlayersHouse_1F_EventScript_DontPushYourselfTooHard
 	goto_if_set FLAG_HAS_MATCH_CALL, PlayersHouse_1F_EventScript_TryRegisterMom
@@ -341,7 +343,7 @@ PlayersHouse_1F_EventScript_Mom::
 
 PlayersHouse_1F_EventScript_DontPushYourselfTooHard::
 	msgbox PlayersHouse_1F_Text_DontPushYourselfTooHard, MSGBOX_DEFAULT
-	release
+	goto PlayersHouse_1F_EventScript_HealParty
 	end
 
 PlayersHouse_1F_EventScript_TryRegisterMom::
@@ -386,6 +388,8 @@ PlayersHouse_1F_EventScript_HealParty::
 	closemessage
 	call Common_EventScript_OutOfCenterPartyHeal
 	incrementgamestat GAME_STAT_RESTED_AT_HOME
+	msgbox PlayersHouse_1F_Text_MomBattleRoyaleAsk, MSGBOX_YESNO
+	goto_if_eq VAR_RESULT, YES, PlayersHouse_1F_EventScript_MomStartBR
 	msgbox PlayersHouse_1F_Text_TakeCareHoney, MSGBOX_DEFAULT
 	release
 	end
@@ -702,3 +706,45 @@ PlayersHouse_1F_Movement_PlayerApproachTVForLatiFemale:
 EventScript_RunningShoesManual::
 	msgbox PlayersHouse_1F_Text_RunningShoesManual, MSGBOX_SIGN
 	end
+
+PlayersHouse_1F_EventScript_MomStartBR::
+	special ActivateBattleRoyaleMode
+	msgbox PlayersHouse_1F_Text_MomBattleRoyaleStarted, MSGBOX_DEFAULT
+	release
+	end
+
+PlayersHouse_1F_EventScript_MomDeactivateBR::
+	msgbox PlayersHouse_1F_Text_MomBattleRoyaleStop, MSGBOX_YESNO
+	goto_if_eq VAR_RESULT, YES, PlayersHouse_1F_EventScript_MomStopBR
+	goto PlayersHouse_1F_EventScript_MomHealsParty
+	end
+
+PlayersHouse_1F_EventScript_MomStopBR::
+	special DeactivateBattleRoyaleMode
+	msgbox PlayersHouse_1F_Text_MomBattleRoyaleStopped, MSGBOX_DEFAULT
+	release
+	end
+
+PlayersHouse_1F_Text_MomBattleRoyaleAsk:
+	.string "MOM: Oh, {PLAYER}!\p"
+	.string "Are you up for a BATTLE ROYALE\n"
+	.string "challenge?\p"
+	.string "Defeat every TRAINER in HOENN without\n"
+	.string "losing once!\p"
+	.string "If you lose, all TRAINERS come back\n"
+	.string "and you start over from here.\p"
+	.string "Want to try?$"
+
+PlayersHouse_1F_Text_MomBattleRoyaleStarted:
+	.string "MOM: That's my {PLAYER}!\p"
+	.string "Go get them all, honey!\n"
+	.string "I'll be cheering for you!$"
+
+PlayersHouse_1F_Text_MomBattleRoyaleStop:
+	.string "MOM: Had enough of the BATTLE ROYALE\n"
+	.string "challenge?\p"
+	.string "Want to stop?$"
+
+PlayersHouse_1F_Text_MomBattleRoyaleStopped:
+	.string "MOM: That's okay, honey.\n"
+	.string "You can always try again later!$"

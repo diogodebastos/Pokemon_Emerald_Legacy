@@ -711,3 +711,8 @@ MauvilleCity_Text_WallyLeaves:
 	.string "I want to be even stronger for our next\n"
 	.string "battle.\p"
 	.string "Take care, {PLAYER}{KUN}!$"
+
+MauvilleCity_EventScript_FrontierOscar::
+	trainerbattle_single TRAINER_FRONTIER_OSCAR, BattleRoyale_Text_GenericIntro, BattleRoyale_Text_GenericDefeated
+	msgbox BattleRoyale_Text_GenericPostBattle, MSGBOX_AUTOCLOSE
+	end

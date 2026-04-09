@@ -71,3 +71,8 @@ SealedChamber_InnerRoom_EventScript_BrailleStoryPart6::
 	releaseall
 	end
 
+SealedChamber_InnerRoom_EventScript_Red::
+	trainerbattle_single TRAINER_RED, LittlerootTown_Text_RedIntro, LittlerootTown_Text_RedDefeated
+	msgbox LittlerootTown_Text_RedPostBattle, MSGBOX_AUTOCLOSE
+	end
+

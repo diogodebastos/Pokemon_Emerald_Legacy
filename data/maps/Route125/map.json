@@ -172,6 +172,19 @@
       "trainer_sight_or_berry_tree_id": "0",
       "script": "Route125_EventScript_ItemYellowShard",
       "flag": "FLAG_ITEM_ROUTE_125_YELLOW_SHARD"
+    },
+    {
+      "graphics_id": "OBJ_EVENT_GFX_SWIMMER_F",
+      "x": 10,
+      "y": 16,
+      "elevation": 3,
+      "movement_type": "MOVEMENT_TYPE_FACE_DOWN",
+      "movement_range_x": 0,
+      "movement_range_y": 0,
+      "trainer_type": "TRAINER_TYPE_NORMAL",
+      "trainer_sight_or_berry_tree_id": "4",
+      "script": "Route125_EventScript_FrontierEsther",
+      "flag": "FLAG_HIDE_BATTLE_ROYALE_TRAINERS"
     }
   ],
   "warp_events": [
@@ -183,9 +196,7 @@
       "dest_warp_id": "0"
     }
   ],
-  "coord_events": [
-
-  ],
+  "coord_events": [],
   "bg_events": [
     {
       "type": "secret_base",

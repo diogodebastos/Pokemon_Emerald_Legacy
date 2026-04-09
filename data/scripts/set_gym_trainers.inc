@@ -1,4 +1,5 @@
 Common_EventScript_SetGymTrainers::
+	goto_if_eq VAR_BATTLE_ROYALE_MODE, 1, Common_EventScript_SetGymTrainers_Skip
 	switch VAR_0x8008
 	case 1, RustboroCity_Gym_SetGymTrainers
 	case 2, DewfordTown_Gym_SetGymTrainers
@@ -90,4 +91,7 @@ SootopolisCity_Gym_SetGymTrainers::
 	settrainerflag TRAINER_BETHANY
 	settrainerflag TRAINER_ANNIKA
 	settrainerflag TRAINER_DAPHNE
+	return
+
+Common_EventScript_SetGymTrainers_Skip::
 	return

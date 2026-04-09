@@ -93,3 +93,8 @@ FallarborTown_Text_MoveTutorSign:
 	.string "MOVE TUTOR'S HOUSE\n"
 	.string "“New moves taught to POKéMON.”$"
 
+
+FallarborTown_EventScript_FrontierStella::
+	trainerbattle_single TRAINER_FRONTIER_STELLA, BattleRoyale_Text_GenericIntro, BattleRoyale_Text_GenericDefeated
+	msgbox BattleRoyale_Text_GenericPostBattle, MSGBOX_AUTOCLOSE
+	end

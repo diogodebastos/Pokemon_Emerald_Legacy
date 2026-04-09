@@ -49,3 +49,8 @@ Route129_EventScript_Clarence::
 	msgbox Route129_Text_ClarencePostBattle, MSGBOX_AUTOCLOSE
 	end
 
+
+Route129_EventScript_FrontierVince::
+	trainerbattle_single TRAINER_FRONTIER_VINCE, BattleRoyale_Text_GenericIntro, BattleRoyale_Text_GenericDefeated
+	msgbox BattleRoyale_Text_GenericPostBattle, MSGBOX_AUTOCLOSE
+	end

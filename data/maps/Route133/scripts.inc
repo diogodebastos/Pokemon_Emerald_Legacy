@@ -36,3 +36,8 @@ Route133_EventScript_Conor::
 	msgbox Route133_Text_ConorPostBattle, MSGBOX_AUTOCLOSE
 	end
 
+
+Route133_EventScript_FrontierTrevon::
+	trainerbattle_single TRAINER_FRONTIER_TREVON, BattleRoyale_Text_GenericIntro, BattleRoyale_Text_GenericDefeated
+	msgbox BattleRoyale_Text_GenericPostBattle, MSGBOX_AUTOCLOSE
+	end

@@ -922,3 +922,8 @@ MossdeepCity_Text_SootopolisNewGymLeader:
 	.string "People tell me he was mentored\n"
 	.string "by a trainer named JUAN.$"
 
+
+MossdeepCity_EventScript_FrontierCarrie::
+	trainerbattle_single TRAINER_FRONTIER_CARRIE, BattleRoyale_Text_GenericIntro, BattleRoyale_Text_GenericDefeated
+	msgbox BattleRoyale_Text_GenericPostBattle, MSGBOX_AUTOCLOSE
+	end

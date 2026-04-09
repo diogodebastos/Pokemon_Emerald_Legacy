@@ -95,3 +95,8 @@ Route104_Text_DadPokenavCall:
 Route104_Text_RegisteredDadInPokenav:
 	.string "Registered DAD NORMAN\n"
 	.string "in the POKéNAV.$"
+
+Route105_EventScript_Greta::
+	trainerbattle_single TRAINER_GRETA, BattleRoyale_Text_GretaIntro, BattleRoyale_Text_GretaDefeated
+	msgbox BattleRoyale_Text_GretaPostBattle, MSGBOX_AUTOCLOSE
+	end
