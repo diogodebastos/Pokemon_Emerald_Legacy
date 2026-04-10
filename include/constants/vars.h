@@ -239,12 +239,12 @@
 #define VAR_PETALBURG_WOODS_WILD_SET                     0x40DB
 #define VAR_RUSTURF_TUNNEL_WILD_SET                      0x40DC
 #define VAR_GIFT_PICHU_SLOT                              0x40DD
-#define VAR_BATTLE_ROYALE_MODE                           0x40DE
-#define VAR_BATTLE_ROYALE_REMAINING                      0x40DF
-#define VAR_BATTLE_ROYALE_TOTAL                          0x40E0
-#define VAR_BATTLE_ROYALE_DEATHS                         0x40E1
-#define VAR_GIFT_UNUSED_5                                0x40E2 // Var is written to, but never read
-#define VAR_GIFT_UNUSED_6                                0x40E3 // Var is written to, but never read
+#define VAR_ROUTE101_WILD_SET                            0x40DE
+#define VAR_ROUTE102_WILD_SET                            0x40DF
+#define VAR_ROUTE103_WILD_SET                            0x40E0
+#define VAR_ROUTE104_WILD_SET                            0x40E1
+#define VAR_NORMAN_REMATCH_CALL_STEP_COUNTER             0x40E2
+#define VAR_SHOW_ZINNIA                                  0x40E3
 #define VAR_GIFT_UNUSED_7                                0x40E4 // var is written to, but never read
 #define VAR_ROUTE117_WILD_SET                            0x40E5
 #define VAR_DAILY_SLOTS                                  0x40E6
@@ -264,17 +264,15 @@
 #define VAR_ROXANNE_CALL_STEP_COUNTER                    0x40F4
 #define VAR_SCOTT_BF_CALL_STEP_COUNTER                   0x40F5
 #define VAR_RIVAL_RAYQUAZA_CALL_STEP_COUNTER             0x40F6
-#define VAR_ROUTE101_WILD_SET                            0x40F7
-#define VAR_ROUTE102_WILD_SET                            0x40F8
-#define VAR_ROUTE103_WILD_SET                            0x40F9
-#define VAR_ROUTE104_WILD_SET                            0x40FA
+#define VAR_BATTLE_ROYALE_MODE                           0x40F7 // 0=off, 1=active, 2=completed
+#define VAR_BATTLE_ROYALE_REMAINING                      0x40F8 // trainers left to beat
+#define VAR_BATTLE_ROYALE_TOTAL                          0x40F9 // total eligible trainers
+#define VAR_BATTLE_ROYALE_DEATHS                         0x40FA // number of resets
 #define VAR_ROUTE110_WILD_SET                            0x40FB
 #define VAR_ROUTE111_WILD_SET                            0x40FC
 #define VAR_ROUTE112_WILD_SET                            0x40FD
 #define VAR_ROUTE114_WILD_SET                            0x40FE
 #define VAR_ROUTE116_WILD_SET                            0x40FF
-#define VAR_NORMAN_REMATCH_CALL_STEP_COUNTER             0x4100
-#define VAR_SHOW_ZINNIA                                  0x4101
 
 #define VARS_END                                         0x4100
 #define VARS_COUNT                                       (VARS_END - VARS_START + 1)

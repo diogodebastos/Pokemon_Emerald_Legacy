@@ -384,7 +384,7 @@ void ShowBattleRoyaleHud(void)
 {
     u16 mode = VarGet(VAR_BATTLE_ROYALE_MODE);
 
-    if (mode == 0 || FuncIsActiveTask(Task_BattleRoyaleHud))
+    if (mode == 0)
         return;
 
     // Discard stale window ID from before the map transition.
@@ -393,6 +393,17 @@ void ShowBattleRoyaleHud(void)
     // with it would destroy the textbox and let the HUD take slot 0,
     // causing all msgbox text to render in the HUD's small top-right window.
     sBattleRoyaleHudWindowId = WINDOW_NONE;
+
+    if (FuncIsActiveTask(Task_BattleRoyaleHud))
+    {
+        // Task survived the map transition — force it to rebuild the window
+        // on its next tick, since InitWindows wiped all window slots.
+        u8 taskId = FindTaskIdByFunc(Task_BattleRoyaleHud);
+        gTasks[taskId].tHidden = FALSE;
+        gTasks[taskId].data[0] = 0xFFFF;
+        gTasks[taskId].data[3] = -1;
+        return;
+    }
 
     CreateBattleRoyaleHudWindow();
 
