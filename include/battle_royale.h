@@ -4,6 +4,7 @@
 bool32 IsTrainerEligibleForBattleRoyale(u16 trainerId);
 void ActivateBattleRoyaleMode(void);
 void DeactivateBattleRoyaleMode(void);
+void NormalizeBattleRoyaleSaveState(void);
 bool32 IsBattleRoyaleModeActive(void);
 void BattleRoyale_ResetAllTrainerFlags(void);
 void BattleRoyale_OnTrainerDefeated(u16 trainerIdA, u16 trainerIdB);
