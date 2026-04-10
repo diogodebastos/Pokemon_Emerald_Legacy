@@ -841,7 +841,6 @@ static bool8 SaveCallback(void)
         ClearDialogWindowAndFrameToTransparent(0, TRUE);
         ScriptUnfreezeObjectEvents();
         UnlockPlayerFieldControls();
-        ShowBattleRoyaleHud();
         SoftResetInBattlePyramid();
         return TRUE;
     }

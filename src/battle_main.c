@@ -1971,10 +1971,13 @@ static u8 CreateNPCTrainerParty(struct Pokemon *party, u16 trainerNum, bool8 fir
     u8 nickname[POKEMON_NAME_LENGTH + 1];
     u8 trainerName[(PLAYER_NAME_LENGTH * 3) + 1];
     u8 ability, gender, friendship;
+    bool8 isFirstBattle;
     s32 playerMaxLevel;
 
     if (trainerNum == TRAINER_SECRET_BASE)
         return 0;
+
+    isFirstBattle = (trainerNum == TRAINER_BRENDAN_ROUTE_103_MUDKIP || trainerNum == TRAINER_BRENDAN_ROUTE_103_TREECKO || trainerNum == TRAINER_BRENDAN_ROUTE_103_TORCHIC || trainerNum == TRAINER_MAY_ROUTE_103_MUDKIP || trainerNum == TRAINER_MAY_ROUTE_103_TREECKO || trainerNum == TRAINER_MAY_ROUTE_103_TORCHIC);
 
     playerMaxLevel = GetHighestLevelInPlayerParty();
 
@@ -2039,7 +2042,7 @@ static u8 CreateNPCTrainerParty(struct Pokemon *party, u16 trainerNum, bool8 fir
                 gender = MON_FEMALE;
 
             level = partyData[i].lvl;
-            if (playerMaxLevel > level)
+            if (playerMaxLevel > level && !isFirstBattle)
                 level = playerMaxLevel;
 
             if (partyData[i].nature > 0)
