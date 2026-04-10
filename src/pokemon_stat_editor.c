@@ -62,6 +62,8 @@ static void DrawStatEditorStats(u8 taskId);
 static void MainCB2(void);
 static void VBlankCB(void);
 void ChangeMonNature(void);
+void MakeMonShiny(void);
+void MakeMonNotShiny(void);
 
 static EWRAM_DATA u16 sEditIVs[STAT_EDITOR_COUNT] = {0};
 static EWRAM_DATA u16 sEditEVs[STAT_EDITOR_COUNT] = {0};
@@ -69,6 +71,7 @@ static EWRAM_DATA u16 sEditLevel = 0;
 static EWRAM_DATA u16 sEditFriendship = 0;
 static EWRAM_DATA u8 sEditAbilityNum = 0;
 static EWRAM_DATA u8 sEditNature = 0;
+static EWRAM_DATA u8 sEditIsShiny = 0;
 
 static const u8 sText_ModeIVs[] = _("IVs");
 static const u8 sText_ModeEVs[] = _("EVs");
@@ -84,6 +87,9 @@ static const u8 sText_Level[] = _("LEVEL");
 static const u8 sText_Happiness[] = _("HAPPINESS");
 static const u8 sText_Ability[] = _("ABILITY");
 static const u8 sText_Nature[] = _("NATURE");
+static const u8 sText_Color[] = _("COLOR");
+static const u8 sText_Normal[] = _("NORMAL");
+static const u8 sText_Shiny[] = _("SHINY");
 static const u8 sText_Space[] = _(" ");
 static const u8 sText_Slash[] = _("/");
 static const u8 sText_Hint[] = _("{DPAD_LEFTRIGHT} Val SEL:Toggle L/R:Tab");
@@ -120,6 +126,7 @@ enum {
     MISC_EDITOR_HAPPINESS,
     MISC_EDITOR_ABILITY,
     MISC_EDITOR_NATURE,
+    MISC_EDITOR_COLOR,
     MISC_EDITOR_COUNT
 };
 
@@ -128,6 +135,7 @@ static const u8 *const sMiscNames[MISC_EDITOR_COUNT] = {
     [MISC_EDITOR_HAPPINESS] = sText_Happiness,
     [MISC_EDITOR_ABILITY] = sText_Ability,
     [MISC_EDITOR_NATURE] = sText_Nature,
+    [MISC_EDITOR_COLOR] = sText_Color,
 };
 
 static const struct WindowTemplate sStatEditorWinTemplates[] = {
@@ -218,6 +226,8 @@ static u16 GetMiscValue(u8 cursor)
         return sEditAbilityNum;
     case MISC_EDITOR_NATURE:
         return sEditNature;
+    case MISC_EDITOR_COLOR:
+        return sEditIsShiny;
     default:
         return sEditFriendship;
     }
@@ -270,6 +280,11 @@ static bool8 IsNatureCursor(u8 mode, u8 cursor)
     return mode == MODE_MISC && cursor == MISC_EDITOR_NATURE;
 }
 
+static bool8 IsColorCursor(u8 mode, u8 cursor)
+{
+    return mode == MODE_MISC && cursor == MISC_EDITOR_COLOR;
+}
+
 static u16 GetMiscMaxValue(u8 cursor)
 {
     switch (cursor)
@@ -282,6 +297,8 @@ static u16 GetMiscMaxValue(u8 cursor)
         return 1;
     case MISC_EDITOR_NATURE:
         return NUM_NATURES - 1;
+    case MISC_EDITOR_COLOR:
+        return 1;
     default:
         return MAX_FRIENDSHIP;
     }
@@ -328,6 +345,7 @@ static void SanitizeEditedValues(u16 species)
 
     sEditAbilityNum = GetClampedAbilityNum(species, sEditAbilityNum);
     sEditNature %= NUM_NATURES;
+    sEditIsShiny = (sEditIsShiny != 0);
 }
 
 static void LoadMonStats(u8 slotId)
@@ -345,6 +363,7 @@ static void LoadMonStats(u8 slotId)
     sEditFriendship = GetMonData(mon, MON_DATA_FRIENDSHIP, NULL);
     sEditAbilityNum = GetClampedAbilityNum(GetMonData(mon, MON_DATA_SPECIES, NULL), GetMonData(mon, MON_DATA_ABILITY_NUM, NULL));
     sEditNature = GetNatureFromPersonality(GetMonData(mon, MON_DATA_PERSONALITY, NULL));
+    sEditIsShiny = IsMonShiny(mon);
 }
 
 static void ApplyMonStats(u8 slotId)
@@ -380,10 +399,14 @@ static void ApplyMonStats(u8 slotId)
         gSpecialVar_0x8005 = sEditNature;
         ChangeMonNature();
     }
+
+    gSpecialVar_0x8004 = slotId;
+    if (sEditIsShiny && !IsMonShiny(mon))
+        MakeMonShiny();
+    else if (!sEditIsShiny && IsMonShiny(mon))
+        MakeMonNotShiny();
     else
-    {
         CalculateMonStats(mon);
-    }
 }
 
 #define TILE_TOP_CORNER_L 0x1A2
@@ -528,6 +551,10 @@ static void DrawStatEditorStats(u8 taskId)
         else if (mode == MODE_MISC && i == MISC_EDITOR_NATURE)
         {
             AddTextPrinterParameterized(WIN_STATS, FONT_NORMAL, gNatureNamePointers[sEditNature], 108, y, TEXT_SKIP_DRAW, NULL);
+        }
+        else if (mode == MODE_MISC && i == MISC_EDITOR_COLOR)
+        {
+            AddTextPrinterParameterized(WIN_STATS, FONT_NORMAL, sEditIsShiny ? sText_Shiny : sText_Normal, 108, y, TEXT_SKIP_DRAW, NULL);
         }
         else
         {
@@ -741,6 +768,10 @@ static void Task_StatEditorProcessInput(u8 taskId)
         {
             value = (sEditNature + 1) % NUM_NATURES;
         }
+        else if (IsColorCursor(mode, cursor))
+        {
+            value = !sEditIsShiny;
+        }
         else if (value == minVal)
         {
             value = maxVal;
@@ -769,6 +800,10 @@ static void Task_StatEditorProcessInput(u8 taskId)
         {
             value = (sEditNature + 1) % NUM_NATURES;
         }
+        else if (IsColorCursor(mode, cursor))
+        {
+            value = !sEditIsShiny;
+        }
         else
         {
             value += (mode == MODE_EV) ? 4 : 1;
@@ -796,6 +831,10 @@ static void Task_StatEditorProcessInput(u8 taskId)
         {
             value = (sEditNature == 0) ? NUM_NATURES - 1 : sEditNature - 1;
         }
+        else if (IsColorCursor(mode, cursor))
+        {
+            value = !sEditIsShiny;
+        }
         else
         {
             value -= (mode == MODE_EV) ? 4 : 1;
@@ -819,6 +858,8 @@ static void Task_StatEditorProcessInput(u8 taskId)
             sEditFriendship = (u16)value;
         else if (cursor == MISC_EDITOR_NATURE)
             sEditNature = (u8)value;
+        else if (cursor == MISC_EDITOR_COLOR)
+            sEditIsShiny = (u8)value;
         else
             sEditAbilityNum = (u8)value;
         DrawStatEditorStats(taskId);
