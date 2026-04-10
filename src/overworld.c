@@ -182,7 +182,6 @@ static u16 (*sPlayerKeyInterceptCallback)(u32);
 static bool8 sReceivingFromLink;
 static u8 sRfuKeepAliveTimer;
 
-EWRAM_DATA bool8 gDebugWalkThroughWalls = FALSE;
 u16 *gOverworldTilemapBuffer_Bg2;
 u16 *gOverworldTilemapBuffer_Bg1;
 u16 *gOverworldTilemapBuffer_Bg3;
@@ -1459,14 +1458,6 @@ bool32 IsOverworldLinkActive(void)
 static void DoCB1_Overworld(u16 newKeys, u16 heldKeys)
 {
     struct FieldInput inputStruct;
-
-    /* Toggle walk-through-walls with A+B+SELECT */
-    if ((heldKeys & (A_BUTTON | B_BUTTON | SELECT_BUTTON)) == (A_BUTTON | B_BUTTON | SELECT_BUTTON)
-     && (newKeys & (A_BUTTON | B_BUTTON | SELECT_BUTTON)))
-    {
-        gDebugWalkThroughWalls = !gDebugWalkThroughWalls;
-        PlaySE(gDebugWalkThroughWalls ? SE_PC_ON : SE_PC_OFF);
-    }
 
     UpdatePlayerAvatarTransitionState();
     FieldClearPlayerInput(&inputStruct);

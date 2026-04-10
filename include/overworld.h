@@ -43,7 +43,6 @@ struct LinkPlayerObjectEvent
 extern struct WarpData gLastUsedWarp;
 extern struct LinkPlayerObjectEvent gLinkPlayerObjectEvents[4];
 
-extern bool8 gDebugWalkThroughWalls;
 extern u16 *gOverworldTilemapBuffer_Bg2;
 extern u16 *gOverworldTilemapBuffer_Bg1;
 extern u16 *gOverworldTilemapBuffer_Bg3;

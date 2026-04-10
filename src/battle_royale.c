@@ -384,7 +384,7 @@ void ShowBattleRoyaleHud(void)
 {
     u16 mode = VarGet(VAR_BATTLE_ROYALE_MODE);
 
-    if (mode == 0 || FuncIsActiveTask(Task_BattleRoyaleHud) || ArePlayerFieldControlsLocked())
+    if (mode == 0 || FuncIsActiveTask(Task_BattleRoyaleHud))
         return;
 
     // Discard stale window ID from before the map transition.
