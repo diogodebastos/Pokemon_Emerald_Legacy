@@ -653,13 +653,8 @@ static void PlayerNotOnBikeMoving(u8 direction, u16 heldKeys)
 static u8 CheckForPlayerAvatarCollision(u8 direction)
 {
     s16 x, y;
-    struct ObjectEvent *playerObjEvent;
+    struct ObjectEvent *playerObjEvent = &gObjectEvents[gPlayerAvatar.objectEventId];
 
-    if (gDebugWalkThroughWalls)
-        return COLLISION_NONE;
-
-    playerObjEvent = &gObjectEvents[gPlayerAvatar.objectEventId];
-    
     x = playerObjEvent->currentCoords.x;
     y = playerObjEvent->currentCoords.y;
     MoveCoords(direction, &x, &y);
