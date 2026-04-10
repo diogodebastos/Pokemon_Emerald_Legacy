@@ -4,6 +4,7 @@
 #include "bg.h"
 #include "event_data.h"
 #include "gpu_regs.h"
+#include "main.h"
 #include "menu.h"
 #include "overworld.h"
 #include "palette.h"
@@ -23,6 +24,8 @@
 static void Task_BattleRoyaleHud(u8 taskId);
 static void DrawBattleRoyaleHud(void);
 static void CreateBattleRoyaleHudWindow(void);
+static bool8 IsBattleRoyaleHudPositionUnsafe(void);
+static bool8 IsBattleRoyaleHudSceneActive(void);
 
 static EWRAM_DATA u8 sBattleRoyaleHudWindowId = WINDOW_NONE;
 static EWRAM_DATA bool8 sBattleRoyaleJustCompleted = FALSE;
@@ -36,6 +39,16 @@ static const u8 sText_Complete[] = _("COMPLETE!");
 #define HUD_WIDTH  9
 #define HUD_HEIGHT 3
 #define HUD_LEFT   19
+
+static bool8 IsBattleRoyaleHudPositionUnsafe(void)
+{
+    return ((GetGpuReg(REG_OFFSET_BG0VOFS) / 8) % 32) > 32 - HUD_HEIGHT;
+}
+
+static bool8 IsBattleRoyaleHudSceneActive(void)
+{
+    return gMain.callback2 == CB2_Overworld || gMain.callback2 == CB2_OverworldBasic;
+}
 
 static void BuildRematchVariantCache(void)
 {
@@ -189,6 +202,30 @@ static u16 CountDefeatedEligibleTrainers(void)
     return count;
 }
 
+void NormalizeBattleRoyaleSaveState(void)
+{
+    u16 mode = VarGet(VAR_BATTLE_ROYALE_MODE);
+    u16 total = VarGet(VAR_BATTLE_ROYALE_TOTAL);
+
+    if (mode == 0)
+    {
+        FlagSet(FLAG_HIDE_BATTLE_ROYALE_TRAINERS);
+        return;
+    }
+
+    if (total != TRAINER_BATTLE_ROYALE_COUNT)
+    {
+        VarSet(VAR_BATTLE_ROYALE_MODE, 0);
+        VarSet(VAR_BATTLE_ROYALE_REMAINING, 0);
+        VarSet(VAR_BATTLE_ROYALE_TOTAL, 0);
+        VarSet(VAR_BATTLE_ROYALE_DEATHS, 0);
+        FlagSet(FLAG_HIDE_BATTLE_ROYALE_TRAINERS);
+        return;
+    }
+
+    FlagClear(FLAG_HIDE_BATTLE_ROYALE_TRAINERS);
+}
+
 bool32 IsBattleRoyaleModeActive(void)
 {
     return VarGet(VAR_BATTLE_ROYALE_MODE) == 1;
@@ -302,7 +339,15 @@ static void Task_BattleRoyaleHud(u8 taskId)
     u16 bg0vofs = GetGpuReg(REG_OFFSET_BG0VOFS);
     bool8 shouldHide = ArePlayerFieldControlsLocked()
                     || ScriptContext_IsEnabled()
-                    || GetMapNamePopUpWindowId() != WINDOW_NONE;
+                    || GetMapNamePopUpWindowId() != WINDOW_NONE
+                    || IsBattleRoyaleHudPositionUnsafe();
+
+    if (!IsBattleRoyaleHudSceneActive())
+    {
+        DestroyTask(taskId);
+        sBattleRoyaleHudWindowId = WINDOW_NONE;
+        return;
+    }
 
     if (mode == 0)
     {
@@ -363,6 +408,17 @@ static void CreateBattleRoyaleHudWindow(void)
     struct WindowTemplate template;
     u16 bg0vofs = GetGpuReg(REG_OFFSET_BG0VOFS);
     u8 topRow = (bg0vofs / 8) % 32;
+
+    if (IsBattleRoyaleHudPositionUnsafe())
+    {
+        if (sBattleRoyaleHudWindowId != WINDOW_NONE)
+        {
+            ClearDialogWindowAndFrameToTransparent(sBattleRoyaleHudWindowId, FALSE);
+            RemoveWindow(sBattleRoyaleHudWindowId);
+            sBattleRoyaleHudWindowId = WINDOW_NONE;
+        }
+        return;
+    }
 
     template.bg = 0;
     template.tilemapLeft = HUD_LEFT;

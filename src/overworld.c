@@ -1735,6 +1735,7 @@ void CB2_ContinueSavedGame(void)
     if (gSaveFileStatus == SAVE_STATUS_ERROR)
         ResetWinStreaks();
 
+    NormalizeBattleRoyaleSaveState();
     LoadSaveblockMapHeader();
     ClearDiveAndHoleWarps();
     trainerHillMapId = GetCurrentTrainerHillMapId();
