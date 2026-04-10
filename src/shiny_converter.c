@@ -126,6 +126,67 @@ void MakeMonShiny(void)
     gSpecialVar_Result = TRUE;
 }
 
+void MakeMonNotShiny(void)
+{
+    struct BoxPokemon *boxMon;
+    u32 oldPersonality;
+    u32 newPersonality;
+    u32 otId;
+    u32 pidLo;
+    u32 oldNature;
+    u32 oldKey;
+    u32 newKey;
+    u32 oldOrder;
+    u32 newOrder;
+    u32 h;
+    u32 i;
+    u8 type;
+    union PokemonSubstruct temp[4];
+
+    boxMon = &gPlayerParty[gSpecialVar_0x8004].box;
+    oldPersonality = boxMon->personality;
+    otId = boxMon->otId;
+
+    if (!IsShinyOtIdPersonality(otId, oldPersonality))
+    {
+        gSpecialVar_Result = FALSE;
+        return;
+    }
+
+    oldNature = oldPersonality % NUM_NATURES;
+    pidLo = oldPersonality & 0xFFFF;
+    newPersonality = oldPersonality;
+
+    for (h = 0; h <= 0xFFFF; h++)
+    {
+        newPersonality = (h << 16) | pidLo;
+        if (!IsShinyOtIdPersonality(otId, newPersonality)
+         && newPersonality % NUM_NATURES == oldNature)
+            break;
+    }
+
+    oldKey = oldPersonality ^ otId;
+    newKey = newPersonality ^ otId;
+    oldOrder = oldPersonality % 24;
+    newOrder = newPersonality % 24;
+
+    for (i = 0; i < ARRAY_COUNT(boxMon->secure.raw); i++)
+        boxMon->secure.raw[i] ^= oldKey;
+
+    for (type = 0; type < 4; type++)
+        temp[type] = boxMon->secure.substructs[sSubstructOrder[oldOrder][type]];
+
+    for (type = 0; type < 4; type++)
+        boxMon->secure.substructs[sSubstructOrder[newOrder][type]] = temp[type];
+
+    for (i = 0; i < ARRAY_COUNT(boxMon->secure.raw); i++)
+        boxMon->secure.raw[i] ^= newKey;
+
+    boxMon->personality = newPersonality;
+    CalculateMonStats(&gPlayerParty[gSpecialVar_0x8004]);
+    gSpecialVar_Result = TRUE;
+}
+
 void BufferShinyMonName(void)
 {
     GetMonNickname(&gPlayerParty[gSpecialVar_0x8004], gStringVar1);
