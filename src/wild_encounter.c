@@ -311,6 +311,8 @@ static u16 GetCurrentMapWildMonHeaderId(void)
         if (gWildMonHeaders[i].mapGroup == gSaveBlock1Ptr->location.mapGroup &&
             gWildMonHeaders[i].mapNum == gSaveBlock1Ptr->location.mapNum)
         {
+            u16 baseHeaderId = i;
+
             if (gSaveBlock1Ptr->location.mapGroup == MAP_GROUP(ROUTE101) &&
                 gSaveBlock1Ptr->location.mapNum == MAP_NUM(ROUTE101))
             {
@@ -529,6 +531,14 @@ static u16 GetCurrentMapWildMonHeaderId(void)
                     alteringCaveId = 0;
 
                 i += alteringCaveId;
+            }
+
+            // Safety: if a corrupted wild set var pushed i out of bounds,
+            // fall back to the base header for this map.
+            if (gWildMonHeaders[i].mapGroup != gSaveBlock1Ptr->location.mapGroup
+             || gWildMonHeaders[i].mapNum != gSaveBlock1Ptr->location.mapNum)
+            {
+                return baseHeaderId;
             }
 
             return i;
