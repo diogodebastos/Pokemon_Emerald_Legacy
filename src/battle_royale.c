@@ -202,10 +202,30 @@ static u16 CountDefeatedEligibleTrainers(void)
     return count;
 }
 
+// Wild set vars that were swapped with BR vars in a previous fix.
+// Old saves may still have large BR values (e.g. 500) in these slots,
+// which causes out-of-bounds indexing into gWildMonHeaders → Bad Egg.
+static const u16 sWildSetVars[] = {
+    VAR_ROUTE101_WILD_SET,
+    VAR_ROUTE102_WILD_SET,
+    VAR_ROUTE103_WILD_SET,
+    VAR_ROUTE104_WILD_SET,
+};
+
+#define MAX_WILD_SET_VALUE 10
+
 void NormalizeBattleRoyaleSaveState(void)
 {
     u16 mode = VarGet(VAR_BATTLE_ROYALE_MODE);
     u16 total = VarGet(VAR_BATTLE_ROYALE_TOTAL);
+    u32 i;
+
+    // Repair wild set vars that may have been corrupted by old var address collision
+    for (i = 0; i < ARRAY_COUNT(sWildSetVars); i++)
+    {
+        if (VarGet(sWildSetVars[i]) > MAX_WILD_SET_VALUE)
+            VarSet(sWildSetVars[i], 0);
+    }
 
     if (mode == 0)
     {

@@ -274,7 +274,7 @@
 #define VAR_ROUTE114_WILD_SET                            0x40FE
 #define VAR_ROUTE116_WILD_SET                            0x40FF
 
-#define VARS_END                                         0x4100
+#define VARS_END                                         0x40FF
 #define VARS_COUNT                                       (VARS_END - VARS_START + 1)
 
 #define SPECIAL_VARS_START            0x8000
