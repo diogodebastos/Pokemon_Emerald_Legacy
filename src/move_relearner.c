@@ -158,7 +158,7 @@ enum {
 #define GFXTAG_UI       5525
 #define PALTAG_UI       5526
 
-#define MAX_RELEARNER_MOVES max(MAX_LEVEL_UP_MOVES, 25)
+#define MAX_RELEARNER_MOVES max(MAX_LEVEL_UP_MOVES * (EVOS_PER_MON + 1) + EGG_MOVES_ARRAY_COUNT, 25)
 
 static EWRAM_DATA struct
 {
@@ -901,10 +901,10 @@ static void CreateLearnableMovesList(void)
     s32 i;
     u8 nickname[POKEMON_NAME_LENGTH + 1];
 
+    sMoveRelearnerStruct->numMenuChoices = GetMoveRelearnerMoves(&gPlayerParty[sMoveRelearnerStruct->partyMon], sMoveRelearnerStruct->movesToLearn);
+
     if (FlagGet(FLAG_EGG_MOVES_TUTOR))
-        sMoveRelearnerStruct->numMenuChoices = GetEggMoves(&gPlayerParty[sMoveRelearnerStruct->partyMon], sMoveRelearnerStruct->movesToLearn);
-    else
-        sMoveRelearnerStruct->numMenuChoices = GetMoveRelearnerMoves(&gPlayerParty[sMoveRelearnerStruct->partyMon], sMoveRelearnerStruct->movesToLearn);
+        sMoveRelearnerStruct->numMenuChoices += GetEggMoves(&gPlayerParty[sMoveRelearnerStruct->partyMon], sMoveRelearnerStruct->movesToLearn + sMoveRelearnerStruct->numMenuChoices);
 
     for (i = 0; i < sMoveRelearnerStruct->numMenuChoices; i++)
     {
