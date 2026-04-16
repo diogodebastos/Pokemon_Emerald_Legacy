@@ -451,18 +451,34 @@ bool8 TryRunFromBattle(u8 battler)
     }
     else
     {
-        if (!(gBattleTypeFlags & BATTLE_TYPE_DOUBLE))
         {
+            u8 opposingBattler;
+
+            if (gBattleTypeFlags & BATTLE_TYPE_DOUBLE)
+            {
+                // In doubles, compare against the faster opponent
+                u8 opp1 = GetBattlerAtPosition(B_POSITION_OPPONENT_LEFT);
+                u8 opp2 = GetBattlerAtPosition(B_POSITION_OPPONENT_RIGHT);
+                if (gBattleMons[opp1].speed >= gBattleMons[opp2].speed)
+                    opposingBattler = opp1;
+                else
+                    opposingBattler = opp2;
+            }
+            else
+            {
+                opposingBattler = BATTLE_OPPOSITE(battler);
+            }
+
             if (InBattlePyramid())
             {
                 pyramidMultiplier = GetPyramidRunMultiplier();
-                speedVar = (gBattleMons[battler].speed * pyramidMultiplier) / (gBattleMons[BATTLE_OPPOSITE(battler)].speed) + (gBattleStruct->runTries * 30);
+                speedVar = (gBattleMons[battler].speed * pyramidMultiplier) / (gBattleMons[opposingBattler].speed) + (gBattleStruct->runTries * 30);
                 if (speedVar > (Random() & 0xFF))
                     effect++;
             }
-            else if (gBattleMons[battler].speed < gBattleMons[BATTLE_OPPOSITE(battler)].speed)
+            else if (gBattleMons[battler].speed < gBattleMons[opposingBattler].speed)
             {
-                speedVar = (gBattleMons[battler].speed * 128) / (gBattleMons[BATTLE_OPPOSITE(battler)].speed) + (gBattleStruct->runTries * 30);
+                speedVar = (gBattleMons[battler].speed * 128) / (gBattleMons[opposingBattler].speed) + (gBattleStruct->runTries * 30);
                 if (speedVar > (Random() & 0xFF))
                     effect++;
             }

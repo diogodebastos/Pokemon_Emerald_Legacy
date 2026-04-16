@@ -80,6 +80,7 @@ static void PlayerHandleClearUnkFlag(void);
 static void PlayerHandleToggleUnkFlag(void);
 static void PlayerHandleHitAnimation(void);
 static void PlayerHandleCantSwitch(void);
+static void HandleInputChooseBallTarget(void);
 static void PlayerHandlePlaySE(void);
 static void PlayerHandlePlayFanfareOrBGM(void);
 static void PlayerHandleFaintingCry(void);
@@ -1417,8 +1418,68 @@ static void CompleteWhenChoseItem(void)
 {
     if (gMain.callback2 == BattleMainCB2 && !gPaletteFade.active)
     {
+        if ((gBattleTypeFlags & BATTLE_TYPE_DOUBLE)
+            && gSpecialVar_ItemId != ITEM_NONE
+            && gSpecialVar_ItemId <= LAST_BALL
+            && !(gBattleTypeFlags & BATTLE_TYPE_TRAINER))
+        {
+            // In wild doubles, let player choose which mon to throw ball at
+            gMultiUsePlayerCursor = GetBattlerAtPosition(B_POSITION_OPPONENT_LEFT);
+            if (gAbsentBattlerFlags & gBitTable[gMultiUsePlayerCursor])
+                gMultiUsePlayerCursor = GetBattlerAtPosition(B_POSITION_OPPONENT_RIGHT);
+            gSprites[gBattlerSpriteIds[gMultiUsePlayerCursor]].callback = SpriteCB_ShowAsMoveTarget;
+            gBattlerControllerFuncs[gActiveBattler] = HandleInputChooseBallTarget;
+        }
+        else
+        {
+            BtlController_EmitOneReturnValue(BUFFER_B, gSpecialVar_ItemId);
+            PlayerBufferExecCompleted();
+        }
+    }
+}
+
+static void HandleInputChooseBallTarget(void)
+{
+    u8 oppLeft = GetBattlerAtPosition(B_POSITION_OPPONENT_LEFT);
+    u8 oppRight = GetBattlerAtPosition(B_POSITION_OPPONENT_RIGHT);
+    bool8 leftAlive = !(gAbsentBattlerFlags & gBitTable[oppLeft]);
+    bool8 rightAlive = !(gAbsentBattlerFlags & gBitTable[oppRight]);
+
+    DoBounceEffect(gMultiUsePlayerCursor, BOUNCE_HEALTHBOX, 15, 1);
+    if (gMultiUsePlayerCursor == oppLeft && rightAlive)
+        EndBounceEffect(oppRight, BOUNCE_HEALTHBOX);
+    if (gMultiUsePlayerCursor == oppRight && leftAlive)
+        EndBounceEffect(oppLeft, BOUNCE_HEALTHBOX);
+
+    if (JOY_NEW(A_BUTTON))
+    {
+        PlaySE(SE_SELECT);
+        gSprites[gBattlerSpriteIds[gMultiUsePlayerCursor]].callback = SpriteCB_HideAsMoveTarget;
+        EndBounceEffect(gMultiUsePlayerCursor, BOUNCE_HEALTHBOX);
+        gBattleStruct->moveTarget[gActiveBattler] = gMultiUsePlayerCursor;
         BtlController_EmitOneReturnValue(BUFFER_B, gSpecialVar_ItemId);
         PlayerBufferExecCompleted();
+    }
+    else if (JOY_NEW(B_BUTTON))
+    {
+        PlaySE(SE_SELECT);
+        gSprites[gBattlerSpriteIds[gMultiUsePlayerCursor]].callback = SpriteCB_HideAsMoveTarget;
+        EndBounceEffect(gMultiUsePlayerCursor, BOUNCE_HEALTHBOX);
+        BtlController_EmitOneReturnValue(BUFFER_B, ITEM_NONE);
+        PlayerBufferExecCompleted();
+    }
+    else if (JOY_NEW(DPAD_LEFT | DPAD_RIGHT | DPAD_UP | DPAD_DOWN))
+    {
+        if (leftAlive && rightAlive)
+        {
+            PlaySE(SE_SELECT);
+            gSprites[gBattlerSpriteIds[gMultiUsePlayerCursor]].callback = SpriteCB_HideAsMoveTarget;
+            if (gMultiUsePlayerCursor == oppLeft)
+                gMultiUsePlayerCursor = oppRight;
+            else
+                gMultiUsePlayerCursor = oppLeft;
+            gSprites[gBattlerSpriteIds[gMultiUsePlayerCursor]].callback = SpriteCB_ShowAsMoveTarget;
+        }
     }
 }
 
@@ -2511,7 +2572,7 @@ static void PlayerHandleSuccessBallThrowAnim(void)
 {
     gBattleSpritesDataPtr->animationData->ballThrowCaseId = BALL_3_SHAKES_SUCCESS;
     gDoingBattleAnim = TRUE;
-    InitAndLaunchSpecialAnimation(gActiveBattler, gActiveBattler, GetBattlerAtPosition(B_POSITION_OPPONENT_LEFT), B_ANIM_BALL_THROW);
+    InitAndLaunchSpecialAnimation(gActiveBattler, gActiveBattler, gBattlerTarget, B_ANIM_BALL_THROW);
     gBattlerControllerFuncs[gActiveBattler] = CompleteOnSpecialAnimDone;
 }
 
@@ -2521,7 +2582,7 @@ static void PlayerHandleBallThrowAnim(void)
 
     gBattleSpritesDataPtr->animationData->ballThrowCaseId = ballThrowCaseId;
     gDoingBattleAnim = TRUE;
-    InitAndLaunchSpecialAnimation(gActiveBattler, gActiveBattler, GetBattlerAtPosition(B_POSITION_OPPONENT_LEFT), B_ANIM_BALL_THROW);
+    InitAndLaunchSpecialAnimation(gActiveBattler, gActiveBattler, gBattlerTarget, B_ANIM_BALL_THROW);
     gBattlerControllerFuncs[gActiveBattler] = CompleteOnSpecialAnimDone;
 }
 

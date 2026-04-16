@@ -405,7 +405,7 @@ static void DoStandardWildBattle(void)
     FreezeObjectEvents();
     StopPlayerAvatar();
     gMain.savedCallback = CB2_EndWildBattle;
-    gBattleTypeFlags = 0;
+    gBattleTypeFlags = BATTLE_TYPE_DOUBLE;
     if (InBattlePyramid())
     {
         VarSet(VAR_TEMP_PLAYING_PYRAMID_MUSIC, 0);
@@ -424,7 +424,7 @@ void BattleSetup_StartRoamerBattle(void)
     FreezeObjectEvents();
     StopPlayerAvatar();
     gMain.savedCallback = CB2_EndWildBattle;
-    gBattleTypeFlags = BATTLE_TYPE_ROAMER;
+    gBattleTypeFlags = BATTLE_TYPE_ROAMER | BATTLE_TYPE_DOUBLE;
     CreateBattleStartTask(GetWildBattleTransition(), 0);
     IncrementGameStat(GAME_STAT_TOTAL_BATTLES);
     IncrementGameStat(GAME_STAT_WILD_BATTLES);
@@ -903,10 +903,22 @@ void ChooseStarter(void)
 static void CB2_GiveStarter(void)
 {
     u16 starterMon;
+    u16 partnerMon;
 
     *GetVarPointer(VAR_STARTER_MON) = gSpecialVar_Result;
     starterMon = GetStarterPokemon(gSpecialVar_Result);
     ScriptGiveMon(starterMon, 5, ITEM_NONE, 0, 0, 0);
+
+    // Give partner Johto eeveelution (Colosseum style)
+    if (starterMon == SPECIES_EEVEE)
+        partnerMon = SPECIES_EEVEE;
+    else if (starterMon == SPECIES_ESPEON)
+        partnerMon = SPECIES_UMBREON;
+    else // SPECIES_UMBREON
+        partnerMon = SPECIES_ESPEON;
+
+    ScriptGiveMon(partnerMon, 5, ITEM_NONE, 0, 0, 0);
+
     ResetTasks();
     PlayBattleBGM();
     SetMainCallback2(CB2_StartFirstBattle);
@@ -920,7 +932,7 @@ static void CB2_StartFirstBattle(void)
 
     if (IsBattleTransitionDone() == TRUE)
     {
-        gBattleTypeFlags = BATTLE_TYPE_FIRST_BATTLE;
+        gBattleTypeFlags = BATTLE_TYPE_FIRST_BATTLE | BATTLE_TYPE_DOUBLE;
         gMain.savedCallback = CB2_EndFirstBattle;
         FreeAllWindowBuffers();
         SetMainCallback2(CB2_InitBattle);
@@ -1258,7 +1270,7 @@ void BattleSetup_StartTrainerBattle(void)
     if (gNoOfApproachingTrainers == 2)
         gBattleTypeFlags = (BATTLE_TYPE_DOUBLE | BATTLE_TYPE_TWO_OPPONENTS | BATTLE_TYPE_TRAINER);
     else
-        gBattleTypeFlags = (BATTLE_TYPE_TRAINER);
+        gBattleTypeFlags = (BATTLE_TYPE_DOUBLE | BATTLE_TYPE_TRAINER);
 
     if (InBattlePyramid())
     {
@@ -1355,7 +1367,7 @@ static void CB2_EndRematchBattle(void)
 
 void BattleSetup_StartRematchBattle(void)
 {
-    gBattleTypeFlags = BATTLE_TYPE_TRAINER;
+    gBattleTypeFlags = BATTLE_TYPE_DOUBLE | BATTLE_TYPE_TRAINER;
     gMain.savedCallback = CB2_EndRematchBattle;
     DoTrainerBattle();
     ScriptContext_Stop();
