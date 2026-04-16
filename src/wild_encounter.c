@@ -629,6 +629,28 @@ static void CreateWildMon(u16 species, u8 level)
 
     CreateMonWithNature(&gEnemyParty[0], species, level, USE_RANDOM_IVS, PickWildMonNature());
 }
+// Generate a second wild mon for double battles (Colosseum mode)
+static void CreateSecondWildMon(const struct WildPokemonInfo *wildMonInfo, u8 area)
+{
+    u8 wildMonIndex;
+    u8 level;
+
+    switch (area)
+    {
+    case WILD_AREA_LAND:
+        wildMonIndex = ChooseWildMonIndex_Land();
+        break;
+    case WILD_AREA_WATER:
+    case WILD_AREA_ROCKS:
+    default:
+        wildMonIndex = ChooseWildMonIndex_WaterRock();
+        break;
+    }
+
+    level = ChooseWildMonLevel(&wildMonInfo->wildPokemon[wildMonIndex]);
+    CreateMonWithNature(&gEnemyParty[1], wildMonInfo->wildPokemon[wildMonIndex].species, level, USE_RANDOM_IVS, PickWildMonNature());
+}
+
 #define TRY_GET_ABILITY_INFLUENCED_WILD_MON_INDEX(wildPokemon, type, ability, ptr, count) TryGetAbilityInfluencedWildMonIndex(wildPokemon, type, ability, ptr, count)
 
 static bool8 TryGenerateWildMon(const struct WildPokemonInfo *wildMonInfo, u8 area, u8 flags)
@@ -664,6 +686,7 @@ static bool8 TryGenerateWildMon(const struct WildPokemonInfo *wildMonInfo, u8 ar
         return FALSE;
 
     CreateWildMon(wildMonInfo->wildPokemon[wildMonIndex].species, level);
+    CreateSecondWildMon(wildMonInfo, area);
     return TRUE;
 }
 
@@ -673,6 +696,7 @@ static u16 GenerateFishingWildMon(const struct WildPokemonInfo *wildMonInfo, u8 
     u8 level = ChooseWildMonLevel(&wildMonInfo->wildPokemon[wildMonIndex]);
 
     CreateWildMon(wildMonInfo->wildPokemon[wildMonIndex].species, level);
+    CreateSecondWildMon(wildMonInfo, WILD_AREA_WATER);
     return wildMonInfo->wildPokemon[wildMonIndex].species;
 }
 
@@ -684,6 +708,7 @@ static bool8 SetUpMassOutbreakEncounter(u8 flags)
         return FALSE;
 
     CreateWildMon(gSaveBlock1Ptr->outbreakPokemonSpecies, gSaveBlock1Ptr->outbreakPokemonLevel);
+    CreateMonWithNature(&gEnemyParty[1], gSaveBlock1Ptr->outbreakPokemonSpecies, gSaveBlock1Ptr->outbreakPokemonLevel, USE_RANDOM_IVS, PickWildMonNature());
     for (i = 0; i < MAX_MON_MOVES; i++)
         SetMonMoveSlot(&gEnemyParty[0], gSaveBlock1Ptr->outbreakPokemonMoves[i], i);
 
@@ -819,6 +844,8 @@ bool8 StandardWildEncounter(u16 curMetatileBehavior, u16 prevMetatileBehavior)
                 if (!IsWildLevelAllowedByRepel(roamer->level))
                     return FALSE;
 
+                // Generate companion wild mon for roamer double battle
+                CreateSecondWildMon(gWildMonHeaders[headerId].landMonsInfo, WILD_AREA_LAND);
                 BattleSetup_StartRoamerBattle();
                 return TRUE;
             }
@@ -858,6 +885,8 @@ bool8 StandardWildEncounter(u16 curMetatileBehavior, u16 prevMetatileBehavior)
                 if (!IsWildLevelAllowedByRepel(roamer->level))
                     return FALSE;
 
+                // Generate companion wild mon for roamer double battle
+                CreateSecondWildMon(gWildMonHeaders[headerId].waterMonsInfo, WILD_AREA_WATER);
                 BattleSetup_StartRoamerBattle();
                 return TRUE;
             }
@@ -999,6 +1028,11 @@ void FishingWildEncounter(u8 rod)
 
         species = sWildFeebas.species;
         CreateWildMon(species, level);
+        // Second wild mon from fishing table for doubles
+        if (gWildMonHeaders[GetCurrentMapWildMonHeaderId()].fishingMonsInfo != NULL)
+            CreateSecondWildMon(gWildMonHeaders[GetCurrentMapWildMonHeaderId()].fishingMonsInfo, WILD_AREA_WATER);
+        else
+            CreateMonWithNature(&gEnemyParty[1], species, level, USE_RANDOM_IVS, PickWildMonNature());
     }
     else
     {
