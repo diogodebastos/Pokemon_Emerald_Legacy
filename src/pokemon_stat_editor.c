@@ -35,9 +35,21 @@ enum {
 };
 
 enum {
+    CONTEST_EDITOR_COOL,
+    CONTEST_EDITOR_BEAUTY,
+    CONTEST_EDITOR_CUTE,
+    CONTEST_EDITOR_SMART,
+    CONTEST_EDITOR_TOUGH,
+    CONTEST_EDITOR_SHEEN,
+    CONTEST_EDITOR_COUNT
+};
+
+enum {
     MODE_IV,
     MODE_EV,
-    MODE_MISC
+    MODE_MISC,
+    MODE_CONTEST,
+    MODE_COUNT
 };
 
 enum {
@@ -72,10 +84,12 @@ static EWRAM_DATA u16 sEditFriendship = 0;
 static EWRAM_DATA u8 sEditAbilityNum = 0;
 static EWRAM_DATA u8 sEditNature = 0;
 static EWRAM_DATA u8 sEditIsShiny = 0;
+static EWRAM_DATA u8 sEditContestStats[CONTEST_EDITOR_COUNT] = {0};
 
 static const u8 sText_ModeIVs[] = _("IVs");
 static const u8 sText_ModeEVs[] = _("EVs");
 static const u8 sText_ModeMisc[] = _("MISC");
+static const u8 sText_ModeContest[] = _("CONTEST");
 static const u8 sText_EditStats[] = _("EDIT STATS");
 static const u8 sText_HP[] = _("HP");
 static const u8 sText_Attack[] = _("ATTACK");
@@ -90,6 +104,12 @@ static const u8 sText_Nature[] = _("NATURE");
 static const u8 sText_Color[] = _("COLOR");
 static const u8 sText_Normal[] = _("NORMAL");
 static const u8 sText_Shiny[] = _("SHINY");
+static const u8 sText_Cool[] = _("COOL");
+static const u8 sText_Beauty[] = _("BEAUTY");
+static const u8 sText_Cute[] = _("CUTE");
+static const u8 sText_Smart[] = _("SMART");
+static const u8 sText_Tough[] = _("TOUGH");
+static const u8 sText_Sheen[] = _("SHEEN");
 static const u8 sText_Space[] = _(" ");
 static const u8 sText_Slash[] = _("/");
 static const u8 sText_Hint[] = _("{DPAD_LEFTRIGHT} Val SEL:Toggle L/R:Tab");
@@ -119,6 +139,24 @@ static const u8 sEVDataIds[STAT_EDITOR_COUNT] = {
     MON_DATA_SPEED_EV,
     MON_DATA_SPATK_EV,
     MON_DATA_SPDEF_EV,
+};
+
+static const u8 *const sContestNames[CONTEST_EDITOR_COUNT] = {
+    [CONTEST_EDITOR_COOL]   = sText_Cool,
+    [CONTEST_EDITOR_BEAUTY] = sText_Beauty,
+    [CONTEST_EDITOR_CUTE]   = sText_Cute,
+    [CONTEST_EDITOR_SMART]  = sText_Smart,
+    [CONTEST_EDITOR_TOUGH]  = sText_Tough,
+    [CONTEST_EDITOR_SHEEN]  = sText_Sheen,
+};
+
+static const u8 sContestDataIds[CONTEST_EDITOR_COUNT] = {
+    MON_DATA_COOL,
+    MON_DATA_BEAUTY,
+    MON_DATA_CUTE,
+    MON_DATA_SMART,
+    MON_DATA_TOUGH,
+    MON_DATA_SHEEN,
 };
 
 enum {
@@ -211,7 +249,11 @@ static u16 GetTotalEditEVs(void)
 
 static u8 GetEntryCountForMode(u8 mode)
 {
-    return (mode == MODE_MISC) ? MISC_EDITOR_COUNT : STAT_EDITOR_COUNT;
+    if (mode == MODE_MISC)
+        return MISC_EDITOR_COUNT;
+    if (mode == MODE_CONTEST)
+        return CONTEST_EDITOR_COUNT;
+    return STAT_EDITOR_COUNT;
 }
 
 static u16 GetMiscValue(u8 cursor)
@@ -364,6 +406,9 @@ static void LoadMonStats(u8 slotId)
     sEditAbilityNum = GetClampedAbilityNum(GetMonData(mon, MON_DATA_SPECIES, NULL), GetMonData(mon, MON_DATA_ABILITY_NUM, NULL));
     sEditNature = GetNatureFromPersonality(GetMonData(mon, MON_DATA_PERSONALITY, NULL));
     sEditIsShiny = IsMonShiny(mon);
+
+    for (i = 0; i < CONTEST_EDITOR_COUNT; i++)
+        sEditContestStats[i] = GetMonData(mon, sContestDataIds[i], NULL);
 }
 
 static void ApplyMonStats(u8 slotId)
@@ -398,6 +443,12 @@ static void ApplyMonStats(u8 slotId)
         gSpecialVar_0x8004 = slotId;
         gSpecialVar_0x8005 = sEditNature;
         ChangeMonNature();
+    }
+
+    for (i = 0; i < CONTEST_EDITOR_COUNT; i++)
+    {
+        val = sEditContestStats[i];
+        SetMonData(mon, sContestDataIds[i], &val);
     }
 
     gSpecialVar_0x8004 = slotId;
@@ -468,6 +519,9 @@ static void DrawStatEditorTitle(u8 taskId)
     case MODE_EV:
         modeStr = sText_ModeEVs;
         break;
+    case MODE_CONTEST:
+        modeStr = sText_ModeContest;
+        break;
     case MODE_MISC:
     default:
         modeStr = sText_ModeMisc;
@@ -524,6 +578,8 @@ static void DrawStatEditorStats(u8 taskId)
         /* Stat name */
         if (mode == MODE_MISC)
             AddTextPrinterParameterized(WIN_STATS, FONT_NORMAL, sMiscNames[i], 12, y, TEXT_SKIP_DRAW, NULL);
+        else if (mode == MODE_CONTEST)
+            AddTextPrinterParameterized(WIN_STATS, FONT_NORMAL, sContestNames[i], 12, y, TEXT_SKIP_DRAW, NULL);
         else
             AddTextPrinterParameterized(WIN_STATS, FONT_NORMAL, sStatNames[i], 12, y, TEXT_SKIP_DRAW, NULL);
 
@@ -537,6 +593,11 @@ static void DrawStatEditorStats(u8 taskId)
         {
             value = sEditEVs[i];
             maxVal = MAX_COMPETITIVE_EVS;
+        }
+        else if (mode == MODE_CONTEST)
+        {
+            value = sEditContestStats[i];
+            maxVal = 255;
         }
         else
         {
@@ -689,11 +750,11 @@ static void Task_StatEditorProcessInput(u8 taskId)
         return;
     }
 
-    /* Toggle IV/EV mode */
+    /* Toggle IV/EV/MISC/CONTEST mode */
     if (JOY_NEW(L_BUTTON))
     {
         PlaySE(SE_SELECT);
-        gTasks[taskId].tMode = (mode == MODE_IV) ? MODE_MISC : mode - 1;
+        gTasks[taskId].tMode = (mode == MODE_IV) ? MODE_COUNT - 1 : mode - 1;
         if (gTasks[taskId].tCursorPos >= GetEntryCountForMode(gTasks[taskId].tMode))
             gTasks[taskId].tCursorPos = GetEntryCountForMode(gTasks[taskId].tMode) - 1;
         DrawStatEditorTitle(taskId);
@@ -703,7 +764,7 @@ static void Task_StatEditorProcessInput(u8 taskId)
     if (JOY_NEW(R_BUTTON))
     {
         PlaySE(SE_SELECT);
-        gTasks[taskId].tMode = (mode + 1) % 3;
+        gTasks[taskId].tMode = (mode + 1) % MODE_COUNT;
         if (gTasks[taskId].tCursorPos >= GetEntryCountForMode(gTasks[taskId].tMode))
             gTasks[taskId].tCursorPos = GetEntryCountForMode(gTasks[taskId].tMode) - 1;
         DrawStatEditorTitle(taskId);
@@ -747,6 +808,12 @@ static void Task_StatEditorProcessInput(u8 taskId)
         value = (s16)sEditEVs[cursor];
         minVal = 0;
         maxVal = MAX_COMPETITIVE_EVS;
+    }
+    else if (mode == MODE_CONTEST)
+    {
+        value = (s16)sEditContestStats[cursor];
+        minVal = 0;
+        maxVal = 255;
     }
     else
     {
@@ -852,6 +919,8 @@ static void Task_StatEditorProcessInput(u8 taskId)
             sEditIVs[cursor] = (u16)value;
         else if (mode == MODE_EV)
             sEditEVs[cursor] = (u16)value;
+        else if (mode == MODE_CONTEST)
+            sEditContestStats[cursor] = (u8)value;
         else if (cursor == MISC_EDITOR_LEVEL)
             sEditLevel = (u16)value;
         else if (cursor == MISC_EDITOR_HAPPINESS)
