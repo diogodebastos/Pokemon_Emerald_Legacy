@@ -9275,7 +9275,7 @@ static const struct TrainerMon sParty_BrendanRoute103Treecko[] = {
     {
     .iv = 0,
     .lvl = 5,
-    .species = SPECIES_GARDEVOIR,
+    .species = SPECIES_RALTS,
     }
 };
 // Rival 3
