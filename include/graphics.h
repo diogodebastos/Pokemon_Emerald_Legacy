@@ -4962,6 +4962,7 @@ extern const u16 gStandardMenuPalette[];
 
 extern const u32 gTitleScreenEmeraldVersionGfx[];
 extern const u32 gTitleScreenSoloLevelingGfx[];
+extern const u32 gTitleScreenColosseumGfx[];
 extern const u32 gTitleScreenPressStartGfx[];
 extern const u32 gTitleScreenPokemonLogoGfx[];
 extern const u32 gTitleScreenPokemonLogoTilemap[];

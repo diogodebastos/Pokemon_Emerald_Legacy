@@ -271,6 +271,7 @@ include songs.mk
 %.1bpp: %.png  ; $(GFX) $< $@
 %.4bpp: %.png  ; $(GFX) $< $@
 graphics/title_screen/emerald_version_sl.8bpp: graphics/title_screen/emerald_version_sl.png ; $(GFX) $< $@ -mwidth 8 -mheight 4
+graphics/title_screen/emerald_version_colosseum.8bpp: graphics/title_screen/emerald_version_colosseum.png ; $(GFX) $< $@ -mwidth 8 -mheight 4
 %.8bpp: %.png  ; $(GFX) $< $@
 %.gbapal: %.pal ; $(GFX) $< $@
 %.gbapal: %.png ; $(GFX) $< $@

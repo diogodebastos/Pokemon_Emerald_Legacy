@@ -28,6 +28,7 @@ enum {
     TAG_PRESS_START_COPYRIGHT,
     TAG_LOGO_SHINE,
     TAG_SOLO_LEVELING,
+    TAG_COLOSSEUM,
 };
 
 #define VERSION_BANNER_RIGHT_TILEOFFSET 64
@@ -39,6 +40,10 @@ enum {
 #define SL_BANNER_RIGHT_X 153
 #define SL_BANNER_Y 12
 #define SL_BANNER_Y_GOAL 98
+#define COLO_BANNER_LEFT_X 89
+#define COLO_BANNER_RIGHT_X 153
+#define COLO_BANNER_Y 44
+#define COLO_BANNER_Y_GOAL 130
 #define START_BANNER_X 128
 
 #define CLEAR_SAVE_BUTTON_COMBO (B_BUTTON | SELECT_BUTTON | DPAD_UP)
@@ -63,6 +68,8 @@ static void SpriteCB_PressStartCopyrightBanner(struct Sprite *sprite);
 static void SpriteCB_PokemonLogoShine(struct Sprite *sprite);
 static void SpriteCB_SoloLevelingLeft(struct Sprite *sprite);
 static void SpriteCB_SoloLevelingRight(struct Sprite *sprite);
+static void SpriteCB_ColosseumLeft(struct Sprite *sprite);
+static void SpriteCB_ColosseumRight(struct Sprite *sprite);
 
 // const rom data
 static const u16 sUnusedUnknownPal[] = INCBIN_U16("graphics/title_screen/unused.gbapal");
@@ -285,6 +292,94 @@ static const struct CompressedSpriteSheet sSpriteSheet_SoloLeveling[] =
         .data = gTitleScreenSoloLevelingGfx,
         .size = 0x1000,
         .tag = TAG_SOLO_LEVELING
+    },
+    {},
+};
+
+static const struct OamData sColosseumLeftOamData =
+{
+    .y = DISPLAY_HEIGHT,
+    .affineMode = ST_OAM_AFFINE_OFF,
+    .objMode = ST_OAM_OBJ_NORMAL,
+    .mosaic = FALSE,
+    .bpp = ST_OAM_8BPP,
+    .shape = SPRITE_SHAPE(64x32),
+    .x = 0,
+    .matrixNum = 0,
+    .size = SPRITE_SIZE(64x32),
+    .tileNum = 0,
+    .priority = 0,
+    .paletteNum = 0,
+    .affineParam = 0,
+};
+
+static const struct OamData sColosseumRightOamData =
+{
+    .y = DISPLAY_HEIGHT,
+    .affineMode = ST_OAM_AFFINE_OFF,
+    .objMode = ST_OAM_OBJ_NORMAL,
+    .mosaic = FALSE,
+    .bpp = ST_OAM_8BPP,
+    .shape = SPRITE_SHAPE(64x32),
+    .x = 0,
+    .matrixNum = 0,
+    .size = SPRITE_SIZE(64x32),
+    .tileNum = 0,
+    .priority = 0,
+    .paletteNum = 0,
+    .affineParam = 0,
+};
+
+static const union AnimCmd sColosseumLeftAnimSequence[] =
+{
+    ANIMCMD_FRAME(0, 30),
+    ANIMCMD_END,
+};
+
+static const union AnimCmd sColosseumRightAnimSequence[] =
+{
+    ANIMCMD_FRAME(VERSION_BANNER_RIGHT_TILEOFFSET, 30),
+    ANIMCMD_END,
+};
+
+static const union AnimCmd *const sColosseumLeftAnimTable[] =
+{
+    sColosseumLeftAnimSequence,
+};
+
+static const union AnimCmd *const sColosseumRightAnimTable[] =
+{
+    sColosseumRightAnimSequence,
+};
+
+static const struct SpriteTemplate sColosseumLeftSpriteTemplate =
+{
+    .tileTag = TAG_COLOSSEUM,
+    .paletteTag = TAG_VERSION,
+    .oam = &sColosseumLeftOamData,
+    .anims = sColosseumLeftAnimTable,
+    .images = NULL,
+    .affineAnims = gDummySpriteAffineAnimTable,
+    .callback = SpriteCB_ColosseumLeft,
+};
+
+static const struct SpriteTemplate sColosseumRightSpriteTemplate =
+{
+    .tileTag = TAG_COLOSSEUM,
+    .paletteTag = TAG_VERSION,
+    .oam = &sColosseumRightOamData,
+    .anims = sColosseumRightAnimTable,
+    .images = NULL,
+    .affineAnims = gDummySpriteAffineAnimTable,
+    .callback = SpriteCB_ColosseumRight,
+};
+
+static const struct CompressedSpriteSheet sSpriteSheet_Colosseum[] =
+{
+    {
+        .data = gTitleScreenColosseumGfx,
+        .size = 0x1000,
+        .tag = TAG_COLOSSEUM
     },
     {},
 };
@@ -527,6 +622,36 @@ static void SpriteCB_SoloLevelingRight(struct Sprite *sprite)
 
 #undef sSlParentTaskId
 
+#define sColoParentTaskId data[0]
+
+static void SpriteCB_ColosseumLeft(struct Sprite *sprite)
+{
+    if (gTasks[sprite->sColoParentTaskId].tSkipToNext)
+    {
+        sprite->oam.objMode = ST_OAM_OBJ_NORMAL;
+        sprite->y = COLO_BANNER_Y_GOAL;
+    }
+    else if (sprite->y != COLO_BANNER_Y_GOAL)
+    {
+        sprite->y++;
+    }
+}
+
+static void SpriteCB_ColosseumRight(struct Sprite *sprite)
+{
+    if (gTasks[sprite->sColoParentTaskId].tSkipToNext)
+    {
+        sprite->oam.objMode = ST_OAM_OBJ_NORMAL;
+        sprite->y = COLO_BANNER_Y_GOAL;
+    }
+    else if (sprite->y != COLO_BANNER_Y_GOAL)
+    {
+        sprite->y++;
+    }
+}
+
+#undef sColoParentTaskId
+
 // Sprite data for SpriteCB_PressStartCopyrightBanner
 #define sAnimate data[0]
 #define sTimer   data[1]
@@ -737,9 +862,14 @@ void CB2_InitTitleScreen(void)
         gReservedSpritePaletteCount = 9;
         LoadCompressedSpriteSheet(&sSpriteSheet_EmeraldVersion[0]);
         LoadCompressedSpriteSheet(&sSpriteSheet_SoloLeveling[0]);
+        LoadCompressedSpriteSheet(&sSpriteSheet_Colosseum[0]);
         LoadCompressedSpriteSheet(&sSpriteSheet_PressStart[0]);
         LoadCompressedSpriteSheet(&sPokemonLogoShineSpriteSheet[0]);
         LoadPalette(gTitleScreenEmeraldVersionPal, OBJ_PLTT_ID(0), PLTT_SIZE_4BPP);
+        {
+            u16 colosseumColors[2] = { RGB(20, 0, 0), RGB(6, 6, 6) };
+            LoadPalette(colosseumColors, OBJ_PLTT_ID(0) + 20, PLTT_SIZEOF(2));
+        }
         LoadSpritePalette(&sSpritePalette_PressStart[0]);
         gMain.state = 2;
         break;
@@ -850,6 +980,12 @@ static void Task_TitleScreenPhase1(u8 taskId)
         gSprites[spriteId].data[0] = taskId;
 
         spriteId = CreateSprite(&sSoloLevelingRightSpriteTemplate, SL_BANNER_RIGHT_X, SL_BANNER_Y, 0);
+        gSprites[spriteId].data[0] = taskId;
+
+        spriteId = CreateSprite(&sColosseumLeftSpriteTemplate, COLO_BANNER_LEFT_X, COLO_BANNER_Y, 0);
+        gSprites[spriteId].data[0] = taskId;
+
+        spriteId = CreateSprite(&sColosseumRightSpriteTemplate, COLO_BANNER_RIGHT_X, COLO_BANNER_Y, 0);
         gSprites[spriteId].data[0] = taskId;
 
         gTasks[taskId].tCounter = 144;

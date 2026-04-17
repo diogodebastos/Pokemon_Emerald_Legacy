@@ -1551,6 +1551,7 @@ const u32 gTitleScreenCloudsTilemap[]      = INCBIN_U32("graphics/title_screen/c
 const u32 gTitleScreenPokemonLogoGfx[]     = INCBIN_U32("graphics/title_screen/pokemon_logo.8bpp.lz");
 const u32 gTitleScreenEmeraldVersionGfx[]  = INCBIN_U32("graphics/title_screen/emerald_version.8bpp.lz");
 const u32 gTitleScreenSoloLevelingGfx[]    = INCBIN_U32("graphics/title_screen/emerald_version_sl.8bpp.lz");
+const u32 gTitleScreenColosseumGfx[]       = INCBIN_U32("graphics/title_screen/emerald_version_colosseum.8bpp.lz");
 const u16 gTitleScreenPressStartPal[]      = INCBIN_U16("graphics/title_screen/press_start.gbapal");
 const u32 gTitleScreenPressStartGfx[]      = INCBIN_U32("graphics/title_screen/press_start.4bpp.lz");
 const u32 gTitleScreenPokemonLogoTilemap[] = INCBIN_U32("graphics/title_screen/pokemon_logo.bin.lz");
