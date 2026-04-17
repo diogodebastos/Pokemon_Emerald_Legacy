@@ -1939,6 +1939,18 @@
 	closebraillemessage
 	.endm
 
+	@ Like callnative, but function expects a ctx
+	.macro callfunc func:req
+	.byte 0xe4
+	.4byte \func
+	.endm
+
+	@ by default waits for their movement to finish
+	.macro hidefollower wait=1
+	callfunc ScrFunc_hidefollower
+	.2byte \wait
+	.endm
+
 	@ Creates a Pokémon with the modernFatefulEncounter bit set for an encounter
 	.macro seteventmon species:req, level:req, item=ITEM_NONE
 	setvar VAR_0x8004, \species

@@ -38,6 +38,7 @@
 #endif // IDE support
 
 #define ARRAY_COUNT(array) (size_t)(sizeof(array) / sizeof((array)[0]))
+#define IS_POW_OF_TWO(n) (((n) & ((n)-1)) == 0)
 
 // GameFreak used a macro called "NELEMS", as evidenced by
 // AgbAssert calls.
@@ -1078,5 +1079,7 @@ struct MapPosition
     s16 y;
     s8 elevation;
 };
+
+#define OW_GFX_COMPRESS FALSE
 
 #endif // GUARD_GLOBAL_H

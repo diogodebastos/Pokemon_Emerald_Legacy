@@ -295,10 +295,47 @@
 #define OBJ_EVENT_GFX_VAR_E  (OBJ_EVENT_GFX_VARS + 0xE)
 #define OBJ_EVENT_GFX_VAR_F  (OBJ_EVENT_GFX_VARS + 0xF) // 255
 
+#define OBJ_EVENT_GFX_POKE_BALL                  OBJ_EVENT_GFX_ITEM_BALL // replaces ITEM_BALL
+#define OBJ_EVENT_GFX_OW_MON                     OBJ_EVENT_GFX_REGICE
+
+#define OBJ_EVENT_GFX_MON_BASE  0x200 // 512
+#define OBJ_EVENT_GFX_SPECIES_BITS 11
+#define OBJ_EVENT_GFX_SPECIES_MASK ((1 << OBJ_EVENT_GFX_SPECIES_BITS) - 1)
+
+// Used to call a specific species' follower graphics
+#define OBJ_EVENT_GFX_SPECIES(name)       (SPECIES_##name + OBJ_EVENT_GFX_MON_BASE)
+#define OBJ_EVENT_GFX_SPECIES_SHINY(name) (SPECIES_##name + OBJ_EVENT_GFX_MON_BASE + SPECIES_SHINY_TAG)
+
+#define OW_SPECIES(x) (((x)->graphicsId & OBJ_EVENT_GFX_SPECIES_MASK) - OBJ_EVENT_GFX_MON_BASE)
+#define OW_FORM(x) ((x)->graphicsId >> OBJ_EVENT_GFX_SPECIES_BITS)
+
+// Whether Object Event is an OW pokemon
+#define IS_OW_MON_OBJ(obj) ((obj)->graphicsId >= OBJ_EVENT_GFX_MON_BASE)
+
+// If true, follower pokemon will bob up and down
+#define OW_MON_BOBBING  TRUE
+// If true, OW pokemon with `MOVEMENT_TYPE_WANDER*` will walk-in-place in between steps
+#define OW_MON_WANDER_WALK TRUE
+
+// If true, large (48x48, 64x64) OWs display correctly under bridges, etc.
+#define LARGE_OW_SUPPORT TRUE
+
+// Followers will emerge from the pokeball they are stored in
+#define OW_MON_POKEBALLS TRUE
+
+// New handling for followers during scripts
+#define OW_MON_SCRIPT_MOVEMENT TRUE
+
+// If set, only pokemon matching these conditions can follow
+#define OW_MON_ALLOWED_SPECIES (0)
+#define OW_MON_ALLOWED_MET_LVL (0)
+#define OW_MON_ALLOWED_MET_LOC (0)
+
 #define SHADOW_SIZE_S   0
 #define SHADOW_SIZE_M   1
 #define SHADOW_SIZE_L   2
 #define SHADOW_SIZE_XL  3
+#define SHADOW_SIZE_NONE 3
 
 #define F_INANIMATE                        (1 << 6)
 #define F_DISABLE_REFLECTION_PALETTE_LOAD  (1 << 7)
@@ -306,6 +343,9 @@
 #define TRACKS_NONE       0
 #define TRACKS_FOOT       1
 #define TRACKS_BIKE_TIRE  2
+#define TRACKS_SLITHER    3
+#define TRACKS_SPOT       4
+#define TRACKS_BUG        5
 
 #define FIRST_DECORATION_SPRITE_GFX OBJ_EVENT_GFX_PICHU_DOLL
 
@@ -315,6 +355,7 @@
 // Special object event local ids
 #define OBJ_EVENT_ID_PLAYER 0xFF
 #define OBJ_EVENT_ID_CAMERA 0x7F
+#define OBJ_EVENT_ID_FOLLOWER 0xFE
 
 // Object event local ids referenced in C files
 #define LOCALID_ROUTE111_PLAYER_FALLING 45

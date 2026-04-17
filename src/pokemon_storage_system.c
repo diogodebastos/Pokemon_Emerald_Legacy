@@ -6773,7 +6773,7 @@ static void SetMonMarkings(u8 markings)
 
 static bool8 IsRemovingLastPartyMon(void)
 {
-    if (sCursorArea == CURSOR_AREA_IN_PARTY && !sIsMonBeingMoved && CountPartyAliveNonEggMonsExcept(sCursorPosition) == 0)
+    if (sCursorArea == CURSOR_AREA_IN_PARTY && !sIsMonBeingMoved && CountPartyAliveNonEggMonsExcept(sCursorPosition) <= 1)
         return TRUE;
     else
         return FALSE;
@@ -6783,7 +6783,7 @@ static bool8 CanShiftMon(void)
 {
     if (sIsMonBeingMoved)
     {
-        if (sCursorArea == CURSOR_AREA_IN_PARTY && CountPartyAliveNonEggMonsExcept(sCursorPosition) == 0)
+        if (sCursorArea == CURSOR_AREA_IN_PARTY && CountPartyAliveNonEggMonsExcept(sCursorPosition) <= 1)
         {
             if (sStorage->displayMonIsEgg || GetMonData(&sStorage->movingMon, MON_DATA_HP) == 0)
                 return FALSE;

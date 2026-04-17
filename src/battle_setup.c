@@ -38,8 +38,11 @@
 #include "mirage_tower.h"
 #include "field_screen_effect.h"
 #include "data.h"
+#include "pokemon.h"
 #include "constants/battle_frontier.h"
 #include "constants/battle_setup.h"
+#include "constants/pokemon.h"
+#include "constants/rgb.h"
 #include "constants/game_stat.h"
 #include "constants/items.h"
 #include "constants/songs.h"
@@ -86,6 +89,8 @@ static void CB2_StartFirstBattle(void);
 static void CB2_EndFirstBattle(void);
 static void CB2_EndTrainerBattle(void);
 static bool32 IsPlayerDefeated(u32 battleOutcome);
+static bool8 TryPreBattleWhiteOut(void);
+static void Task_PreBattleWhiteOutFade(u8 taskId);
 static u16 GetRematchTrainerId(u16 trainerId);
 static void RegisterTrainerInMatchCall(void);
 static void HandleRematchVarsOnBattleEnd(void);
@@ -388,6 +393,8 @@ static void CreateBattleStartTask(u8 transition, u16 song)
 
 void BattleSetup_StartWildBattle(void)
 {
+    if (TryPreBattleWhiteOut())
+        return;
     if (GetSafariZoneFlag())
         DoSafariBattle();
     else
@@ -420,6 +427,8 @@ static void DoStandardWildBattle(void)
 
 void BattleSetup_StartRoamerBattle(void)
 {
+    if (TryPreBattleWhiteOut())
+        return;
     LockPlayerFieldControls();
     FreezeObjectEvents();
     StopPlayerAvatar();
@@ -987,6 +996,41 @@ static u16 GetTrainerBFlag(void)
     return TRAINER_FLAGS_START + gTrainerBattleOpponent_B;
 }
 
+static bool8 TryPreBattleWhiteOut(void)
+{
+    s32 i, alive = 0;
+
+    if (InBattlePyramid() || InBattlePike() || InTrainerHillChallenge() || GetSafariZoneFlag())
+        return FALSE;
+
+    for (i = 0; i < PARTY_SIZE; i++)
+    {
+        u32 species = GetMonData(&gPlayerParty[i], MON_DATA_SPECIES_OR_EGG, NULL);
+        if (species != SPECIES_EGG && species != SPECIES_NONE
+            && GetMonData(&gPlayerParty[i], MON_DATA_HP, NULL) != 0)
+            alive++;
+    }
+    if (alive >= 2)
+        return FALSE;
+
+    LockPlayerFieldControls();
+    FreezeObjectEvents();
+    StopPlayerAvatar();
+    BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 16, RGB_BLACK);
+    CreateTask(Task_PreBattleWhiteOutFade, 80);
+    return TRUE;
+}
+
+static void Task_PreBattleWhiteOutFade(u8 taskId)
+{
+    if (!gPaletteFade.active)
+    {
+        DestroyTask(taskId);
+        gMain.state = 0;
+        SetMainCallback2(CB2_WhiteOut);
+    }
+}
+
 static bool32 IsPlayerDefeated(u32 battleOutcome)
 {
     switch (battleOutcome)
@@ -1267,6 +1311,15 @@ void ClearTrainerFlag(u16 trainerId)
 
 void BattleSetup_StartTrainerBattle(void)
 {
+    if (TryPreBattleWhiteOut())
+    {
+        gNoOfApproachingTrainers = 0;
+        sShouldCheckTrainerBScript = FALSE;
+        gWhichTrainerToFaceAfterBattle = 0;
+        ScriptContext_Stop();
+        return;
+    }
+
     if (gNoOfApproachingTrainers == 2)
         gBattleTypeFlags = (BATTLE_TYPE_DOUBLE | BATTLE_TYPE_TWO_OPPONENTS | BATTLE_TYPE_TRAINER);
     else
@@ -1367,6 +1420,11 @@ static void CB2_EndRematchBattle(void)
 
 void BattleSetup_StartRematchBattle(void)
 {
+    if (TryPreBattleWhiteOut())
+    {
+        ScriptContext_Stop();
+        return;
+    }
     gBattleTypeFlags = BATTLE_TYPE_DOUBLE | BATTLE_TYPE_TRAINER;
     gMain.savedCallback = CB2_EndRematchBattle;
     DoTrainerBattle();

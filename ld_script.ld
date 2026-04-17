@@ -1303,13 +1303,13 @@ SECTIONS {
         data/multiboot_pokemon_colosseum.o(.rodata);
     } > ROM =0
 
-    anim_mon_front_pic_data __anim_mon_load_address :
+    anim_mon_front_pic_data :
     ALIGN(4)
     {
         src/anim_mon_front_pics.o(.rodata);
     } > ROM =0
 
-    gfx_data __gfx_load_address :
+    gfx_data :
     ALIGN(4)
     {
         src/graphics.o(.rodata);

@@ -1,0 +1,6 @@
+#ifndef GUARD_DEBUG_H
+#define GUARD_DEBUG_H
+
+#define TX_DEBUG_SYSTEM_ENABLE FALSE
+
+#endif // GUARD_DEBUG_H
