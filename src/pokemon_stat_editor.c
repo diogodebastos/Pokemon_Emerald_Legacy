@@ -3,6 +3,7 @@
 #include "battle_main.h"
 #include "event_data.h"
 #include "gpu_regs.h"
+#include "item.h"
 #include "main.h"
 #include "menu.h"
 #include "palette.h"
@@ -20,6 +21,7 @@
 #include "text_window.h"
 #include "window.h"
 #include "constants/abilities.h"
+#include "constants/items.h"
 #include "constants/pokemon.h"
 #include "constants/rgb.h"
 #include "constants/songs.h"
@@ -84,6 +86,7 @@ static EWRAM_DATA u16 sEditFriendship = 0;
 static EWRAM_DATA u8 sEditAbilityNum = 0;
 static EWRAM_DATA u8 sEditNature = 0;
 static EWRAM_DATA u8 sEditIsShiny = 0;
+static EWRAM_DATA u16 sEditPokeball = 0;
 static EWRAM_DATA u8 sEditContestStats[CONTEST_EDITOR_COUNT] = {0};
 
 static const u8 sText_ModeIVs[] = _("IVs");
@@ -102,6 +105,7 @@ static const u8 sText_Happiness[] = _("HAPPINESS");
 static const u8 sText_Ability[] = _("ABILITY");
 static const u8 sText_Nature[] = _("NATURE");
 static const u8 sText_Color[] = _("COLOR");
+static const u8 sText_PokeBall[] = _("BALL");
 static const u8 sText_Normal[] = _("NORMAL");
 static const u8 sText_Shiny[] = _("SHINY");
 static const u8 sText_Cool[] = _("COOL");
@@ -165,6 +169,7 @@ enum {
     MISC_EDITOR_ABILITY,
     MISC_EDITOR_NATURE,
     MISC_EDITOR_COLOR,
+    MISC_EDITOR_POKEBALL,
     MISC_EDITOR_COUNT
 };
 
@@ -174,6 +179,7 @@ static const u8 *const sMiscNames[MISC_EDITOR_COUNT] = {
     [MISC_EDITOR_ABILITY] = sText_Ability,
     [MISC_EDITOR_NATURE] = sText_Nature,
     [MISC_EDITOR_COLOR] = sText_Color,
+    [MISC_EDITOR_POKEBALL] = sText_PokeBall,
 };
 
 static const struct WindowTemplate sStatEditorWinTemplates[] = {
@@ -270,6 +276,8 @@ static u16 GetMiscValue(u8 cursor)
         return sEditNature;
     case MISC_EDITOR_COLOR:
         return sEditIsShiny;
+    case MISC_EDITOR_POKEBALL:
+        return sEditPokeball;
     default:
         return sEditFriendship;
     }
@@ -327,6 +335,26 @@ static bool8 IsColorCursor(u8 mode, u8 cursor)
     return mode == MODE_MISC && cursor == MISC_EDITOR_COLOR;
 }
 
+static bool8 IsPokeballCursor(u8 mode, u8 cursor)
+{
+    return mode == MODE_MISC && cursor == MISC_EDITOR_POKEBALL;
+}
+
+static u16 ClampPokeball(u16 ball)
+{
+    if (ball < FIRST_BALL || ball > LAST_BALL)
+        return ITEM_POKE_BALL;
+    return ball;
+}
+
+static u16 CyclePokeball(u16 ball, s8 direction)
+{
+    ball = ClampPokeball(ball);
+    if (direction > 0)
+        return (ball >= LAST_BALL) ? FIRST_BALL : ball + 1;
+    return (ball <= FIRST_BALL) ? LAST_BALL : ball - 1;
+}
+
 static u16 GetMiscMaxValue(u8 cursor)
 {
     switch (cursor)
@@ -341,6 +369,8 @@ static u16 GetMiscMaxValue(u8 cursor)
         return NUM_NATURES - 1;
     case MISC_EDITOR_COLOR:
         return 1;
+    case MISC_EDITOR_POKEBALL:
+        return LAST_BALL;
     default:
         return MAX_FRIENDSHIP;
     }
@@ -352,6 +382,8 @@ static u16 GetMiscMinValue(u8 cursor)
     {
     case MISC_EDITOR_LEVEL:
         return 1;
+    case MISC_EDITOR_POKEBALL:
+        return FIRST_BALL;
     case MISC_EDITOR_HAPPINESS:
     default:
         return 0;
@@ -388,6 +420,7 @@ static void SanitizeEditedValues(u16 species)
     sEditAbilityNum = GetClampedAbilityNum(species, sEditAbilityNum);
     sEditNature %= NUM_NATURES;
     sEditIsShiny = (sEditIsShiny != 0);
+    sEditPokeball = ClampPokeball(sEditPokeball);
 }
 
 static void LoadMonStats(u8 slotId)
@@ -406,6 +439,7 @@ static void LoadMonStats(u8 slotId)
     sEditAbilityNum = GetClampedAbilityNum(GetMonData(mon, MON_DATA_SPECIES, NULL), GetMonData(mon, MON_DATA_ABILITY_NUM, NULL));
     sEditNature = GetNatureFromPersonality(GetMonData(mon, MON_DATA_PERSONALITY, NULL));
     sEditIsShiny = IsMonShiny(mon);
+    sEditPokeball = ClampPokeball(GetMonData(mon, MON_DATA_POKEBALL, NULL));
 
     for (i = 0; i < CONTEST_EDITOR_COUNT; i++)
         sEditContestStats[i] = GetMonData(mon, sContestDataIds[i], NULL);
@@ -437,6 +471,9 @@ static void ApplyMonStats(u8 slotId)
 
     val = sEditAbilityNum;
     SetMonData(mon, MON_DATA_ABILITY_NUM, &val);
+
+    val = sEditPokeball;
+    SetMonData(mon, MON_DATA_POKEBALL, &val);
 
     if (GetNatureFromPersonality(GetMonData(mon, MON_DATA_PERSONALITY, NULL)) != sEditNature)
     {
@@ -616,6 +653,10 @@ static void DrawStatEditorStats(u8 taskId)
         else if (mode == MODE_MISC && i == MISC_EDITOR_COLOR)
         {
             AddTextPrinterParameterized(WIN_STATS, FONT_NORMAL, sEditIsShiny ? sText_Shiny : sText_Normal, 108, y, TEXT_SKIP_DRAW, NULL);
+        }
+        else if (mode == MODE_MISC && i == MISC_EDITOR_POKEBALL)
+        {
+            AddTextPrinterParameterized(WIN_STATS, FONT_NORMAL, ItemId_GetName(ClampPokeball(sEditPokeball)), 108, y, TEXT_SKIP_DRAW, NULL);
         }
         else
         {
@@ -839,6 +880,10 @@ static void Task_StatEditorProcessInput(u8 taskId)
         {
             value = !sEditIsShiny;
         }
+        else if (IsPokeballCursor(mode, cursor))
+        {
+            value = CyclePokeball(sEditPokeball, 1);
+        }
         else if (value == minVal)
         {
             value = maxVal;
@@ -871,6 +916,10 @@ static void Task_StatEditorProcessInput(u8 taskId)
         {
             value = !sEditIsShiny;
         }
+        else if (IsPokeballCursor(mode, cursor))
+        {
+            value = CyclePokeball(sEditPokeball, 1);
+        }
         else
         {
             value += (mode == MODE_EV) ? 4 : 1;
@@ -902,6 +951,10 @@ static void Task_StatEditorProcessInput(u8 taskId)
         {
             value = !sEditIsShiny;
         }
+        else if (IsPokeballCursor(mode, cursor))
+        {
+            value = CyclePokeball(sEditPokeball, -1);
+        }
         else
         {
             value -= (mode == MODE_EV) ? 4 : 1;
@@ -929,6 +982,8 @@ static void Task_StatEditorProcessInput(u8 taskId)
             sEditNature = (u8)value;
         else if (cursor == MISC_EDITOR_COLOR)
             sEditIsShiny = (u8)value;
+        else if (cursor == MISC_EDITOR_POKEBALL)
+            sEditPokeball = (u16)value;
         else
             sEditAbilityNum = (u8)value;
         DrawStatEditorStats(taskId);
