@@ -22,7 +22,7 @@
 #define FLAG_TEMP_C      (TEMP_FLAGS_START + 0xC)  // Unused Flag
 #define FLAG_TEMP_D      (TEMP_FLAGS_START + 0xD)  // Unused Flag
 #define FLAG_TEMP_E      (TEMP_FLAGS_START + 0xE)  // Unused Flag
-#define FLAG_TEMP_F      (TEMP_FLAGS_START + 0xF)  // Unused Flag
+#define FLAG_TEMP_HIDE_FOLLOWER     (TEMP_FLAGS_START + 0xF)  // When set, follower pokemon won't be spawned
 #define FLAG_TEMP_10     (TEMP_FLAGS_START + 0x10) // Unused Flag
 #define FLAG_TEMP_11     (TEMP_FLAGS_START + 0x11)
 #define FLAG_TEMP_12     (TEMP_FLAGS_START + 0x12)
@@ -690,7 +690,7 @@
 #define FLAG_FRONTIER_SEEDOT_NPC_TRADE_COMPLETED    0x28B
 #define FLAG_FRONTIER_PLUSLE_NPC_TRADE_COMPLETED    0x28C
 #define FLAG_RECEIVED_SHINY_BELDUM      0x28D
-#define FLAG_UNUSED_0x28E  0x28E // Unused Flag
+#define FLAG_ENABLE_FOLLOWER                                        0x28E // Flag for Option to enable and disable Pokemon follower
 #define FLAG_UNUSED_0x28F  0x28F // Unused Flag
 #define FLAG_UNUSED_0x290  0x290 // Unused Flag
 #define FLAG_UNUSED_0x291  0x291 // Unused Flag
@@ -1285,7 +1285,7 @@
 #define FLAG_UNUSED_0x4D9                                           0x4D9 // Unused Flag
 #define FLAG_UNUSED_0x4DA                                           0x4DA // Unused Flag
 #define FLAG_UNUSED_0x4DB                                           0x4DB // Unused Flag
-#define FLAG_UNUSED_0x4DC                                           0x4DC // Unused Flag
+#define FLAG_DISABLE_SURFMUSIC                                      0x4DC // Flag for disabling Surf music when surfing
 #define FLAG_UNUSED_0x4DD                                           0x4DD // Unused Flag
 #define FLAG_UNUSED_0x4DE                                           0x4DE // Unused Flag
 #define FLAG_UNUSED_0x4DF                                           0x4DF // Unused Flag
@@ -1637,7 +1637,8 @@
 #define FLAG_ENABLE_MULTI_CORRIDOR_DOOR         (SPECIAL_FLAGS_START + 0x2)
 #define FLAG_SPECIAL_FLAG_UNUSED_0x4003         (SPECIAL_FLAGS_START + 0x3) // Unused Flag
 #define FLAG_STORING_ITEMS_IN_PYRAMID_BAG       (SPECIAL_FLAGS_START + 0x4)
-// FLAG_SPECIAL_FLAG_0x4005 - 0x407F also exist and are unused
+#define FLAG_SAFE_FOLLOWER_MOVEMENT             (SPECIAL_FLAGS_START + 0x5)
+// FLAG_SPECIAL_FLAG_0x4006 - 0x407F also exist and are unused
 #define SPECIAL_FLAGS_END                       (SPECIAL_FLAGS_START + 0x7F)
 #define NUM_SPECIAL_FLAGS                       (SPECIAL_FLAGS_END - SPECIAL_FLAGS_START + 1)
 
