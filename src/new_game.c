@@ -211,6 +211,7 @@ void NewGameInitData(void)
     FlagSet(FLAG_HIDE_BATTLE_ROYALE_TRAINERS);
     nuzlockePrev ? FlagSet(FLAG_NUZLOCKE) : FlagClear(FLAG_NUZLOCKE);
     hardPrev ? FlagSet(FLAG_HARD) : FlagClear(FLAG_HARD);
+    FlagSet(FLAG_ENABLE_FOLLOWER);
 }
 
 static void ResetMiniGamesRecords(void)
