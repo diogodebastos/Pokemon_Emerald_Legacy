@@ -12,6 +12,7 @@
     background: #1a1a2e;
     color: #e0e0e0;
     height: 100vh;
+    height: 100dvh;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -29,17 +30,8 @@
     flex-wrap: wrap;
   }
 
-  header h1 {
-    font-size: 18px;
-    font-weight: 700;
-    color: #ffd700;
-  }
-
-  header p {
-    font-size: 12px;
-    color: #a0b8d0;
-    margin-top: 2px;
-  }
+  header h1 { font-size: 18px; font-weight: 700; color: #ffd700; }
+  header p  { font-size: 12px; color: #a0b8d0; margin-top: 2px; }
 
   .header-links { display: flex; gap: 8px; flex-wrap: wrap; }
 
@@ -57,10 +49,9 @@
 
   .btn-secondary { background: #0f3460; color: #e0e0e0; border: 1px solid #1a5080; }
   .btn-secondary:hover { border-color: #ffd700; color: #ffd700; }
-  .btn-secondary:disabled { opacity: 0.4; cursor: default; }
-  .btn-secondary:disabled:hover { border-color: #1a5080; color: #e0e0e0; }
+  .btn-secondary.active { border-color: #e94560; color: #e94560; }
 
-  /* Emulator area — fills remaining space above the drawer */
+  /* ── Emulator area ── */
   #play-section {
     flex: 1;
     min-height: 0;
@@ -69,7 +60,6 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 10px;
     padding: 16px;
     background: #16213e;
     overflow: hidden;
@@ -81,34 +71,66 @@
     max-width: 720px;
     flex: 1;
     min-height: 0;
-    max-height: calc((720px) * (2/3));
+    max-height: calc(720px * (2/3));
     background: #000;
     border-radius: 8px;
     overflow: hidden;
     border: 2px solid #0f3460;
   }
 
-/* ── Pokédex drawer ─────────────────────────────────── */
+  /* ── Splash ── */
+  #splash {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding-bottom: 24px;
+    background: #000;
+    z-index: 10;
+  }
+
+  #btn-start {
+    position: relative;
+    z-index: 1;
+    padding: 12px 36px;
+    border-radius: 24px;
+    border: none;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    background: #e94560;
+    color: #fff;
+    letter-spacing: 0.5px;
+    transition: background 0.15s, transform 0.1s;
+  }
+
+  #btn-start:hover { background: #c73550; transform: scale(1.04); }
+
+  /* ── Pokédex drawer — overlays from bottom of play-section ── */
   #dex-drawer {
-    flex-shrink: 0;
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
     height: 0;
     overflow: hidden;
     transition: height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     background: #1a1a2e;
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
   }
 
-  #dex-drawer.open {
-    height: 66vh;
-  }
+  #dex-drawer.open { height: 66%; }
 
   #pokedex-frame {
+    flex: 1;
     width: 100%;
-    height: 100%;
     border: none;
     display: block;
   }
 
-  /* ── Drawer toggle bar ──────────────────────────────── */
+  /* ── Toggle bar at page bottom ── */
   #dex-toggle {
     flex-shrink: 0;
     background: #0f3460;
@@ -138,38 +160,7 @@
     transition: transform 0.35s;
   }
 
-  #dex-drawer.open ~ #dex-toggle #dex-arrow,
-  #dex-toggle.open #dex-arrow {
-    transform: rotate(180deg);
-  }
-
-  /* ── Splash screen ──────────────────────────────────── */
-  #splash {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-end;
-    padding-bottom: 24px;
-    background: #16213e;
-    z-index: 10;
-  }
-
-#btn-start {
-    padding: 12px 36px;
-    border-radius: 24px;
-    border: none;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    background: #e94560;
-    color: #fff;
-    letter-spacing: 0.5px;
-    transition: background 0.15s, transform 0.1s;
-  }
-
-  #btn-start:hover { background: #c73550; transform: scale(1.04); }
+  #dex-toggle.open #dex-arrow { transform: rotate(180deg); }
 </style>
 </head>
 <body>
@@ -180,6 +171,7 @@
     <p>A fan-made ROM hack for Pokémon Emerald</p>
   </div>
   <div class="header-links">
+    <button class="btn btn-secondary" id="btn-dex-header" onclick="toggleDex()">Pokédex</button>
     <a class="btn btn-secondary" href="https://github.com/diogodebastos/Pokemon_Emerald_Legacy" target="_blank">GitHub</a>
   </div>
 </header>
@@ -188,16 +180,17 @@
 <section id="play-section">
   <div id="game">
     <div id="splash">
-      <img src="title.png" alt="Pokémon Emerald Legacy title screen" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;">
-      <button id="btn-start" onclick="startGame()" style="position:relative;z-index:1;">▶ Start Game</button>
+      <img src="title.png" alt="Pokémon Emerald Legacy title screen"
+           style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;">
+      <button id="btn-start" onclick="startGame()">▶ Start Game</button>
     </div>
   </div>
-</section>
 
-<!-- ── Pokédex drawer ── -->
-<div id="dex-drawer">
-  <iframe id="pokedex-frame" src="pokedex.html" title="Pokédex" loading="lazy"></iframe>
-</div>
+  <!-- Pokédex slides up over the play area -->
+  <div id="dex-drawer">
+    <iframe id="pokedex-frame" src="pokedex.html" title="Pokédex" loading="lazy"></iframe>
+  </div>
+</section>
 
 <!-- ── Toggle bar ── -->
 <div id="dex-toggle" onclick="toggleDex()">
@@ -226,7 +219,15 @@
     const toggle = document.getElementById('dex-toggle');
     const isOpen = drawer.classList.toggle('open');
     toggle.classList.toggle('open', isOpen);
+    document.getElementById('btn-dex-header').classList.toggle('active', isOpen);
   }
+
+  document.getElementById('play-section').addEventListener('click', function(e) {
+    const drawer = document.getElementById('dex-drawer');
+    if (drawer.classList.contains('open') && !drawer.contains(e.target)) {
+      toggleDex();
+    }
+  });
 </script>
 
 </body>

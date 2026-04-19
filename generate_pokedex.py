@@ -774,7 +774,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pokémon Emerald Legacy — Pokédex</title>
+<title>Pokémon Emerald Legacy Solo Leveling Colosseum — Pokédex</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -796,6 +796,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
     display: flex;
     flex-direction: column;
     height: 100vh;
+    min-height: 0;
   }
 
   #sidebar-header {
@@ -890,6 +891,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
   /* Main panel */
   #main {
     flex: 1;
+    min-height: 0;
     overflow-y: auto;
     padding: 24px;
     background: #1a1a2e;
@@ -1329,13 +1331,61 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
 
   [data-move] { cursor: help; }
   [data-move]:hover { opacity: 0.85; }
+
+  /* ── Mobile ── */
+  @media (max-width: 600px) {
+    body { flex-direction: column; overflow: auto; height: auto; min-height: 100dvh; }
+
+    #sidebar {
+      width: 100%;
+      min-width: unset;
+      height: auto;
+      max-height: 100dvh;
+      border-right: none;
+      border-bottom: 2px solid #0f3460;
+    }
+
+    #sidebar.hidden { display: none; }
+
+    #main {
+      width: 100%;
+      overflow-y: visible;
+      padding: 12px;
+    }
+
+    #main.hidden { display: none; }
+
+    #btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 12px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid #1a5080;
+      background: #0f3460;
+      color: #e0e0e0;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    #btn-back:active { background: #1a4070; }
+
+    .detail-header { flex-direction: column; align-items: center; gap: 12px; }
+    .detail-info { width: 100%; }
+  }
+
+  @media (min-width: 601px) {
+    #btn-back { display: none; }
+  }
 </style>
 </head>
 <body>
 
 <div id="sidebar">
   <div id="sidebar-header">
-    <h1>🌿 Pokémon Emerald Legacy</h1>
+    <h1>Pokédex</h1>
     <input type="text" id="search" placeholder="Search Pokémon..." oninput="filterList(this.value)">
   </div>
   <div id="pokemon-count"></div>
@@ -1465,6 +1515,13 @@ function filterList(query) {
   renderList(filtered);
 }
 
+const isMobile = () => window.innerWidth <= 600;
+
+function goBack() {
+  document.getElementById('sidebar').classList.remove('hidden');
+  document.getElementById('main').classList.add('hidden');
+}
+
 function selectPokemon(idx) {
   currentIdx = idx;
   document.querySelectorAll('.poke-item').forEach(el => {
@@ -1472,6 +1529,10 @@ function selectPokemon(idx) {
   });
   document.getElementById('welcome').style.display = 'none';
   document.getElementById('pokemon-detail').style.display = 'block';
+  if (isMobile()) {
+    document.getElementById('sidebar').classList.add('hidden');
+    document.getElementById('main').classList.remove('hidden');
+  }
   renderDetail({...DATA[idx], _origIdx: idx}, 0, currentShinyState);
 }
 
@@ -1567,6 +1628,7 @@ function renderDetail(p, formIdx, shiny) {
 
   const detail = document.getElementById('pokemon-detail');
   detail.innerHTML = `
+    <button id="btn-back" onclick="goBack()">◀ Back</button>
     <div class="detail-header">
       <div class="sprite-col">
         <div class="detail-sprite${shiny ? ' shiny' : ''}" id="detail-sprite-el"
