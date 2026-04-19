@@ -776,12 +776,27 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pokémon Emerald Legacy Solo Leveling Colosseum — Pokédex</title>
 <style>
+  :root {
+    --bg:          #1a0a0a;
+    --bg-panel:    #240e0e;
+    --bg-nav:      #601212;
+    --bg-hover:    #7a2020;
+    --red:         #e94560;
+    --red-dark:    #c73550;
+    --gold:        #ffd700;
+    --text:        #e0e0e0;
+    --text-dim:    #c8b0b0;
+    --text-muted:  #998080;
+    --border:      #5a1515;
+    --border-dim:  #3a1010;
+  }
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
     font-family: 'Segoe UI', Arial, sans-serif;
-    background: #1a1a2e;
-    color: #e0e0e0;
+    background: var(--bg);
+    color: var(--text);
     display: flex;
     height: 100vh;
     overflow: hidden;
@@ -791,8 +806,8 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
   #sidebar {
     width: 260px;
     min-width: 220px;
-    background: #16213e;
-    border-right: 2px solid #0f3460;
+    background: var(--bg-panel);
+    border-right: 2px solid var(--bg-nav);
     display: flex;
     flex-direction: column;
     height: 100vh;
@@ -801,14 +816,14 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
 
   #sidebar-header {
     padding: 14px 12px 10px;
-    background: #0f3460;
-    border-bottom: 2px solid #e94560;
+    background: var(--bg-nav);
+    border-bottom: 2px solid var(--red);
   }
 
   #sidebar-header h1 {
     font-size: 14px;
     font-weight: 700;
-    color: #ffd700;
+    color: var(--gold);
     letter-spacing: 0.5px;
     margin-bottom: 8px;
   }
@@ -817,22 +832,22 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
     width: 100%;
     padding: 7px 10px;
     border-radius: 20px;
-    border: 1px solid #e94560;
-    background: #1a1a2e;
-    color: #e0e0e0;
+    border: 1px solid var(--red);
+    background: var(--bg);
+    color: var(--text);
     font-size: 13px;
     outline: none;
   }
 
-  #search::placeholder { color: #888; }
-  #search:focus { border-color: #ffd700; }
+  #search::placeholder { color: var(--text-muted); }
+  #search:focus { border-color: var(--gold); }
 
   #pokemon-count {
     font-size: 11px;
-    color: #aaa;
+    color: var(--text-muted);
     padding: 4px 12px;
-    background: #0f3460;
-    border-bottom: 1px solid #0f3460;
+    background: var(--bg-nav);
+    border-bottom: 1px solid var(--bg-nav);
   }
 
   #pokemon-list {
@@ -845,8 +860,8 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
   }
 
   #pokemon-list::-webkit-scrollbar { width: 6px; }
-  #pokemon-list::-webkit-scrollbar-track { background: #16213e; }
-  #pokemon-list::-webkit-scrollbar-thumb { background: #0f3460; border-radius: 3px; }
+  #pokemon-list::-webkit-scrollbar-track { background: var(--bg-panel); }
+  #pokemon-list::-webkit-scrollbar-thumb { background: var(--bg-nav); border-radius: 3px; }
 
   .poke-item {
     display: flex;
@@ -859,10 +874,10 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
     border: 1px solid transparent;
   }
 
-  .poke-item:hover { background: #0f3460; }
+  .poke-item:hover { background: var(--bg-nav); }
   .poke-item.active {
-    background: #0f3460;
-    border-color: #e94560;
+    background: var(--bg-nav);
+    border-color: var(--red);
   }
 
   .poke-item img {
@@ -874,7 +889,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
 
   .poke-item .poke-num {
     font-size: 10px;
-    color: #888;
+    color: var(--text-muted);
     width: 28px;
     flex-shrink: 0;
     text-align: right;
@@ -882,11 +897,11 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
 
   .poke-item .poke-name {
     font-size: 13px;
-    color: #e0e0e0;
+    color: var(--text);
     flex: 1;
   }
 
-  .poke-item.active .poke-name { color: #ffd700; font-weight: 600; }
+  .poke-item.active .poke-name { color: var(--gold); font-weight: 600; }
 
   /* Main panel */
   #main {
@@ -894,12 +909,12 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
     min-height: 0;
     overflow-y: auto;
     padding: 24px;
-    background: #1a1a2e;
+    background: var(--bg);
   }
 
   #main::-webkit-scrollbar { width: 8px; }
-  #main::-webkit-scrollbar-track { background: #1a1a2e; }
-  #main::-webkit-scrollbar-thumb { background: #0f3460; border-radius: 4px; }
+  #main::-webkit-scrollbar-track { background: var(--bg); }
+  #main::-webkit-scrollbar-thumb { background: var(--bg-nav); border-radius: 4px; }
 
   #welcome {
     display: flex;
@@ -907,11 +922,11 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
     align-items: center;
     justify-content: center;
     height: 100%;
-    color: #666;
+    color: var(--text-muted);
     text-align: center;
   }
 
-  #welcome h2 { font-size: 28px; color: #ffd700; margin-bottom: 8px; }
+  #welcome h2 { font-size: 28px; color: var(--gold); margin-bottom: 8px; }
   #welcome p { font-size: 15px; }
 
   /* Pokemon detail */
@@ -921,8 +936,8 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
     display: flex;
     align-items: flex-start;
     gap: 24px;
-    background: #16213e;
-    border: 2px solid #0f3460;
+    background: var(--bg-panel);
+    border: 2px solid var(--bg-nav);
     border-radius: 12px;
     padding: 20px 24px;
     margin-bottom: 20px;
@@ -940,7 +955,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
     image-rendering: pixelated;
     width: 96px;
     height: 96px;
-    background-color: #0f3460;
+    background-color: var(--bg-nav);
     background-repeat: no-repeat;
     background-size: 88px auto;
     background-origin: content-box;
@@ -958,27 +973,27 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
     font-size: 11px;
     padding: 3px 8px;
     border-radius: 12px;
-    border: 1px solid #0f3460;
-    background: #0f3460;
-    color: #a0a0c0;
+    border: 1px solid var(--bg-nav);
+    background: var(--bg-nav);
+    color: var(--text-dim);
     cursor: pointer;
     white-space: nowrap;
   }
-  .shiny-toggle:hover { border-color: #ffd700; color: #ffd700; }
-  .shiny-toggle.active { background: #2a1a4e; border-color: #ffd700; color: #ffd700; }
+  .shiny-toggle:hover { border-color: var(--gold); color: var(--gold); }
+  .shiny-toggle.active { background: var(--border); border-color: var(--gold); color: var(--gold); }
 
   .detail-info { flex: 1; }
 
   .detail-info h2 {
     font-size: 26px;
     font-weight: 700;
-    color: #ffd700;
+    color: var(--gold);
     margin-bottom: 6px;
   }
 
   .detail-info .dex-num {
     font-size: 13px;
-    color: #888;
+    color: var(--text-muted);
     margin-bottom: 12px;
   }
 
@@ -986,7 +1001,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
   .section-title {
     font-size: 13px;
     font-weight: 700;
-    color: #e94560;
+    color: var(--red);
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-bottom: 8px;
@@ -1000,29 +1015,29 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
   }
 
   .location-tag {
-    background: #0f3460;
-    border: 1px solid #1a4f7a;
+    background: var(--bg-nav);
+    border: 1px solid var(--border);
     border-radius: 12px;
     padding: 3px 10px;
     font-size: 12px;
-    color: #b0d0f0;
+    color: var(--text-dim);
   }
 
   .location-tag .method {
-    color: #ffd700;
+    color: var(--gold);
     font-weight: 600;
     margin-left: 4px;
   }
 
   .location-tag .lvl {
-    color: #aaa;
+    color: var(--text-muted);
     font-size: 11px;
     margin-left: 3px;
   }
 
   .location-tag .postgame-badge {
     display: inline-block;
-    background: #e94560;
+    background: var(--red);
     color: #fff;
     font-size: 9px;
     font-weight: 700;
@@ -1036,16 +1051,16 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
 
   /* Tabs */
   .tabs {
-    background: #16213e;
-    border: 2px solid #0f3460;
+    background: var(--bg-panel);
+    border: 2px solid var(--bg-nav);
     border-radius: 12px;
     overflow: hidden;
   }
 
   .tab-bar {
     display: flex;
-    background: #0f3460;
-    border-bottom: 2px solid #0f3460;
+    background: var(--bg-nav);
+    border-bottom: 2px solid var(--bg-nav);
   }
 
   .tab-btn {
@@ -1053,7 +1068,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
     padding: 10px 8px;
     border: none;
     background: transparent;
-    color: #aaa;
+    color: var(--text-muted);
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
@@ -1062,11 +1077,11 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
     letter-spacing: 0.3px;
   }
 
-  .tab-btn:hover { color: #e0e0e0; background: #1a4060; }
+  .tab-btn:hover { color: var(--text); background: var(--bg-hover); }
   .tab-btn.active {
-    color: #ffd700;
-    border-bottom-color: #e94560;
-    background: #16213e;
+    color: var(--gold);
+    border-bottom-color: var(--red);
+    background: var(--bg-panel);
   }
 
   .tab-content { padding: 16px; }
@@ -1083,26 +1098,26 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
   .level-table th {
     text-align: left;
     padding: 6px 12px;
-    background: #0f3460;
-    color: #ffd700;
+    background: var(--bg-nav);
+    color: var(--gold);
     font-size: 11px;
     letter-spacing: 0.5px;
     text-transform: uppercase;
-    border-bottom: 1px solid #1a4f7a;
+    border-bottom: 1px solid var(--border);
   }
 
   .level-table td {
     padding: 6px 12px;
-    border-bottom: 1px solid #0f3460;
-    color: #e0e0e0;
+    border-bottom: 1px solid var(--bg-nav);
+    color: var(--text);
   }
 
   .level-table tr:last-child td { border-bottom: none; }
-  .level-table tr:hover td { background: #0f3460; }
+  .level-table tr:hover td { background: var(--bg-nav); }
 
   .level-badge {
     display: inline-block;
-    background: #e94560;
+    background: var(--red);
     color: #fff;
     border-radius: 10px;
     padding: 1px 8px;
@@ -1120,27 +1135,27 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
   }
 
   .pill {
-    background: #0f3460;
-    border: 1px solid #1a4f7a;
+    background: var(--bg-nav);
+    border: 1px solid var(--border);
     border-radius: 12px;
     padding: 4px 12px;
     font-size: 12px;
-    color: #b0d0f0;
+    color: var(--text-dim);
   }
 
-  .pill-tm { border-color: #1a6f3a; color: #80e0a0; background: #0a2f1a; }
-  .pill-egg { border-color: #6f3a1a; color: #e0b080; background: #2f1a0a; }
+  .pill-tm    { border-color: #1a6f3a; color: #80e0a0; background: #0a2f1a; }
+  .pill-egg   { border-color: #6f3a1a; color: #e0b080; background: #2f1a0a; }
   .pill-tutor { border-color: #3a1a6f; color: #b080e0; background: #1a0a2f; }
 
   .empty-msg {
-    color: #666;
+    color: var(--text-muted);
     font-style: italic;
     font-size: 13px;
     padding: 8px 0;
   }
 
   .no-results {
-    color: #888;
+    color: var(--text-muted);
     text-align: center;
     padding: 20px;
     font-style: italic;
@@ -1157,33 +1172,33 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
   .form-btn {
     padding: 4px 14px;
     border-radius: 16px;
-    border: 1px solid #0f3460;
-    background: #0f3460;
-    color: #aaa;
+    border: 1px solid var(--bg-nav);
+    background: var(--bg-nav);
+    color: var(--text-muted);
     font-size: 12px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.15s;
   }
 
-  .form-btn:hover { border-color: #ffd700; color: #e0e0e0; }
-  .form-btn.active { background: #e94560; border-color: #e94560; color: #fff; }
+  .form-btn:hover { border-color: var(--gold); color: var(--text); }
+  .form-btn.active { background: var(--red); border-color: var(--red); color: #fff; }
 
   /* Evolution chain */
   .evo-chain { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; }
   .evo-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .evo-node {
     display: flex; flex-direction: column; align-items: center; gap: 2px;
-    padding: 4px 8px; border-radius: 8px; border: 1px solid #0f3460;
-    background: #0f3460; min-width: 60px; text-align: center;
+    padding: 4px 8px; border-radius: 8px; border: 1px solid var(--bg-nav);
+    background: var(--bg-nav); min-width: 60px; text-align: center;
   }
   .evo-node img { image-rendering: pixelated; width: 40px; height: 40px; }
-  .evo-node span { font-size: 10px; color: #ccc; }
-  .evo-node.current { border-color: #ffd700; background: #1a2a4e; }
-  .evo-node.current span { color: #ffd700; font-weight: 700; }
+  .evo-node span { font-size: 10px; color: var(--text-dim); }
+  .evo-node.current { border-color: var(--gold); background: var(--bg-panel); }
+  .evo-node.current span { color: var(--gold); font-weight: 700; }
   .evo-node:not(.current) { cursor: pointer; }
-  .evo-node:not(.current):hover { border-color: #e94560; }
-  .evo-arrow { font-size: 11px; color: #888; text-align: center; white-space: nowrap; }
+  .evo-node:not(.current):hover { border-color: var(--red); }
+  .evo-arrow { font-size: 11px; color: var(--text-muted); text-align: center; white-space: nowrap; }
 
   /* Pokédex description */
   .dex-meta {
@@ -1194,15 +1209,15 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
   }
 
   .dex-meta-item {
-    background: #0f3460;
+    background: var(--bg-nav);
     border-radius: 8px;
     padding: 4px 10px;
     font-size: 12px;
-    color: #b0d0f0;
+    color: var(--text-dim);
   }
 
   .dex-meta-item span {
-    color: #888;
+    color: var(--text-muted);
     font-size: 10px;
     text-transform: uppercase;
     letter-spacing: 0.4px;
@@ -1211,11 +1226,11 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
 
   .dex-desc {
     font-size: 13px;
-    color: #c0c8d8;
+    color: var(--text-dim);
     line-height: 1.6;
     font-style: italic;
     margin-bottom: 12px;
-    border-left: 3px solid #0f3460;
+    border-left: 3px solid var(--bg-nav);
     padding-left: 10px;
   }
 
@@ -1241,7 +1256,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
     letter-spacing: 0.4px;
   }
 
-  .all-stat { color: #b0b0b0; font-size: 12px; text-align: center; }
+  .all-stat { color: var(--text-dim); font-size: 12px; text-align: center; }
 
   .src-badge {
     display: inline-block;
@@ -1262,8 +1277,8 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
     position: fixed;
     display: none;
     z-index: 9999;
-    background: #0d1b33;
-    border: 1px solid #2a5080;
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
     border-radius: 10px;
     padding: 10px 14px;
     min-width: 200px;
@@ -1275,7 +1290,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
   #move-tooltip .tt-name {
     font-size: 14px;
     font-weight: 700;
-    color: #ffd700;
+    color: var(--gold);
     margin-bottom: 6px;
   }
 
@@ -1302,14 +1317,14 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
     flex-direction: column;
     align-items: center;
     flex: 1;
-    background: #162040;
+    background: var(--border-dim);
     border-radius: 6px;
     padding: 4px 6px;
   }
 
   #move-tooltip .tt-stat-label {
     font-size: 9px;
-    color: #888;
+    color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin-bottom: 2px;
@@ -1318,14 +1333,14 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
   #move-tooltip .tt-stat-val {
     font-size: 13px;
     font-weight: 700;
-    color: #e0e0e0;
+    color: var(--text);
   }
 
   #move-tooltip .tt-desc {
     font-size: 11px;
-    color: #aaa;
+    color: var(--text-muted);
     line-height: 1.5;
-    border-top: 1px solid #1e3050;
+    border-top: 1px solid var(--border);
     padding-top: 7px;
   }
 
@@ -1342,7 +1357,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
       height: auto;
       max-height: 100dvh;
       border-right: none;
-      border-bottom: 2px solid #0f3460;
+      border-bottom: 2px solid var(--bg-nav);
     }
 
     #sidebar.hidden { display: none; }
@@ -1362,15 +1377,15 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
       margin-bottom: 12px;
       padding: 6px 14px;
       border-radius: 20px;
-      border: 1px solid #1a5080;
-      background: #0f3460;
-      color: #e0e0e0;
+      border: 1px solid var(--border);
+      background: var(--bg-nav);
+      color: var(--text);
       font-size: 12px;
       font-weight: 600;
       cursor: pointer;
     }
 
-    #btn-back:active { background: #1a4070; }
+    #btn-back:active { background: var(--bg-hover); }
 
     .detail-header { flex-direction: column; align-items: center; gap: 12px; }
     .detail-info { width: 100%; }
@@ -1499,7 +1514,7 @@ function renderList(items) {
     div.dataset.idx = p._origIdx;
     div.innerHTML = `
       <span class="poke-num">#${String(p.dexNum).padStart(3, '0')}</span>
-      ${p.sprite ? `<img src="${p.sprite}" alt="${p.name}">` : `<div style="width:32px;height:32px;background:#0f3460;border-radius:4px;flex-shrink:0"></div>`}
+      ${p.sprite ? `<img src="${p.sprite}" alt="${p.name}">` : `<div style="width:32px;height:32px;background:var(--bg-nav);border-radius:4px;flex-shrink:0"></div>`}
       <span class="poke-name">${p.name}</span>
     `;
     div.onclick = () => selectPokemon(p._origIdx);

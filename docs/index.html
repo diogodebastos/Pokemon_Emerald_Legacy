@@ -5,12 +5,30 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pokémon Emerald Legacy Solo Leveling Colosseum</title>
 <style>
+  :root {
+    --bg:        #1a1a2e;
+    --bg-panel:  #16213e;
+    --bg-nav:    #0f3460;
+    --bg-hover:  #1a4070;
+    --gold:      #ffd700;
+    --red:       #e94560;
+    --red-dark:  #c73550;
+    --text:      #e0e0e0;
+    --text-dim:  #a0b8d0;
+    --text-muted:#888;
+    --border:    #1a5080;
+
+    /* Pokédex drawer accent (matches pokedex theme) */
+    --dex-bg-nav:   #601212;
+    --dex-bg-hover: #7a2020;
+  }
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
     font-family: 'Segoe UI', Arial, sans-serif;
-    background: #1a1a2e;
-    color: #e0e0e0;
+    background: var(--bg);
+    color: var(--text);
     height: 100vh;
     height: 100dvh;
     display: flex;
@@ -19,8 +37,8 @@
   }
 
   header {
-    background: #0f3460;
-    border-bottom: 3px solid #e94560;
+    background: var(--bg-nav);
+    border-bottom: 3px solid var(--red);
     padding: 14px 24px;
     display: flex;
     align-items: center;
@@ -30,8 +48,8 @@
     flex-wrap: wrap;
   }
 
-  header h1 { font-size: 18px; font-weight: 700; color: #ffd700; }
-  header p  { font-size: 12px; color: #a0b8d0; margin-top: 2px; }
+  header h1 { font-size: 18px; font-weight: 700; color: var(--gold); }
+  header p  { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
 
   .header-links { display: flex; gap: 8px; flex-wrap: wrap; }
 
@@ -47,9 +65,9 @@
     display: inline-block;
   }
 
-  .btn-secondary { background: #0f3460; color: #e0e0e0; border: 1px solid #1a5080; }
-  .btn-secondary:hover { border-color: #ffd700; color: #ffd700; }
-  .btn-secondary.active { border-color: #e94560; color: #e94560; }
+  .btn-secondary { background: var(--bg-nav); color: var(--text); border: 1px solid var(--border); }
+  .btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
+  .btn-secondary.active { border-color: var(--red); color: var(--red); }
 
   /* ── Emulator area ── */
   #play-section {
@@ -61,7 +79,7 @@
     align-items: center;
     justify-content: center;
     padding: 16px;
-    background: #16213e;
+    background: var(--bg-panel);
     overflow: hidden;
   }
 
@@ -75,7 +93,7 @@
     background: #000;
     border-radius: 8px;
     overflow: hidden;
-    border: 2px solid #0f3460;
+    border: 2px solid var(--bg-nav);
   }
 
   /* ── Splash ── */
@@ -100,22 +118,22 @@
     font-size: 15px;
     font-weight: 700;
     cursor: pointer;
-    background: #e94560;
+    background: var(--red);
     color: #fff;
     letter-spacing: 0.5px;
     transition: background 0.15s, transform 0.1s;
   }
 
-  #btn-start:hover { background: #c73550; transform: scale(1.04); }
+  #btn-start:hover { background: var(--red-dark); transform: scale(1.04); }
 
-  /* ── Pokédex drawer — overlays from bottom of play-section ── */
+  /* ── Pokédex drawer ── */
   #dex-drawer {
     position: absolute;
     bottom: 0; left: 0; right: 0;
-    height: 0;
+    height: 42px;
     overflow: hidden;
     transition: height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-    background: #1a1a2e;
+    background: var(--bg);
     z-index: 30;
     display: flex;
     flex-direction: column;
@@ -130,11 +148,11 @@
     display: block;
   }
 
-  /* ── Toggle bar at page bottom ── */
+  /* ── Toggle bar (inside drawer, at top) ── */
   #dex-toggle {
     flex-shrink: 0;
-    background: #0f3460;
-    border-top: 2px solid #e94560;
+    background: var(--red);
+    border-bottom: 2px solid var(--red);
     padding: 8px 24px;
     display: flex;
     align-items: center;
@@ -145,18 +163,18 @@
     transition: background 0.15s;
   }
 
-  #dex-toggle:hover { background: #1a4070; }
+  #dex-toggle:hover { background: var(--red-dark); }
 
   #dex-toggle span {
     font-size: 13px;
     font-weight: 700;
-    color: #ffd700;
+    color: var(--gold);
     letter-spacing: 0.5px;
   }
 
   #dex-arrow {
     font-size: 12px;
-    color: #e94560;
+    color: var(--red);
     transition: transform 0.35s;
   }
 
@@ -186,19 +204,18 @@
     </div>
   </div>
 
-  <!-- Pokédex slides up over the play area -->
   <div id="dex-drawer">
+    <div id="dex-toggle" onclick="toggleDex()">
+      <span>Pokédex</span>
+      <span id="dex-arrow">▲</span>
+    </div>
     <iframe id="pokedex-frame" src="pokedex.html" title="Pokédex" loading="lazy"></iframe>
   </div>
 </section>
 
-<!-- ── Toggle bar ── -->
-<div id="dex-toggle" onclick="toggleDex()">
-  <span>Pokédex</span>
-  <span id="dex-arrow">▲</span>
-</div>
-
 <script>
+  const THEME_RED = getComputedStyle(document.documentElement).getPropertyValue('--red').trim();
+
   function startGame() {
     document.getElementById('splash').style.display = 'none';
 
@@ -206,7 +223,7 @@
     window.EJS_core          = 'gba';
     window.EJS_gameUrl       = 'rom/legacy.gba';
     window.EJS_pathtodata    = 'https://cdn.emulatorjs.org/stable/data/';
-    window.EJS_color         = '#e94560';
+    window.EJS_color         = THEME_RED;
     window.EJS_startOnLoaded = true;
 
     const s = document.createElement('script');
