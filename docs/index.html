@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pokémon Emerald Legacy Solo Leveling Colosseum</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #1a1a2e;
+    color: #e0e0e0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  header {
+    background: #0f3460;
+    border-bottom: 3px solid #e94560;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+  }
+
+  header h1 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #ffd700;
+  }
+
+  header p {
+    font-size: 12px;
+    color: #a0b8d0;
+    margin-top: 2px;
+  }
+
+  .header-links { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .btn {
+    padding: 7px 16px;
+    border-radius: 20px;
+    border: none;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn-secondary { background: #0f3460; color: #e0e0e0; border: 1px solid #1a5080; }
+  .btn-secondary:hover { border-color: #ffd700; color: #ffd700; }
+  .btn-secondary:disabled { opacity: 0.4; cursor: default; }
+  .btn-secondary:disabled:hover { border-color: #1a5080; color: #e0e0e0; }
+
+  /* Emulator area — fills remaining space above the drawer */
+  #play-section {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px;
+    background: #16213e;
+    overflow: hidden;
+  }
+
+  #game {
+    position: relative;
+    width: 100%;
+    max-width: 720px;
+    flex: 1;
+    min-height: 0;
+    max-height: calc((720px) * (2/3));
+    background: #000;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid #0f3460;
+  }
+
+/* ── Pokédex drawer ─────────────────────────────────── */
+  #dex-drawer {
+    flex-shrink: 0;
+    height: 0;
+    overflow: hidden;
+    transition: height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #1a1a2e;
+  }
+
+  #dex-drawer.open {
+    height: 66vh;
+  }
+
+  #pokedex-frame {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+  }
+
+  /* ── Drawer toggle bar ──────────────────────────────── */
+  #dex-toggle {
+    flex-shrink: 0;
+    background: #0f3460;
+    border-top: 2px solid #e94560;
+    padding: 8px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+  }
+
+  #dex-toggle:hover { background: #1a4070; }
+
+  #dex-toggle span {
+    font-size: 13px;
+    font-weight: 700;
+    color: #ffd700;
+    letter-spacing: 0.5px;
+  }
+
+  #dex-arrow {
+    font-size: 12px;
+    color: #e94560;
+    transition: transform 0.35s;
+  }
+
+  #dex-drawer.open ~ #dex-toggle #dex-arrow,
+  #dex-toggle.open #dex-arrow {
+    transform: rotate(180deg);
+  }
+
+  /* ── Splash screen ──────────────────────────────────── */
+  #splash {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding-bottom: 24px;
+    background: #16213e;
+    z-index: 10;
+  }
+
+#btn-start {
+    padding: 12px 36px;
+    border-radius: 24px;
+    border: none;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    background: #e94560;
+    color: #fff;
+    letter-spacing: 0.5px;
+    transition: background 0.15s, transform 0.1s;
+  }
+
+  #btn-start:hover { background: #c73550; transform: scale(1.04); }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Pokémon Emerald Legacy Solo Leveling Colosseum</h1>
+    <p>A fan-made ROM hack for Pokémon Emerald</p>
+  </div>
+  <div class="header-links">
+    <a class="btn btn-secondary" href="https://github.com/diogodebastos/Pokemon_Emerald_Legacy" target="_blank">GitHub</a>
+  </div>
+</header>
+
+<!-- ── Emulator ── -->
+<section id="play-section">
+  <div id="game">
+    <div id="splash">
+      <img src="title.png" alt="Pokémon Emerald Legacy title screen" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;">
+      <button id="btn-start" onclick="startGame()" style="position:relative;z-index:1;">▶ Start Game</button>
+    </div>
+  </div>
+</section>
+
+<!-- ── Pokédex drawer ── -->
+<div id="dex-drawer">
+  <iframe id="pokedex-frame" src="pokedex.html" title="Pokédex" loading="lazy"></iframe>
+</div>
+
+<!-- ── Toggle bar ── -->
+<div id="dex-toggle" onclick="toggleDex()">
+  <span>Pokédex</span>
+  <span id="dex-arrow">▲</span>
+</div>
+
+<script>
+  function startGame() {
+    document.getElementById('splash').style.display = 'none';
+
+    window.EJS_player        = '#game';
+    window.EJS_core          = 'gba';
+    window.EJS_gameUrl       = 'rom/legacy.gba';
+    window.EJS_pathtodata    = 'https://cdn.emulatorjs.org/stable/data/';
+    window.EJS_color         = '#e94560';
+    window.EJS_startOnLoaded = true;
+
+    const s = document.createElement('script');
+    s.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
+    document.body.appendChild(s);
+  }
+
+  function toggleDex() {
+    const drawer = document.getElementById('dex-drawer');
+    const toggle = document.getElementById('dex-toggle');
+    const isOpen = drawer.classList.toggle('open');
+    toggle.classList.toggle('open', isOpen);
+  }
+</script>
+
+</body>
+</html>

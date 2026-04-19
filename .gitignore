@@ -58,3 +58,11 @@ prefabs.json
 *.ss8
 *.ss9
 *.cheats
+
+# website
+docs/rom/
+pokedex.html
+
+# pycache
+__pycache__/
+*.pyc
