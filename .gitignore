@@ -66,3 +66,6 @@ pokedex.html
 # pycache
 __pycache__/
 *.pyc
+
+# pictures
+pokeemerald*.png
