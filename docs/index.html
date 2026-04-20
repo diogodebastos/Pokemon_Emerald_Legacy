@@ -3,33 +3,40 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pokémon Emerald Legacy — Solo Leveling Colosseum</title>
+<title>Emerald Legacy — Solo Leveling Colosseum · Specimen Nº 001</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
 <style>
   :root {
-    --ink-0:      #060d16;
-    --ink-1:      #0a121d;
-    --ink-2:      #101a28;
-    --ink-3:      #172436;
-    --line:       #1f2f46;
-    --line-soft:  #17223433;
-    --text:       #eaf2fb;
-    --text-dim:   #93a3b8;
-    --text-muted: #5e6d82;
-    --em:         #3dd787;
-    --em-deep:    #1aa864;
-    --em-soft:    rgba(61,215,135,0.14);
-    --amber:      #f5b642;
-    --ring:       rgba(61,215,135,0.35);
+    /* Ink on paper — warm dark, not cold navy */
+    --paper-0: #0a140e;
+    --paper-1: #0e1b14;
+    --paper-2: #13221a;
+    --paper-3: #1a2c22;
+    --paper-4: #233829;
 
-    --font-sans: 'Space Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
-    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    --ink:     #ece3d0;
+    --ink-dim: #b5a98f;
+    --ink-mut: #7b705c;
+    --ink-fnt: #534a3b;   /* faintest — for rules */
 
-    --r-sm: 6px;
-    --r-md: 10px;
-    --r-lg: 14px;
+    --rule:    #2d3d33;
+    --rule-2:  #1e2a23;
+
+    --jade:       #1a8d5a;   /* true Emerald jade */
+    --jade-bright:#2eb070;
+    --jade-deep:  #0d6b40;
+    --jade-soft:  rgba(46,176,112,0.13);
+
+    --ruby:    #b3272b;      /* used once — stamp */
+    --dusk:    #e8a530;      /* shiny / postgame only */
+
+    --f-serif: 'Fraunces', 'Iowan Old Style', 'Palatino', Georgia, serif;
+    --f-sans:  'Instrument Sans', 'Söhne', system-ui, -apple-system, sans-serif;
+    --f-mono:  'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+    --grain: url("data:image/svg+xml;utf8,<svg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.1  0 0 0 0 0.1  0 0 0 0 0.1  0 0 0 0.55 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/></svg>");
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -37,204 +44,330 @@
   html, body { height: 100%; }
 
   body {
-    font-family: var(--font-sans);
-    font-feature-settings: "ss01", "cv11";
-    background: var(--ink-0);
-    color: var(--text);
+    font-family: var(--f-sans);
+    font-size: 14px;
+    background: var(--paper-1);
+    color: var(--ink);
     height: 100dvh;
     display: flex;
     flex-direction: column;
     overflow: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    letter-spacing: 0.005em;
   }
 
-  /* ── Header ── */
+  /* global grain */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: var(--grain);
+    background-size: 240px 240px;
+    opacity: 0.35;
+    pointer-events: none;
+    mix-blend-mode: overlay;
+    z-index: 9999;
+  }
+
+  /* ── Header ────────────────────────────────────────────── */
   header {
     position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 24px;
-    padding: 18px 28px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: baseline;
+    gap: 20px;
+    padding: 18px 28px 16px;
     flex-shrink: 0;
-    flex-wrap: wrap;
-    background: var(--ink-1);
-    border-bottom: 1px solid var(--line);
+    border-bottom: 1px solid var(--rule);
+    background: var(--paper-0);
     z-index: 2;
   }
 
-  .brand {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    min-width: 0;
-  }
-
-  .brand-mark {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background:
-      radial-gradient(circle at 35% 30%, #fff 0%, #fff 6%, transparent 7%),
-      conic-gradient(from 210deg, #ef5d60 0 50%, #eaf2fb 50% 100%);
-    border: 3px solid var(--ink-0);
-    box-shadow: 0 0 0 1px var(--line), 0 0 18px rgba(239,93,96,0.25);
-    position: relative;
-    flex-shrink: 0;
-  }
-  .brand-mark::after {
-    content: "";
-    position: absolute;
-    left: 50%; top: 50%;
-    width: 10px; height: 10px;
-    background: var(--ink-0);
-    border: 2px solid var(--ink-0);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: inset 0 0 0 2px #fff;
-  }
-
-  .brand-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-
-  .brand h1 {
-    font-family: var(--font-sans);
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text);
-    letter-spacing: -0.01em;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .brand h1 em {
-    color: var(--em);
-    font-style: normal;
-    font-weight: 600;
-  }
-  .brand p {
-    font-family: var(--font-mono);
+  .hdr-no {
+    font-family: var(--f-mono);
     font-size: 10px;
-    color: var(--text-muted);
-    letter-spacing: 0.12em;
+    color: var(--jade-bright);
+    letter-spacing: 0.2em;
     text-transform: uppercase;
+    white-space: nowrap;
+    align-self: center;
+  }
+  .hdr-no::before { content: "Nº "; color: var(--ink-mut); }
+
+  .hdr-mark {
+    font-family: var(--f-serif);
+    font-variation-settings: "opsz" 144, "SOFT" 40, "WONK" 1;
+    font-weight: 500;
+    font-style: italic;
+    font-size: 26px;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    line-height: 1;
+    align-self: center;
+    position: relative;
+  }
+  .hdr-mark em {
+    font-style: normal;
+    color: var(--jade-bright);
+  }
+  .hdr-sub {
+    display: block;
+    font-family: var(--f-mono);
+    font-size: 9px;
+    font-weight: 500;
+    color: var(--ink-mut);
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    margin-top: 5px;
+    line-height: 1;
   }
 
-  .header-links { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .hdr-actions { display: flex; align-items: center; gap: 6px; align-self: center; }
 
   .btn {
-    padding: 9px 16px;
-    border-radius: var(--r-sm);
-    border: 1px solid var(--line);
-    font-family: var(--font-sans);
-    font-size: 12px;
+    font-family: var(--f-mono);
+    font-size: 10px;
     font-weight: 500;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 8px 14px;
+    border: 1px solid var(--rule);
+    background: transparent;
+    color: var(--ink-dim);
     cursor: pointer;
-    transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
     text-decoration: none;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: var(--ink-2);
-    color: var(--text-dim);
   }
-  .btn:hover { color: var(--text); border-color: var(--line); background: var(--ink-3); }
-  .btn:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--ink-0), 0 0 0 4px var(--ring); }
+  .btn:hover { color: var(--ink); border-color: var(--ink-mut); }
+  .btn:focus-visible { outline: none; border-color: var(--jade-bright); color: var(--jade-bright); }
 
-  .btn-ghost.active {
-    color: var(--em);
-    border-color: var(--em);
-    background: var(--em-soft);
-  }
+  .btn .tick { color: var(--ink-fnt); transition: color 0.2s; }
+  .btn-ghost.active { color: var(--jade-bright); border-color: var(--jade-bright); background: var(--jade-soft); }
+  .btn-ghost.active .tick { color: var(--jade-bright); }
 
-  .btn .dot {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: var(--text-muted);
-    transition: background 0.15s;
-  }
-  .btn-ghost.active .dot { background: var(--em); box-shadow: 0 0 8px var(--em); }
-
-  /* ── Emulator area ── */
+  /* ── Stage (main area) ─────────────────────────────────── */
   #play-section {
     flex: 1;
     min-height: 0;
     position: relative;
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr minmax(0, calc((100dvh - 300px) * 1.5 + 24px)) 1fr;
     align-items: center;
-    justify-content: center;
-    padding: 32px 24px;
-    background:
-      radial-gradient(1000px 500px at 50% 0%, rgba(61,215,135,0.06), transparent 55%),
-      linear-gradient(180deg, var(--ink-1) 0%, var(--ink-0) 100%);
+    column-gap: 24px;
+    padding: 20px 20px 66px;
+    background: var(--paper-1);
     overflow: hidden;
   }
 
-  /* subtle grid pattern for retro-computing vibe */
+  /* contour-line atmosphere */
   #play-section::before {
     content: "";
     position: absolute;
     inset: 0;
     background-image:
-      linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
-    background-size: 32px 32px;
-    mask-image: radial-gradient(ellipse at center, rgba(0,0,0,0.85) 0%, transparent 75%);
+      radial-gradient(ellipse 80% 60% at 50% 120%, rgba(26,141,90,0.10), transparent 60%),
+      repeating-linear-gradient(
+        42deg,
+        transparent 0 60px,
+        rgba(236,227,208,0.015) 60px 61px,
+        transparent 61px 120px
+      );
     pointer-events: none;
   }
 
-  .stage {
+  /* LEFT GUTTER — vertical rotated classification label */
+  .rail {
     position: relative;
-    width: 100%;
-    max-width: 720px;
+    justify-self: start;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 8px;
+  }
+  .rail-text {
+    font-family: var(--f-mono);
+    font-size: 10px;
+    color: var(--ink-mut);
+    letter-spacing: 0.5em;
+    text-transform: uppercase;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    white-space: nowrap;
+    padding: 10px 0;
+  }
+  .rail-text b {
+    color: var(--jade-bright);
+    font-weight: 500;
+  }
+  .rail::before,
+  .rail::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    width: 1px;
+    background: var(--rule);
+  }
+  .rail::before { top: 0;    height: 28px; }
+  .rail::after  { bottom: 0; height: 28px; }
+
+  /* CENTER — the specimen */
+  .specimen {
+    position: relative;
+    align-self: stretch;
     display: flex;
     flex-direction: column;
-    gap: 14px;
-    flex: 1;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
     min-height: 0;
   }
 
-  .stage-meta {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.18em;
+  /* Classification stamp (rotated red mark) */
+  .stamp {
+    position: absolute;
+    top: -8px;
+    right: 10px;
+    transform: rotate(-7deg);
+    border: 2px solid var(--ruby);
+    color: var(--ruby);
+    padding: 7px 11px;
+    font-family: var(--f-mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: var(--text-muted);
+    line-height: 1.3;
+    text-align: center;
+    background: transparent;
+    pointer-events: none;
+    z-index: 4;
+    opacity: 0.82;
+    box-shadow: inset 0 0 0 1px rgba(179,39,43,0.25);
   }
-  .stage-meta .left, .stage-meta .right { display: flex; align-items: center; gap: 10px; }
-  .stage-meta .sep { width: 1px; height: 10px; background: var(--line); }
-  .stage-meta .status { display: inline-flex; align-items: center; gap: 6px; color: var(--em); }
-  .stage-meta .status::before {
+  .stamp b { display: block; font-weight: 700; letter-spacing: 0.28em; }
+  .stamp span { display: block; color: var(--ruby); opacity: 0.75; font-size: 8px; margin-top: 2px; }
+
+  /* Bezel — the device frame */
+  .bezel {
+    position: relative;
+    /* Width tracks viewport height so the 3:2 screen fills the stage
+       without black bars or clipping. 220px ≈ header + drawer + label
+       strip + outer padding. */
+    width: 100%;
+    max-height: 100%;
+    padding: 12px 12px 0;
+    background: linear-gradient(180deg, var(--paper-3) 0%, var(--paper-2) 100%);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    box-shadow:
+      inset 0 1px 0 rgba(236,227,208,0.04),
+      0 1px 0 rgba(236,227,208,0.02),
+      0 30px 60px -30px rgba(0,0,0,0.8);
+    display: flex;
+    flex-direction: column;
+  }
+  .bezel::after {
+    /* faint jade ambient leak when running */
     content: "";
-    width: 6px; height: 6px; border-radius: 50%;
-    background: var(--em);
-    box-shadow: 0 0 8px var(--em);
-    animation: pulse 2.2s ease-in-out infinite;
+    position: absolute;
+    inset: -40px;
+    background: radial-gradient(ellipse at center, rgba(46,176,112,0.0), transparent 60%);
+    pointer-events: none;
+    transition: background 0.6s;
+    z-index: -1;
   }
-  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+  /* Cartridge grip — horizontal ridges along the top edge */
+  .bezel::before {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 18%;
+    right: 18%;
+    height: 7px;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0,0,0,0.45) 0 1px,
+      rgba(236,227,208,0.05) 1px 2px
+    );
+    border-radius: 1px;
+    box-shadow:
+      inset 0 1px 0 rgba(236,227,208,0.06),
+      inset 0 -1px 0 rgba(0,0,0,0.4);
+    pointer-events: none;
+  }
+  .bezel.running::after {
+    background: radial-gradient(ellipse at center, rgba(46,176,112,0.25), transparent 65%);
+  }
 
   #game {
     position: relative;
     width: 100%;
-    flex: 1;
-    min-height: 0;
-    max-height: calc(720px * (2/3));
+    aspect-ratio: 3 / 2;
     background: #000;
-    border-radius: var(--r-md);
+    border: 1px solid var(--paper-0);
+    border-radius: 2px;
     overflow: hidden;
-    border: 1px solid var(--line);
-    box-shadow:
-      0 1px 0 rgba(255,255,255,0.03) inset,
-      0 30px 60px -20px rgba(0,0,0,0.8),
-      0 0 0 1px var(--ink-0);
+    box-shadow: inset 0 0 0 1px #000, inset 0 0 60px rgba(0,0,0,0.6);
   }
 
-  /* ── Splash ── */
+  /* CRT scanlines inside the screen */
+  #game::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      0deg,
+      rgba(0,0,0,0.22) 0 1px,
+      transparent 1px 3px
+    );
+    pointer-events: none;
+    mix-blend-mode: multiply;
+    z-index: 20;
+    opacity: 0.55;
+  }
+
+  /* Bezel label strip */
+  .bezel-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 4px 12px;
+    font-family: var(--f-mono);
+    font-size: 9px;
+    color: var(--ink-mut);
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .bezel-label .hinge {
+    display: inline-flex;
+    gap: 4px;
+    align-items: center;
+  }
+  .bezel-label .hinge i {
+    width: 4px; height: 4px;
+    background: var(--ink-fnt);
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .bezel-label .hinge i + i { margin-left: 2px; }
+  .bezel-label .edition {
+    font-family: var(--f-serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 12px;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--ink-dim);
+  }
+
+  /* ── Splash ───────────────────────────────────────────── */
   #splash {
     position: absolute;
     inset: 0;
@@ -242,7 +375,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: flex-end;
-    padding-bottom: 36px;
+    padding-bottom: 32px;
     background: #000;
     z-index: 10;
   }
@@ -250,9 +383,10 @@
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.55) 100%);
+    background: linear-gradient(180deg, transparent 45%, rgba(0,0,0,0.6) 100%);
     pointer-events: none;
   }
+  #splash img { z-index: 1; }
 
   .splash-cta {
     position: relative;
@@ -260,200 +394,339 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 14px;
+  }
+  .splash-hint {
+    font-family: var(--f-mono);
+    font-size: 9px;
+    color: rgba(236,227,208,0.55);
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
     gap: 10px;
   }
-
-  .splash-hint {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: rgba(234,242,251,0.55);
+  .splash-hint::before,
+  .splash-hint::after {
+    content: "";
+    width: 18px; height: 1px;
+    background: rgba(236,227,208,0.35);
   }
 
   #btn-start {
     position: relative;
-    padding: 13px 36px 13px 30px;
-    border-radius: var(--r-md);
-    border: 1px solid rgba(61,215,135,0.5);
-    font-family: var(--font-sans);
-    font-size: 13px;
+    padding: 14px 38px;
+    border: 1px solid var(--jade-bright);
+    font-family: var(--f-serif);
+    font-variation-settings: "opsz" 24, "SOFT" 50;
+    font-style: italic;
     font-weight: 600;
+    font-size: 17px;
     cursor: pointer;
-    color: var(--ink-0);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    background: linear-gradient(180deg, #4ee093 0%, var(--em-deep) 100%);
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+    color: #fff;
+    background: var(--jade);
+    letter-spacing: 0.02em;
+    transition: background 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+                border-color 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+                color 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    overflow: hidden;
     box-shadow:
-      inset 0 1px 0 rgba(255,255,255,0.35),
-      0 10px 30px -8px rgba(61,215,135,0.45);
+      inset 0 1px 0 rgba(255,255,255,0.18),
+      0 10px 28px -10px rgba(26,141,90,0.6);
   }
-  #btn-start::before {
-    content: "";
-    width: 0;
-    height: 0;
-    border-left: 8px solid var(--ink-0);
-    border-top: 5px solid transparent;
-    border-bottom: 5px solid transparent;
+  #btn-start:hover {
+    background: var(--ruby);
+    border-color: var(--ruby);
+    color: #fff;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.22),
+      0 12px 30px -8px rgba(179,39,43,0.65);
   }
-  #btn-start:hover { transform: translateY(-1px); filter: brightness(1.06); }
   #btn-start:focus-visible {
     outline: none;
     box-shadow:
-      inset 0 1px 0 rgba(255,255,255,0.4),
-      0 0 0 2px var(--ink-0),
-      0 0 0 4px var(--em);
+      inset 0 1px 0 rgba(255,255,255,0.18),
+      0 0 0 1px var(--paper-0),
+      0 0 0 3px var(--jade-bright);
   }
 
-  /* ── Pokédex drawer ── */
+  /* RIGHT GUTTER — specimen data card (subordinate) */
+  .placard {
+    position: relative;
+    justify-self: end;
+    align-self: center;
+    padding: 14px 14px 14px;
+    border: 1px solid var(--rule);
+    background: transparent;
+    width: 180px;
+    opacity: 0.82;
+    transition: opacity 0.2s;
+  }
+  .placard:hover { opacity: 1; }
+  .placard::before {
+    content: "DATA";
+    position: absolute;
+    top: -7px;
+    left: 10px;
+    font-family: var(--f-mono);
+    font-size: 8px;
+    color: var(--jade-bright);
+    letter-spacing: 0.3em;
+    background: var(--paper-1);
+    padding: 0 5px;
+  }
+  .placard dl {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .placard dt {
+    font-family: var(--f-mono);
+    font-size: 8px;
+    color: var(--ink-mut);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    margin-bottom: 1px;
+  }
+  .placard dd {
+    font-family: var(--f-serif);
+    font-style: italic;
+    font-size: 12px;
+    color: var(--ink-dim);
+    line-height: 1.15;
+  }
+  .placard dd.mono {
+    font-family: var(--f-mono);
+    font-style: normal;
+    font-size: 10px;
+    color: var(--ink-mut);
+  }
+  .placard hr {
+    border: 0;
+    border-top: 1px solid var(--rule);
+    margin: 10px 0 8px;
+  }
+  .placard .custodian {
+    font-family: var(--f-serif);
+    font-style: italic;
+    font-size: 11px;
+    color: var(--ink-mut);
+    line-height: 1.3;
+  }
+  .placard .custodian b {
+    color: var(--ink-dim);
+    font-weight: 400;
+  }
+  .placard .custodian a {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px solid var(--ruby);
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .placard .custodian a:hover { color: var(--ruby); }
+  .placard .custodian a:hover b { color: var(--ruby); }
+
+  /* ── Drawer — the Field Guide ──────────────────────────── */
   #dex-drawer {
     position: absolute;
     bottom: 0; left: 0; right: 0;
-    height: 44px;
+    height: 54px;
     overflow: hidden;
-    transition: height 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-    background: var(--ink-1);
+    transition: height 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+    background: var(--paper-0);
     z-index: 30;
     display: flex;
     flex-direction: column;
-    border-top: 1px solid var(--line);
+    border-top: 1px solid var(--rule);
   }
-  #dex-drawer.open { height: 68%; }
+  #dex-drawer.open { height: 70%; }
 
   #pokedex-frame {
     flex: 1;
     width: 100%;
     border: none;
     display: block;
-    background: var(--ink-1);
+    background: var(--paper-1);
   }
 
   #dex-toggle {
     flex-shrink: 0;
     position: relative;
-    padding: 12px 24px;
+    padding: 14px 28px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
+    gap: 20px;
     cursor: pointer;
     user-select: none;
-    background: var(--ink-1);
-    transition: background 0.15s;
+    background: var(--paper-0);
+    transition: background 0.25s;
   }
-  #dex-toggle:hover { background: var(--ink-2); }
-
   #dex-toggle::before {
+    /* hairline that grows on open */
     content: "";
     position: absolute;
-    left: 24px; right: 24px; top: 0;
+    left: 50%; top: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, var(--em) 20%, var(--em) 80%, transparent);
-    opacity: 0.35;
-    transition: opacity 0.25s;
+    width: 0%;
+    background: var(--jade-bright);
+    transform: translateX(-50%);
+    transition: width 0.55s cubic-bezier(0.22, 1, 0.36, 1);
   }
-  #dex-toggle.open::before { opacity: 0.9; }
+  #dex-toggle.open::before { width: 100%; }
+  #dex-toggle:hover { background: var(--paper-1); }
 
-  #dex-toggle .label {
+  #dex-toggle .lhs {
     display: inline-flex;
-    align-items: center;
-    gap: 10px;
+    align-items: baseline;
+    gap: 14px;
   }
-  #dex-toggle .chip {
-    font-family: var(--font-mono);
+  #dex-toggle .mono-pre {
+    font-family: var(--f-mono);
     font-size: 9px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--em);
-    background: var(--em-soft);
-    border: 1px solid rgba(61,215,135,0.3);
-    padding: 3px 8px;
-    border-radius: 999px;
-  }
-  #dex-toggle span.title {
-    font-family: var(--font-sans);
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text);
-    letter-spacing: 0.01em;
-  }
-  #dex-toggle .hint {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    color: var(--text-muted);
-    letter-spacing: 0.16em;
+    color: var(--jade-bright);
+    letter-spacing: 0.28em;
     text-transform: uppercase;
   }
+  #dex-toggle .mono-pre::after {
+    content: "";
+    display: inline-block;
+    width: 18px; height: 1px;
+    background: var(--jade-bright);
+    vertical-align: middle;
+    margin-left: 10px;
+    opacity: 0.5;
+  }
+  #dex-toggle .title {
+    font-family: var(--f-serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 18px;
+    color: var(--ink);
+    letter-spacing: -0.005em;
+  }
+  #dex-toggle .count {
+    font-family: var(--f-mono);
+    font-size: 9px;
+    color: var(--ink-mut);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  #dex-toggle .count b { color: var(--ink); font-weight: 500; }
 
   #dex-arrow {
+    font-family: var(--f-mono);
     font-size: 10px;
-    color: var(--em);
-    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-    margin-left: 6px;
+    color: var(--jade-bright);
+    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+    letter-spacing: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
   }
+  #dex-arrow::before { content: "PULL"; color: var(--ink-mut); font-size: 9px; letter-spacing: 0.28em; }
   #dex-toggle.open #dex-arrow { transform: rotate(180deg); }
+  #dex-toggle.open #dex-arrow::before { content: ""; }
 
+  /* ── Responsive ────────────────────────────────────────── */
+  @media (max-width: 900px) {
+    #play-section { grid-template-columns: 1fr; padding: 16px 14px 68px; }
+    .rail, .placard { display: none; }
+    .bezel {
+      width: 100%;
+      padding: 14px;
+      border-radius: 10px;
+    }
+    .bezel-label { display: none; }
+  }
+  /* Portrait phones: give the bezel a taller, original Game Boy
+     silhouette — screen stays 3:2 but sits inside a taller frame. */
+  @media (max-width: 900px) and (orientation: portrait) {
+    .bezel {
+      height: 100%;
+      padding: 18px 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    #game { width: 100%; aspect-ratio: 3 / 2; }
+  }
   @media (max-width: 640px) {
-    header { padding: 14px 18px; }
-    .brand h1 { font-size: 14px; white-space: normal; }
-    #play-section { padding: 16px 12px; }
-    .stage-meta { display: none; }
-    #dex-toggle .hint { display: none; }
+    header { grid-template-columns: 1fr auto; row-gap: 8px; padding: 14px 18px; }
+    .hdr-no { grid-column: 1 / -1; }
+    .hdr-mark { font-size: 22px; }
+    #dex-toggle { padding: 12px 16px; gap: 12px; }
+    #dex-toggle .mono-pre { display: none; }
+    #dex-toggle .title { font-size: 15px; }
+    #dex-toggle .count { display: none; }
   }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="brand">
-    <div class="brand-mark" aria-hidden="true"></div>
-    <div class="brand-text">
-      <h1><em>Emerald Legacy</em> · Solo Leveling Colosseum</h1>
-      <p>ROM hack · Pokémon Emerald</p>
-    </div>
+  <span class="hdr-no">001 / Hoenn Region</span>
+  <div class="hdr-mark">
+    <em>Emerald</em> Legacy
+    <span class="hdr-sub">Solo Leveling Colosseum · Unofficial ROM Hack</span>
   </div>
-  <div class="header-links">
+  <div class="hdr-actions">
     <button class="btn btn-ghost" id="btn-dex-header" onclick="toggleDex()">
-      <span class="dot"></span>Pokédex
+      <span class="tick">—</span> Pokédex
     </button>
-    <a class="btn" href="https://github.com/diogodebastos/Pokemon_Emerald_Legacy" target="_blank">GitHub ↗</a>
+    <a class="btn" href="https://github.com/diogodebastos/Pokemon_Emerald_Legacy" target="_blank">Source ↗</a>
   </div>
 </header>
 
-<!-- ── Emulator ── -->
 <section id="play-section">
-  <div class="stage">
-    <div class="stage-meta">
-      <div class="left">
-        <span>GBA</span><span class="sep"></span><span>legacy.gba</span>
-      </div>
-      <div class="right">
-        <span class="status">Ready</span>
-      </div>
-    </div>
-    <div id="game">
-      <div id="splash">
-        <img src="title.png" alt="Pokémon Emerald Legacy title screen"
-             style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;">
-        <div class="splash-cta">
-          <span class="splash-hint">Press to play</span>
-          <button id="btn-start" onclick="startGame()">Start Game</button>
+  <div class="rail" aria-hidden="true">
+    <span class="rail-text">Cartridge <b>—</b> Emerald Legacy <b>—</b> Hoenn Region <b>—</b> Est. 2026</span>
+  </div>
+
+  <div class="specimen">
+    <div class="bezel" id="bezel">
+      <div id="game">
+        <div id="splash">
+          <img src="title.png" alt="Pokémon Emerald Legacy title screen"
+               style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;">
+          <div class="splash-cta">
+            <span class="splash-hint" id="splash-hint">Provide your Pokémon Emerald ROM</span>
+            <button id="btn-start" onclick="document.getElementById('rom-input').click()">Upload your ROM · Play</button>
+            <input type="file" id="rom-input" accept=".gba" style="display:none" onchange="patchAndPlay(this)">
+          </div>
         </div>
+      </div>
+      <div class="bezel-label">
+        <span class="hinge"><i></i><i></i><i></i></span>
+        <span class="edition">— an heirloom in emerald —</span>
+        <span>GBA · AGB-001</span>
       </div>
     </div>
   </div>
 
+  <aside class="placard" aria-label="Specimen data">
+    <dl>
+      <dt>Origin</dt>
+      <dd>Pokémon Emerald <span style="font-family:var(--f-mono); font-size:10px; color:var(--ink-mut); font-style:normal;">(2004)</span></dd>
+      <dt>Subject</dt>
+      <dd>Fan ROM Hack</dd>
+      <dt>System</dt>
+      <dd class="mono">Game Boy Advance</dd>
+      <dt>Region</dt>
+      <dd>Hoenn</dd>
+    </dl>
+    <hr>
+    <p class="custodian">Kept by <a href="https://edge-cavai.diogodebastos18.workers.dev/" target="_blank" rel="noopener"><b>Diogo de Bastos</b></a>. For private study and shared delight.</p>
+  </aside>
+
   <div id="dex-drawer">
     <div id="dex-toggle" onclick="toggleDex()">
-      <span class="label">
-        <span class="chip">Dex</span>
-        <span class="title">National Pokédex</span>
+      <span class="lhs">
+        <span class="mono-pre">The National</span>
+        <span class="title">Pokédex</span>
       </span>
-      <span class="hint">386 entries</span>
+      <span class="count"><b>386</b> Specimens · Hoenn + National</span>
       <span id="dex-arrow">▲</span>
     </div>
     <iframe id="pokedex-frame" src="pokedex.html" title="Pokédex" loading="lazy"></iframe>
@@ -461,14 +734,98 @@
 </section>
 
 <script>
-  const THEME_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--em').trim();
+  const THEME_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--jade-bright').trim();
 
-  function startGame() {
+  const _crcTable = (() => {
+    const t = new Uint32Array(256);
+    for (let i = 0; i < 256; i++) {
+      let c = i;
+      for (let j = 0; j < 8; j++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+      t[i] = c;
+    }
+    return t;
+  })();
+
+  function crc32(buf) {
+    let c = 0xFFFFFFFF;
+    for (let i = 0; i < buf.length; i++) c = (c >>> 8) ^ _crcTable[(c ^ buf[i]) & 0xFF];
+    return (c ^ 0xFFFFFFFF) >>> 0;
+  }
+
+  function applyBPS(srcBuf, patBuf) {
+    const src = new Uint8Array(srcBuf);
+    const pat = new Uint8Array(patBuf);
+    let pos = 0;
+    function readVLQ() {
+      let data = 0, shift = 1;
+      while (true) {
+        const x = pat[pos++];
+        data += (x & 0x7f) * shift;
+        if (x & 0x80) break;
+        shift <<= 7;
+        data += shift;
+      }
+      return data;
+    }
+    if (pat[0]!==66||pat[1]!==80||pat[2]!==83||pat[3]!==49) throw new Error('Invalid patch file');
+    pos = 4;
+    readVLQ();
+    const targetSize = readVLQ();
+    const metaSize = readVLQ(); pos += metaSize;
+    const patchEnd = patBuf.byteLength - 12;
+    const expectedCRC = new DataView(patBuf).getUint32(patchEnd, true);
+    if (crc32(src) !== expectedCRC) throw new Error('Wrong ROM — need vanilla Pokémon Emerald (US/EU)');
+    const tgt = new Uint8Array(targetSize);
+    let outPos = 0, srcRel = 0, tgtRel = 0;
+    while (pos < patchEnd) {
+      const data = readVLQ();
+      const action = data & 3, length = (data >> 2) + 1;
+      if (action === 0) {
+        for (let i = 0; i < length; i++) tgt[outPos + i] = src[outPos + i];
+        outPos += length;
+      } else if (action === 1) {
+        for (let i = 0; i < length; i++) tgt[outPos++] = pat[pos++];
+      } else if (action === 2) {
+        const d = readVLQ(); srcRel += (d & 1) ? -(d >> 1) : (d >> 1);
+        for (let i = 0; i < length; i++) tgt[outPos++] = src[srcRel++];
+      } else {
+        const d = readVLQ(); tgtRel += (d & 1) ? -(d >> 1) : (d >> 1);
+        for (let i = 0; i < length; i++) tgt[outPos++] = tgt[tgtRel++];
+      }
+    }
+    return tgt.buffer;
+  }
+
+  async function patchAndPlay(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const hint = document.getElementById('splash-hint');
+    const btn  = document.getElementById('btn-start');
+    btn.disabled = true;
+    hint.style.color = '';
+    hint.textContent = 'Patching…';
+    try {
+      const [srcBuf, patBuf] = await Promise.all([
+        file.arrayBuffer(),
+        fetch('patch.bps').then(r => { if (!r.ok) throw new Error('Could not load patch'); return r.arrayBuffer(); })
+      ]);
+      const romUrl = URL.createObjectURL(new Blob([applyBPS(srcBuf, patBuf)]));
+      startGame(romUrl);
+    } catch (e) {
+      hint.style.color = 'var(--ruby)';
+      hint.textContent = e.message;
+      btn.disabled = false;
+      input.value = '';
+    }
+  }
+
+  function startGame(romUrl) {
     document.getElementById('splash').style.display = 'none';
+    document.getElementById('bezel').classList.add('running');
 
     window.EJS_player        = '#game';
     window.EJS_core          = 'gba';
-    window.EJS_gameUrl       = 'rom/legacy.gba';
+    window.EJS_gameUrl       = romUrl;
     window.EJS_pathtodata    = 'https://cdn.emulatorjs.org/stable/data/';
     window.EJS_color         = THEME_COLOR;
     window.EJS_startOnLoaded = true;
