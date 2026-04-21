@@ -347,6 +347,8 @@ def parse_base_stats(path):
         'baseSpAttack':  'spa',
         'baseSpDefense': 'spd',
     }
+    types_re = re.compile(r'\.types\s*=\s*\{[^}]+\}')
+    type_val_re = re.compile(r'TYPE_(\w+)')
     i = 1
     while i < len(blocks) - 1:
         key = blocks[i].strip()
@@ -357,6 +359,15 @@ def parse_base_stats(path):
                 m = re.search(rf'\.{field}\s*=\s*(\d+)', body)
                 if m:
                     stats[short] = int(m.group(1))
+            tm = types_re.search(body)
+            if tm:
+                type_vals = type_val_re.findall(tm.group(0))
+                # deduplicate mono-types (TYPE_GRASS, TYPE_GRASS -> ['GRASS'])
+                seen = []
+                for t in type_vals:
+                    if t not in seen:
+                        seen.append(t)
+                stats['types'] = seen
             if stats:
                 result[key] = stats
         i += 2
@@ -533,10 +544,10 @@ SPRITE_USE_ANIM = {'deoxys_attack', 'deoxys_defense', 'deoxys_speed'}
 
 # Cosmetic-only forms: same moves, different sprite. folder_path relative to graphics/pokemon/
 CASTFORM_COSMETIC = [
-    ('Normal', 'castform/normal'),
-    ('Sunny',  'castform/sunny'),
-    ('Rainy',  'castform/rainy'),
-    ('Snowy',  'castform/snowy'),
+    ('Normal', 'castform/normal', ['NORMAL']),
+    ('Sunny',  'castform/sunny',  ['FIRE']),
+    ('Rainy',  'castform/rainy',  ['WATER']),
+    ('Snowy',  'castform/snowy',  ['ICE']),
 ]
 
 def _apply_shiny_palette(img, sprite_dir):
@@ -691,6 +702,7 @@ def build_data():
         anim_sprite, anim_frames = load_anim_b64(folder)
         anim_shiny_sprite, _ = load_anim_b64(folder, shiny=True)
         dex = pokedex.get(key, {})
+        raw_stats = base_stats.get(key, {})
         entry = {
             'key': key,
             'name': species_display_name(key),
@@ -704,7 +716,8 @@ def build_data():
             'height': dex.get('height', 0),
             'weight': dex.get('weight', 0),
             'dexDesc': dex.get('desc', ''),
-            'stats': base_stats.get(key, {}),
+            'types': raw_stats.get('types', []),
+            'stats': {k: v for k, v in raw_stats.items() if k != 'types'},
             'levelUp': level_up.get(key, []),
             'tmhm': tmhm.get(key, []),
             'egg': egg.get(key, []),
@@ -727,6 +740,7 @@ def build_data():
         shiny_sprite = load_sprite_b64(folder, shiny=True)
         anim_sprite, anim_frames = load_anim_b64(folder)
         anim_shiny_sprite, _ = load_anim_b64(folder, shiny=True)
+        raw_form_stats = base_stats.get(key, {})
         entries_by_key[base_key]['forms'].append({
             'name': form_name,
             'sprite': sprite,
@@ -734,7 +748,8 @@ def build_data():
             'animSprite': anim_sprite,
             'animShinySprite': anim_shiny_sprite,
             'animFrames': anim_frames,
-            'stats': base_stats.get(key, {}),
+            'types': raw_form_stats.get('types', []),
+            'stats': {k: v for k, v in raw_form_stats.items() if k != 'types'},
             'levelUp': level_up.get(key, []),
             'tmhm': tmhm.get(key, []),
             'egg': egg.get(key, []),
@@ -751,6 +766,7 @@ def build_data():
                 'animSprite': entry['animSprite'],
                 'animShinySprite': entry['animShinySprite'],
                 'animFrames': entry['animFrames'],
+                'types': entry['types'],
                 'stats': entry['stats'],
                 'levelUp': entry['levelUp'],
                 'tmhm': entry['tmhm'],
@@ -766,7 +782,7 @@ def build_data():
     for entry in pokemon_list:
         if entry['key'] == 'CASTFORM':
             entry['forms'] = []
-            for form_name, folder_path in CASTFORM_COSMETIC:
+            for form_name, folder_path, form_types in CASTFORM_COSMETIC:
                 sprite = load_sprite_b64(folder_path)
                 shiny_sprite = load_sprite_b64(folder_path, shiny=True)
                 anim_sprite, anim_frames = load_anim_b64(folder_path)
@@ -778,6 +794,7 @@ def build_data():
                     'animSprite': anim_sprite,
                     'animShinySprite': anim_shiny_sprite,
                     'animFrames': anim_frames,
+                    'types': form_types,
                     'levelUp': entry['levelUp'],
                     'tmhm': entry['tmhm'],
                     'egg': entry['egg'],
@@ -1240,6 +1257,18 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
     margin-bottom: 20px;
   }
   .category-line b { color: var(--jade-bright); font-weight: 400; }
+
+  .type-badges { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+  .type-badge {
+    display: inline-block;
+    padding: 3px 12px;
+    font-family: var(--f-mono);
+    font-size: 10px;
+    font-weight: 500;
+    color: #fff;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
 
   /* Pull-quote dex description */
   .dex-desc {
@@ -2072,6 +2101,11 @@ function renderDetail(p, formIdx, shiny) {
     ? '<span class="empty-msg">—</span>'
     : arr.map(m => `<span class="pill ${cls}" data-move="${m}">${m}</span>`).join('');
 
+  const types = (src.types && src.types.length ? src.types : p.types) || [];
+  const typeBadgesHtml = types.length
+    ? `<div class="type-badges">${types.map(t => `<span class="type-badge" style="background:${TYPE_COLORS[t] || '#888'}">${t}</span>`).join('')}</div>`
+    : '';
+
   const category = p.category ? `${p.category} Pokémon` : '';
   const specs = p.category ? `
     <dl class="spec-grid">
@@ -2099,6 +2133,7 @@ function renderDetail(p, formIdx, shiny) {
       <div class="detail-info">
         <div class="dex-num">Specimen Nº ${dexNum}${category ? ' · ' + category : ''}</div>
         <h2>${p.name}</h2>
+        ${typeBadgesHtml}
         ${formSwitcher}
         ${p.dexDesc ? `<div class="dex-desc">${p.dexDesc}</div>` : ''}
         ${specs}

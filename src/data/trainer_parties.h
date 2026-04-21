@@ -1311,7 +1311,7 @@ static const struct TrainerMon sParty_Wilton1[] = {
     {
     .iv = 0,
     .lvl = 20,
-    .species = SPECIES_GARDEVOIR,
+    .species = SPECIES_SWABLU,
     }
 };
 // Victory Road CooltrainerM
@@ -1454,7 +1454,7 @@ static const struct TrainerMon sParty_Wilton3[] = {
     .species = SPECIES_HARIYAMA,
     },
     {
-    .iv = 0,
+    .iv = 120,
     .lvl = 36,
     .species = SPECIES_GARDEVOIR,
     }
@@ -4093,7 +4093,7 @@ static const struct TrainerMon sParty_Cameron1[] = {
     {
     .iv = 0,
     .lvl = 34,
-    .species = SPECIES_GARDEVOIR,
+    .species = SPECIES_HAUNTER,
     }
 };
 
@@ -4185,7 +4185,7 @@ static const struct TrainerMon sParty_Samantha[] = {
     {
     .iv = 0,
     .lvl = 41,
-    .species = SPECIES_GARDEVOIR,
+    .species = SPECIES_GENGAR,
     }
 };
 // Mossdeep Gym PsychicF 1 - Entrance Room (Double Battle w Preston)
@@ -4631,9 +4631,10 @@ static const struct TrainerMon sParty_Drake[] = {
     .moves = {MOVE_FLAMETHROWER, MOVE_DRAGON_CLAW, MOVE_ROCK_SLIDE, MOVE_CRUNCH}
     },
     {
-    .iv = 0,
+    .iv = 255,
     .lvl = 54,
-    .species = SPECIES_GARDEVOIR,
+    .species = SPECIES_DRAGONITE,
+    .heldItem = ITEM_SALAC_BERRY,
     }
 };
 //Rustboro Gym Leader
@@ -5902,9 +5903,9 @@ static const struct TrainerMon sParty_Calvin5[] = {
     .species = SPECIES_MIGHTYENA,
     },
     {
-    .iv = 0,
+    .iv = 40,
     .lvl = 50,
-    .species = SPECIES_GARDEVOIR,
+    .species = SPECIES_ALAKAZAM,
     }
 };
 // Trick House 1 (Cut) Youngster
@@ -8418,7 +8419,7 @@ static const struct TrainerMon sParty_Cedric[] = {
     {
     .iv = 0,
     .lvl = 35,
-    .species = SPECIES_GARDEVOIR,
+    .species = SPECIES_JYNX,
     }
 };
 //Route 111 Mid Picnicker
@@ -11645,9 +11646,9 @@ static const struct TrainerMon sParty_Gerald[] = {
     .moves = {MOVE_FLAMETHROWER, MOVE_FURY_SWIPES, MOVE_FAINT_ATTACK, MOVE_BIND}
     },
     {
-    .iv = 0,
+    .iv = 100,
     .lvl = 26,
-    .species = SPECIES_GARDEVOIR,
+    .species = SPECIES_MACHOKE,
     }
 };
 // Mauville Gym Battle Girl
@@ -11758,7 +11759,7 @@ static const struct TrainerMon sParty_WallyMauville[] = {
     {
     .iv = 0,
     .lvl = 16,
-    .species = SPECIES_GARDEVOIR,
+    .species = SPECIES_SWABLU,
     }
 };
 // Rematch 1
@@ -12013,7 +12014,7 @@ static const struct TrainerMon sParty_BrendanLilycoveTreecko[] = {
     .moves = {MOVE_BLAZE_KICK, MOVE_ROLLING_KICK, MOVE_BULK_UP, MOVE_MACH_PUNCH}
     },
     {
-    .iv = 0,
+    .iv = 200,
     .lvl = 36,
     .species = SPECIES_GARDEVOIR,
     }
@@ -12051,7 +12052,7 @@ static const struct TrainerMon sParty_BrendanLilycoveTorchic[] = {
     .moves = {MOVE_MUD_SHOT, MOVE_ROCK_TOMB, MOVE_TAKE_DOWN, MOVE_MUDDY_WATER}
     },
     {
-    .iv = 0,
+    .iv = 200,
     .lvl = 36,
     .species = SPECIES_GARDEVOIR,
     }
@@ -12089,7 +12090,7 @@ static const struct TrainerMon sParty_MayLilycoveMudkip[] = {
     .moves = {MOVE_GROWTH, MOVE_SLASH, MOVE_ROCK_TOMB, MOVE_LEAF_BLADE}
     },
     {
-    .iv = 0,
+    .iv = 200,
     .lvl = 36,
     .species = SPECIES_MANECTRIC,
     }
@@ -12127,7 +12128,7 @@ static const struct TrainerMon sParty_MayLilycoveTreecko[] = {
     .moves = {MOVE_BLAZE_KICK, MOVE_ROLLING_KICK, MOVE_BULK_UP, MOVE_MACH_PUNCH}
     },
     {
-    .iv = 0,
+    .iv = 200,
     .lvl = 36,
     .species = SPECIES_SWELLOW,
     }
@@ -13473,7 +13474,7 @@ static const struct TrainerMon sParty_Alix[] = {
     {
     .iv = 0,
     .lvl = 30,
-    .species = SPECIES_GARDEVOIR,
+    .species = SPECIES_HAUNTER,
     }
 };
 // Route 115 Surf Battle Girl (Double Battle w Alix)
