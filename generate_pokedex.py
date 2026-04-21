@@ -332,6 +332,36 @@ def parse_move_descriptions(path):
         result[key] = text
     return result
 
+# --- Parse base stats ---
+
+def parse_base_stats(path):
+    with open(path) as f:
+        content = f.read()
+    result = {}
+    blocks = re.split(r'\[SPECIES_(\w+)\]\s*=\s*\{', content)
+    stat_fields = {
+        'baseHP':        'hp',
+        'baseAttack':    'atk',
+        'baseDefense':   'def',
+        'baseSpeed':     'spe',
+        'baseSpAttack':  'spa',
+        'baseSpDefense': 'spd',
+    }
+    i = 1
+    while i < len(blocks) - 1:
+        key = blocks[i].strip()
+        body = blocks[i + 1]
+        if key != 'NONE':
+            stats = {}
+            for field, short in stat_fields.items():
+                m = re.search(rf'\.{field}\s*=\s*(\d+)', body)
+                if m:
+                    stats[short] = int(m.group(1))
+            if stats:
+                result[key] = stats
+        i += 2
+    return result
+
 # --- Build move info dict (keyed by display name) ---
 
 def build_move_info(moves_path, desc_path):
@@ -411,6 +441,32 @@ def parse_evolution(path):
         if evos:
             evolutions[species] = evos
     return evolutions
+
+# --- Event / scripted legendary encounters ---
+# Sourced from data/maps/*/scripts.inc (seteventmon / setwildbattle commands)
+EVENT_ENCOUNTERS = {
+    'ARTICUNO':  [{'map': 'Shoal Cave',        'method': 'Event', 'minLvl': 50, 'maxLvl': 50, 'postgame': True}],
+    'ZAPDOS':    [{'map': 'New Mauville',       'method': 'Event', 'minLvl': 50, 'maxLvl': 50, 'postgame': True}],
+    'MOLTRES':   [{'map': 'Magma Hideout',      'method': 'Event', 'minLvl': 50, 'maxLvl': 50, 'postgame': True}],
+    'MEWTWO':    [{'map': 'Altering Cave',      'method': 'Event', 'minLvl': 50, 'maxLvl': 50, 'postgame': True}],
+    'MEW':       [{'map': 'Faraway Island',     'method': 'Event', 'minLvl': 30, 'maxLvl': 30, 'postgame': True}],
+    'RAIKOU':    [{'map': 'Space Center',       'method': 'Event', 'minLvl': 40, 'maxLvl': 40, 'postgame': True}],
+    'ENTEI':     [{'map': 'Scorched Slab',      'method': 'Event', 'minLvl': 40, 'maxLvl': 40, 'postgame': True}],
+    'SUICUNE':   [{'map': 'Abandoned Ship',     'method': 'Event', 'minLvl': 40, 'maxLvl': 40, 'postgame': True}],
+    'LUGIA':     [{'map': 'Navel Rock',         'method': 'Event', 'minLvl': 70, 'maxLvl': 70, 'postgame': True}],
+    'HO_OH':     [{'map': 'Navel Rock',         'method': 'Event', 'minLvl': 70, 'maxLvl': 70, 'postgame': True}],
+    'CELEBI':    [{'map': 'Route 130',          'method': 'Event', 'minLvl': 30, 'maxLvl': 30, 'postgame': True}],
+    'JIRACHI':   [{'map': 'Mossdeep City',      'method': 'Event', 'minLvl': 30, 'maxLvl': 30, 'postgame': True}],
+    'REGIROCK':  [{'map': 'Desert Ruins',       'method': 'Event', 'minLvl': 40, 'maxLvl': 40, 'postgame': True}],
+    'REGICE':    [{'map': 'Island Cave',        'method': 'Event', 'minLvl': 40, 'maxLvl': 40, 'postgame': True}],
+    'REGISTEEL': [{'map': 'Ancient Tomb',       'method': 'Event', 'minLvl': 40, 'maxLvl': 40, 'postgame': True}],
+    'LATIAS':    [{'map': 'Southern Island',    'method': 'Event', 'minLvl': 50, 'maxLvl': 50, 'postgame': True}],
+    'LATIOS':    [{'map': 'Southern Island',    'method': 'Event', 'minLvl': 50, 'maxLvl': 50, 'postgame': True}],
+    'KYOGRE':    [{'map': 'Marine Cave',        'method': 'Event', 'minLvl': 70, 'maxLvl': 70, 'postgame': False}],
+    'GROUDON':   [{'map': 'Terra Cave',         'method': 'Event', 'minLvl': 70, 'maxLvl': 70, 'postgame': False}],
+    'RAYQUAZA':  [{'map': 'Sky Pillar',         'method': 'Event', 'minLvl': 70, 'maxLvl': 70, 'postgame': False}],
+    'DEOXYS':    [{'map': 'Birth Island',       'method': 'Event', 'minLvl': 30, 'maxLvl': 30, 'postgame': True}],
+}
 
 # --- Parse wild encounters ---
 
@@ -590,7 +646,9 @@ def build_data():
 
     print("Parsing wild encounters...")
     locs = parse_encounters(os.path.join(BASE, 'src/data/wild_encounters.json'))
-    print(f"  {len(locs)} species in wild")
+    for sp, entries in EVENT_ENCOUNTERS.items():
+        locs.setdefault(sp, []).extend(entries)
+    print(f"  {len(locs)} species in wild/events")
 
     print("Parsing national dex order...")
     dex_order = parse_national_dex_order(
@@ -608,6 +666,10 @@ def build_data():
     print("Parsing evolutions...")
     raw_evos = parse_evolution(os.path.join(BASE, 'src/data/pokemon/evolution.h'))
     print(f"  {len(raw_evos)} species with evolutions")
+
+    print("Parsing base stats...")
+    base_stats = parse_base_stats(os.path.join(BASE, 'src/data/pokemon/species_info.h'))
+    print(f"  {len(base_stats)} species")
 
     print("Parsing move data...")
     move_info = build_move_info(
@@ -642,6 +704,7 @@ def build_data():
             'height': dex.get('height', 0),
             'weight': dex.get('weight', 0),
             'dexDesc': dex.get('desc', ''),
+            'stats': base_stats.get(key, {}),
             'levelUp': level_up.get(key, []),
             'tmhm': tmhm.get(key, []),
             'egg': egg.get(key, []),
@@ -671,6 +734,7 @@ def build_data():
             'animSprite': anim_sprite,
             'animShinySprite': anim_shiny_sprite,
             'animFrames': anim_frames,
+            'stats': base_stats.get(key, {}),
             'levelUp': level_up.get(key, []),
             'tmhm': tmhm.get(key, []),
             'egg': egg.get(key, []),
@@ -687,6 +751,7 @@ def build_data():
                 'animSprite': entry['animSprite'],
                 'animShinySprite': entry['animShinySprite'],
                 'animFrames': entry['animFrames'],
+                'stats': entry['stats'],
                 'levelUp': entry['levelUp'],
                 'tmhm': entry['tmhm'],
                 'egg': entry['egg'],
@@ -1283,6 +1348,41 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
     text-transform: uppercase;
   }
 
+  /* Base stats bars */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 36px 32px 1fr;
+    gap: 6px 10px;
+    align-items: center;
+    margin-top: 4px;
+    max-width: 420px;
+  }
+  .stat-label {
+    font-family: var(--f-mono);
+    font-size: 9px;
+    color: var(--ink-mut);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    text-align: right;
+  }
+  .stat-val {
+    font-family: var(--f-mono);
+    font-size: 11px;
+    color: var(--ink-dim);
+    text-align: right;
+  }
+  .stat-bar-track {
+    height: 5px;
+    background: var(--paper-3);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .stat-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
   /* Form switcher */
   .form-switcher { display: inline-flex; gap: 0; border: 1px solid var(--rule); margin-bottom: 16px; }
   .form-btn {
@@ -1862,6 +1962,28 @@ function renderDetail(p, formIdx, shiny) {
         return `<span class="location-tag"><span>${l.map}</span><span class="method">${l.method}</span><span class="lvl">${lvl}</span>${pg}</span>`;
       }).join('') + '</div>';
 
+  const STAT_META = [
+    {key:'hp',  label:'HP',  color:'#e05555'},
+    {key:'atk', label:'ATK', color:'#e07030'},
+    {key:'def', label:'DEF', color:'#e0c030'},
+    {key:'spa', label:'SpA', color:'#6890f0'},
+    {key:'spd', label:'SpD', color:'#78c850'},
+    {key:'spe', label:'SPE', color:'#f85888'},
+  ];
+  const statsHtml = (() => {
+    const s = src.stats || p.stats || {};
+    if (!Object.keys(s).length) return '';
+    const total = STAT_META.reduce((n, m) => n + (s[m.key] || 0), 0);
+    const rows = STAT_META.map(m => {
+      const v = s[m.key] || 0;
+      const pct = Math.round(v / 255 * 100);
+      return `<span class="stat-label">${m.label}</span><span class="stat-val">${v}</span><div class="stat-bar-track"><div class="stat-bar-fill" style="width:${pct}%;background:${m.color}"></div></div>`;
+    }).join('');
+    return `<div class="section-title" style="margin-top:28px">Base Statistics</div>
+    <div class="stats-grid">${rows}</div>
+    <div style="font-family:var(--f-mono);font-size:9px;color:var(--ink-mut);letter-spacing:0.15em;margin-top:10px;max-width:420px;text-align:right">TOTAL <span style="color:var(--ink-dim)">${total}</span></div>`;
+  })();
+
   const evoNode = (e, isCurrent) => {
     const idx = dexIdx[e.dexNum];
     const sp = idx !== undefined ? DATA[idx] : null;
@@ -1963,6 +2085,8 @@ function renderDetail(p, formIdx, shiny) {
 
     <div class="section-title">Where Observed</div>
     ${locHtml}
+
+    ${statsHtml}
 
     <div class="section-title" style="margin-top:28px">Learned Techniques</div>
     <div class="tabs">
