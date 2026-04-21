@@ -91,6 +91,7 @@ static void CB2_EndTrainerBattle(void);
 static bool32 IsPlayerDefeated(u32 battleOutcome);
 static bool8 TryPreBattleWhiteOut(void);
 static void Task_PreBattleWhiteOutFade(u8 taskId);
+static s32 CountAliveMons(void);
 static u16 GetRematchTrainerId(u16 trainerId);
 static void RegisterTrainerInMatchCall(void);
 static void HandleRematchVarsOnBattleEnd(void);
@@ -623,12 +624,26 @@ void StartRegiBattle(void)
     TryUpdateGymLeaderRematchFromWild();
 }
 
+static s32 CountAliveMons(void)
+{
+    s32 i, alive = 0;
+    for (i = 0; i < PARTY_SIZE; i++)
+    {
+        u32 species = GetMonData(&gPlayerParty[i], MON_DATA_SPECIES_OR_EGG, NULL);
+        if (species != SPECIES_EGG && species != SPECIES_NONE
+            && GetMonData(&gPlayerParty[i], MON_DATA_HP, NULL) != 0)
+            alive++;
+    }
+    return alive;
+}
+
 static void CB2_EndWildBattle(void)
 {
     CpuFill16(0, (void *)(BG_PLTT), BG_PLTT_SIZE);
     ResetOamRange(0, 128);
 
-    if (IsPlayerDefeated(gBattleOutcome) == TRUE && !InBattlePyramid() && !InBattlePike())
+    if ((IsPlayerDefeated(gBattleOutcome) == TRUE && !InBattlePyramid() && !InBattlePike())
+        || (FlagGet(FLAG_NUZLOCKE) && CountAliveMons() < 2))
     {
         SetMainCallback2(CB2_WhiteOut);
     }
@@ -650,6 +665,10 @@ static void CB2_EndScriptedWildBattle(void)
             SetMainCallback2(CB2_ReturnToFieldContinueScriptPlayMapMusic);
         else
             SetMainCallback2(CB2_WhiteOut);
+    }
+    else if (FlagGet(FLAG_NUZLOCKE) && CountAliveMons() < 2)
+    {
+        SetMainCallback2(CB2_WhiteOut);
     }
     else
     {
@@ -998,19 +1017,15 @@ static u16 GetTrainerBFlag(void)
 
 static bool8 TryPreBattleWhiteOut(void)
 {
-    s32 i, alive = 0;
+    s32 alive;
+    s32 threshold;
 
     if (InBattlePyramid() || InBattlePike() || InTrainerHillChallenge() || GetSafariZoneFlag())
         return FALSE;
 
-    for (i = 0; i < PARTY_SIZE; i++)
-    {
-        u32 species = GetMonData(&gPlayerParty[i], MON_DATA_SPECIES_OR_EGG, NULL);
-        if (species != SPECIES_EGG && species != SPECIES_NONE
-            && GetMonData(&gPlayerParty[i], MON_DATA_HP, NULL) != 0)
-            alive++;
-    }
-    if (alive >= 2)
+    alive = CountAliveMons();
+    threshold = 2;
+    if (alive >= threshold)
         return FALSE;
 
     LockPlayerFieldControls();
@@ -1381,10 +1396,14 @@ static void CB2_EndTrainerBattle(void)
     }
     else if (IsPlayerDefeated(gBattleOutcome) == TRUE)
     {
-        if (InBattlePyramid() || InTrainerHillChallenge())
+        if ((InBattlePyramid() || InTrainerHillChallenge()) && !(FlagGet(FLAG_NUZLOCKE) && CountAliveMons() < 2))
             SetMainCallback2(CB2_ReturnToFieldContinueScriptPlayMapMusic);
         else
             SetMainCallback2(CB2_WhiteOut);
+    }
+    else if (FlagGet(FLAG_NUZLOCKE) && CountAliveMons() < 2)
+    {
+        SetMainCallback2(CB2_WhiteOut);
     }
     else
     {
@@ -1404,7 +1423,7 @@ static void CB2_EndRematchBattle(void)
     {
         SetMainCallback2(CB2_ReturnToFieldContinueScriptPlayMapMusic);
     }
-    else if (IsPlayerDefeated(gBattleOutcome) == TRUE)
+    else if (IsPlayerDefeated(gBattleOutcome) == TRUE || (FlagGet(FLAG_NUZLOCKE) && CountAliveMons() < 2))
     {
         SetMainCallback2(CB2_WhiteOut);
     }

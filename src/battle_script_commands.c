@@ -3683,6 +3683,18 @@ static void Cmd_checkteamslost(void)
     }
     if (HP_count == 0)
         gBattleOutcome |= B_OUTCOME_LOST;
+    else if (FlagGet(FLAG_NUZLOCKE) && FlagGet(FLAG_SYS_POKEDEX_GET))
+    {
+        s32 alive = 0;
+        for (i = 0; i < PARTY_SIZE; i++)
+        {
+            if (GetMonData(&gPlayerParty[i], MON_DATA_SPECIES) && !GetMonData(&gPlayerParty[i], MON_DATA_IS_EGG)
+                && GetMonData(&gPlayerParty[i], MON_DATA_HP))
+                alive++;
+        }
+        if (alive < 2)
+            gBattleOutcome |= B_OUTCOME_LOST;
+    }
     HP_count = 0;
 
     // Get total HP for the enemy's party to determine if the player has won
