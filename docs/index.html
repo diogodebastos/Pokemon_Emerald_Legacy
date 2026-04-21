@@ -542,6 +542,7 @@
     border-top: 1px solid var(--rule);
   }
   #dex-drawer.open { height: 70%; }
+  #dex-drawer.open.maximized { height: 100%; }
 
   #pokedex-frame {
     flex: 1;
@@ -636,6 +637,23 @@
   #dex-arrow::before { content: "PULL"; color: var(--ink-mut); font-size: 9px; letter-spacing: 0.28em; }
   #dex-toggle.open #dex-arrow { transform: rotate(180deg); }
   #dex-toggle.open #dex-arrow::before { content: ""; }
+
+  #btn-dex-max {
+    display: none;
+    font-family: var(--f-mono);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--jade-bright);
+    background: transparent;
+    border: 1px solid var(--jade-bright);
+    padding: 5px 9px;
+    cursor: pointer;
+    transition: color 0.2s, background 0.2s;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  #btn-dex-max:hover { background: var(--jade-soft); }
+  #dex-toggle.open #btn-dex-max { display: inline-flex; align-items: center; }
 
   /* ── Responsive ────────────────────────────────────────── */
   @media (max-width: 900px) {
@@ -735,7 +753,10 @@
         <span class="title">Pokédex</span>
       </span>
       <span class="count"><b>386</b> Specimens · Hoenn + National</span>
-      <span id="dex-arrow">▲</span>
+      <span style="display:inline-flex;align-items:center;gap:10px;">
+        <button id="btn-dex-max" title="Expand to full page" onclick="event.stopPropagation(); toggleMax()">⤢</button>
+        <span id="dex-arrow">▲</span>
+      </span>
     </div>
     <iframe id="pokedex-frame" src="pokedex.html" title="Pokédex" loading="lazy"></iframe>
   </div>
@@ -849,6 +870,19 @@
     const isOpen = drawer.classList.toggle('open');
     toggle.classList.toggle('open', isOpen);
     document.getElementById('btn-dex-header').classList.toggle('active', isOpen);
+    if (!isOpen) {
+      drawer.classList.remove('maximized');
+      document.getElementById('btn-dex-max').title = 'Expand to full page';
+      document.getElementById('btn-dex-max').textContent = '⤢';
+    }
+  }
+
+  function toggleMax() {
+    const drawer = document.getElementById('dex-drawer');
+    const btn = document.getElementById('btn-dex-max');
+    const isMax = drawer.classList.toggle('maximized');
+    btn.title = isMax ? 'Restore' : 'Expand to full page';
+    btn.textContent = isMax ? '⤡' : '⤢';
   }
 
   document.getElementById('play-section').addEventListener('click', function(e) {
