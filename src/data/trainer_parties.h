@@ -9301,7 +9301,7 @@ static const struct TrainerMon sParty_BrendanRoute110Treecko[] = {
     {
     .iv = 0,
     .lvl = 20,
-    .species = SPECIES_GARDEVOIR,
+    .species = SPECIES_KIRLIA,
     }
 };
 // Route 119 Rival 4 w Torchic
@@ -9367,7 +9367,7 @@ static const struct TrainerMon sParty_BrendanRoute110Torchic[] = {
     {
     .iv = 0,
     .lvl = 20,
-    .species = SPECIES_FLYGON,
+    .species = SPECIES_TRAPINCH,
     }
 };
 // Route 119 Rival 4 w Mudkip
@@ -9565,7 +9565,7 @@ static const struct TrainerMon sParty_MayRoute110Torchic[] = {
     {
     .iv = 0,
     .lvl = 20,
-    .species = SPECIES_GARDEVOIR,
+    .species = SPECIES_KIRLIA,
     }
 };
 // Route 119 Rival 4 w Mudkip

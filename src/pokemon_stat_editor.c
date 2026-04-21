@@ -116,7 +116,7 @@ static const u8 sText_Tough[] = _("TOUGH");
 static const u8 sText_Sheen[] = _("SHEEN");
 static const u8 sText_Space[] = _(" ");
 static const u8 sText_Slash[] = _("/");
-static const u8 sText_Hint[] = _("{DPAD_LEFTRIGHT} Val SEL:Toggle L/R:Tab");
+static const u8 sText_Hint[] = _("{DPAD_LEFTRIGHT} Val SEL:Min/Max L/R:Tab");
 
 static const u8 *const sStatNames[STAT_EDITOR_COUNT] = {
     [STAT_EDITOR_HP]    = sText_HP,

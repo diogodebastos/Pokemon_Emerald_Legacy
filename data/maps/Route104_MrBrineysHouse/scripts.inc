@@ -9,7 +9,23 @@ Route104_MrBrineysHouse_OnTransition:
 	setflag FLAG_LANDMARK_MR_BRINEY_HOUSE
 	call_if_eq VAR_BRINEY_HOUSE_STATE, 1, Route104_MrBrineysHouse_EventScript_SetBrineyPeekoPos
 	call_if_set FLAG_RECEIVED_POKENAV, Route104_MrBrineysHouse_EventScript_HideRustboroRival
+	call Route104_MrBrineysHouse_EventScript_TryRestoreBriney
 	end
+
+@ If player sailed to Slateport (Briney stranded at Route 109) but hasn't gotten
+@ the Mauville badge yet, restore Briney to his house to prevent a soft lock.
+@ Petalburg has no overland path to Route 110/Mauville without Briney or Rock Smash.
+Route104_MrBrineysHouse_EventScript_TryRestoreBriney::
+	goto_if_set FLAG_BADGE03_GET, Route104_MrBrineysHouse_EventScript_TryRestoreBrineyReturn
+	goto_if_unset FLAG_DELIVERED_DEVON_GOODS, Route104_MrBrineysHouse_EventScript_TryRestoreBrineyReturn
+	goto_if_unset FLAG_HIDE_BRINEYS_HOUSE_MR_BRINEY, Route104_MrBrineysHouse_EventScript_TryRestoreBrineyReturn
+	clearflag FLAG_HIDE_BRINEYS_HOUSE_MR_BRINEY
+	clearflag FLAG_HIDE_BRINEYS_HOUSE_PEEKO
+	clearflag FLAG_HIDE_ROUTE_104_MR_BRINEY_BOAT
+	setflag FLAG_HIDE_ROUTE_109_MR_BRINEY
+	setflag FLAG_HIDE_ROUTE_109_MR_BRINEY_BOAT
+Route104_MrBrineysHouse_EventScript_TryRestoreBrineyReturn::
+	return
 
 Route104_MrBrineysHouse_EventScript_HideRustboroRival::
 	setflag FLAG_HIDE_RUSTBORO_CITY_RIVAL
