@@ -1834,22 +1834,28 @@ function showTooltip(e, moveName) {
     </div>
     ${info.desc ? `<div class="tt-desc">${info.desc}</div>` : ''}
   `;
-  positionTooltip(e);
   tt.style.display = 'block';
+  positionTooltip(e.clientX, e.clientY);
 }
 
-function positionTooltip(e) {
+function positionTooltip(cx, cy) {
   const margin = 14;
-  let x = e.clientX + margin;
-  let y = e.clientY + margin;
-  if (x + 300 > window.innerWidth) x = e.clientX - 300 - margin;
-  if (y + tt.offsetHeight + 10 > window.innerHeight) y = e.clientY - tt.offsetHeight - margin;
+  const w = tt.offsetWidth || 300;
+  const h = tt.offsetHeight || 160;
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  let x = cx + margin;
+  let y = cy + margin;
+  if (x + w > vw - margin) x = cx - w - margin;
+  if (x < margin) x = margin;
+  if (y + h > vh - margin) y = cy - h - margin;
+  if (y < margin) y = margin;
   tt.style.left = x + 'px';
   tt.style.top = y + 'px';
 }
 
 document.addEventListener('mousemove', e => {
-  if (tt.style.display === 'block') positionTooltip(e);
+  if (tt.style.display === 'block') positionTooltip(e.clientX, e.clientY);
 });
 
 document.addEventListener('mouseover', e => {
@@ -1858,13 +1864,31 @@ document.addEventListener('mouseover', e => {
     clearTimeout(ttTimeout);
     const raw = el.dataset.move;
     const moveName = raw.replace(/^(?:TM|HM)\d+\s+/, '');
-    showTooltip(e, moveName);
+    showTooltip({ clientX: e.clientX, clientY: e.clientY }, moveName);
   }
 });
 
 document.addEventListener('mouseout', e => {
   if (e.target.closest('[data-move]')) {
     ttTimeout = setTimeout(() => { tt.style.display = 'none'; }, 80);
+  }
+});
+
+document.addEventListener('touchstart', e => {
+  const el = e.target.closest('[data-move]');
+  if (el) {
+    e.preventDefault();
+    clearTimeout(ttTimeout);
+    const t = e.touches[0];
+    const raw = el.dataset.move;
+    const moveName = raw.replace(/^(?:TM|HM)\d+\s+/, '');
+    showTooltip({ clientX: t.clientX, clientY: t.clientY }, moveName);
+  }
+}, { passive: false });
+
+document.addEventListener('touchend', e => {
+  if (e.target.closest('[data-move]')) {
+    ttTimeout = setTimeout(() => { tt.style.display = 'none'; }, 1800);
   }
 });
 
