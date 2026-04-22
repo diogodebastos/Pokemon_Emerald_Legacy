@@ -160,6 +160,8 @@ enum {
 
 #define MAX_RELEARNER_MOVES max(MAX_LEVEL_UP_MOVES * (EVOS_PER_MON + 1) + EGG_MOVES_ARRAY_COUNT, 25)
 
+static EWRAM_DATA MainCallback sMoveRelearnerExitCallback = {0};
+
 static EWRAM_DATA struct
 {
     u8 state;
@@ -368,6 +370,13 @@ static void VBlankCB_MoveRelearner(void)
     LoadOam();
     ProcessSpriteCopyRequests();
     TransferPlttBuffer();
+}
+
+void OpenMoveRelearnerFromMenu(u8 partyMon, MainCallback exitCB)
+{
+    sMoveRelearnerExitCallback = exitCB;
+    gSpecialVar_0x8004 = partyMon;
+    SetMainCallback2(CB2_InitLearnMove);
 }
 
 // Script arguments: The Pokémon to teach is in VAR_0x8004
@@ -679,8 +688,10 @@ static void DoMoveRelearnerMain(void)
     case MENU_STATE_RETURN_TO_FIELD:
         if (!gPaletteFade.active)
         {
+            MainCallback exitCB = sMoveRelearnerExitCallback;
+            sMoveRelearnerExitCallback = NULL;
             FreeMoveRelearnerResources();
-            SetMainCallback2(CB2_ReturnToField);
+            SetMainCallback2(exitCB != NULL ? exitCB : CB2_ReturnToField);
         }
         break;
     case MENU_STATE_FADE_FROM_SUMMARY_SCREEN:
@@ -900,11 +911,32 @@ static void CreateLearnableMovesList(void)
 {
     s32 i;
     u8 nickname[POKEMON_NAME_LENGTH + 1];
+    u16 eggMoves[EGG_MOVES_ARRAY_COUNT];
+    u8 numEggMoves;
+    s32 e, m;
+    bool8 found;
 
     sMoveRelearnerStruct->numMenuChoices = GetMoveRelearnerMoves(&gPlayerParty[sMoveRelearnerStruct->partyMon], sMoveRelearnerStruct->movesToLearn);
 
     if (FlagGet(FLAG_EGG_MOVES_TUTOR))
-        sMoveRelearnerStruct->numMenuChoices += GetEggMoves(&gPlayerParty[sMoveRelearnerStruct->partyMon], sMoveRelearnerStruct->movesToLearn + sMoveRelearnerStruct->numMenuChoices);
+    {
+        numEggMoves = GetEggMoves(&gPlayerParty[sMoveRelearnerStruct->partyMon], eggMoves);
+        for (e = 0; e < numEggMoves; e++)
+        {
+            u16 eggMove = eggMoves[e];
+            found = FALSE;
+            for (m = 0; m < sMoveRelearnerStruct->numMenuChoices; m++)
+            {
+                if (sMoveRelearnerStruct->movesToLearn[m] == eggMove)
+                {
+                    found = TRUE;
+                    break;
+                }
+            }
+            if (!found)
+                sMoveRelearnerStruct->movesToLearn[sMoveRelearnerStruct->numMenuChoices++] = eggMove;
+        }
+    }
 
     for (i = 0; i < sMoveRelearnerStruct->numMenuChoices; i++)
     {

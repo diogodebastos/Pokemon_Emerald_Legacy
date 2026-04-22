@@ -10,6 +10,7 @@
 #include "party_menu.h"
 #include "pokemon.h"
 #include "pokemon_summary_screen.h"
+#include "move_relearner.h"
 #include "pokemon_stat_editor.h"
 #include "scanline_effect.h"
 #include "sound.h"
@@ -51,6 +52,7 @@ enum {
     MODE_EV,
     MODE_MISC,
     MODE_CONTEST,
+    MODE_MOVES,
     MODE_COUNT
 };
 
@@ -71,6 +73,7 @@ static void Task_StatEditorFadeIn(u8 taskId);
 static void Task_StatEditorProcessInput(u8 taskId);
 static void Task_StatEditorSave(u8 taskId);
 static void Task_StatEditorFadeOut(u8 taskId);
+static void Task_StatEditorFadeOutToMoves(u8 taskId);
 static void DrawStatEditorTitle(u8 taskId);
 static void DrawStatEditorStats(u8 taskId);
 static void MainCB2(void);
@@ -93,6 +96,7 @@ static const u8 sText_ModeIVs[] = _("IVs");
 static const u8 sText_ModeEVs[] = _("EVs");
 static const u8 sText_ModeMisc[] = _("MISC");
 static const u8 sText_ModeContest[] = _("CONTEST");
+static const u8 sText_ModeMoves[] = _("MOVES");
 static const u8 sText_EditStats[] = _("EDIT STATS");
 static const u8 sText_HP[] = _("HP");
 static const u8 sText_Attack[] = _("ATTACK");
@@ -259,6 +263,8 @@ static u8 GetEntryCountForMode(u8 mode)
         return MISC_EDITOR_COUNT;
     if (mode == MODE_CONTEST)
         return CONTEST_EDITOR_COUNT;
+    if (mode == MODE_MOVES)
+        return 0;
     return STAT_EDITOR_COUNT;
 }
 
@@ -559,6 +565,9 @@ static void DrawStatEditorTitle(u8 taskId)
     case MODE_CONTEST:
         modeStr = sText_ModeContest;
         break;
+    case MODE_MOVES:
+        modeStr = sText_ModeMoves;
+        break;
     case MODE_MISC:
     default:
         modeStr = sText_ModeMisc;
@@ -791,23 +800,39 @@ static void Task_StatEditorProcessInput(u8 taskId)
         return;
     }
 
-    /* Toggle IV/EV/MISC/CONTEST mode */
+    /* Toggle IV/EV/MISC/CONTEST/MOVES mode */
     if (JOY_NEW(L_BUTTON))
     {
+        u8 newMode = (mode == MODE_IV) ? MODE_COUNT - 1 : mode - 1;
         PlaySE(SE_SELECT);
-        gTasks[taskId].tMode = (mode == MODE_IV) ? MODE_COUNT - 1 : mode - 1;
-        if (gTasks[taskId].tCursorPos >= GetEntryCountForMode(gTasks[taskId].tMode))
-            gTasks[taskId].tCursorPos = GetEntryCountForMode(gTasks[taskId].tMode) - 1;
+        if (newMode == MODE_MOVES)
+        {
+            ApplyMonStats(gTasks[taskId].tSlotId);
+            BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 16, RGB_BLACK);
+            gTasks[taskId].func = Task_StatEditorFadeOutToMoves;
+            return;
+        }
+        gTasks[taskId].tMode = newMode;
+        if (gTasks[taskId].tCursorPos >= GetEntryCountForMode(newMode))
+            gTasks[taskId].tCursorPos = GetEntryCountForMode(newMode) - 1;
         DrawStatEditorTitle(taskId);
         DrawStatEditorStats(taskId);
         return;
     }
     if (JOY_NEW(R_BUTTON))
     {
+        u8 newMode = (mode + 1) % MODE_COUNT;
         PlaySE(SE_SELECT);
-        gTasks[taskId].tMode = (mode + 1) % MODE_COUNT;
-        if (gTasks[taskId].tCursorPos >= GetEntryCountForMode(gTasks[taskId].tMode))
-            gTasks[taskId].tCursorPos = GetEntryCountForMode(gTasks[taskId].tMode) - 1;
+        if (newMode == MODE_MOVES)
+        {
+            ApplyMonStats(gTasks[taskId].tSlotId);
+            BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 16, RGB_BLACK);
+            gTasks[taskId].func = Task_StatEditorFadeOutToMoves;
+            return;
+        }
+        gTasks[taskId].tMode = newMode;
+        if (gTasks[taskId].tCursorPos >= GetEntryCountForMode(newMode))
+            gTasks[taskId].tCursorPos = GetEntryCountForMode(newMode) - 1;
         DrawStatEditorTitle(taskId);
         DrawStatEditorStats(taskId);
         return;
@@ -989,6 +1014,17 @@ static void Task_StatEditorProcessInput(u8 taskId)
         DrawStatEditorStats(taskId);
         if (mode == MODE_EV)
             DrawStatEditorTitle(taskId);
+    }
+}
+
+static void Task_StatEditorFadeOutToMoves(u8 taskId)
+{
+    if (!gPaletteFade.active)
+    {
+        u8 slotId = gTasks[taskId].tSlotId;
+        DestroyTask(taskId);
+        FreeAllWindowBuffers();
+        OpenMoveRelearnerFromMenu(slotId, CB2_ShowStatEditor);
     }
 }
 

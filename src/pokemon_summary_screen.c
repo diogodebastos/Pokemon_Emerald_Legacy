@@ -1337,6 +1337,10 @@ static bool8 DecompressGraphics(void)
     case 6:
         LoadCompressedPalette(gSummaryScreen_Pal, BG_PLTT_ID(0), 8 * PLTT_SIZE_4BPP);
         LoadPalette(&gPPTextPalette, BG_PLTT_ID(8) + 1, PLTT_SIZEOF(16 - 1));
+        {
+            static const u16 sNatureUpColor = RGB(1, 28, 1);
+            LoadPalette(&sNatureUpColor, BG_PLTT_ID(6) + 7, sizeof(u16));
+        }
         sMonSummaryScreen->switchCounter++;
         break;
     case 7:
@@ -4333,8 +4337,8 @@ static void KeepMoveSelectorVisible(u8 firstSpriteId)
 
 static void BufferStat(u8 *dst, s8 natureMod, u32 stat, u32 strId, u32 n)
 {
-    static const u8 sTextNatureDown[] = _("{COLOR}{08}");
-    static const u8 sTextNatureUp[] = _("{COLOR}{05}");
+    static const u8 sTextNatureDown[] = _("{COLOR}{05}");
+    static const u8 sTextNatureUp[] = _("{COLOR}{07}");
     static const u8 sTextNatureNeutral[] = _("{COLOR}{01}");
     u8 *txtPtr;
 

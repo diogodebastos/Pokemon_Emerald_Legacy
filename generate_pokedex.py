@@ -280,6 +280,25 @@ def parse_pokedex(text_path, entries_path):
 
 # --- Parse battle moves ---
 
+def parse_ability_info(path):
+    with open(path) as f:
+        content = f.read()
+    result = {}
+    pattern = re.compile(
+        r'static const u8 s(\w+?)Description\[\]\s*=\s*_\("(.*?)"\)'
+    )
+    for m in pattern.finditer(content):
+        camel = m.group(1)
+        desc = m.group(2).strip()
+        key = re.sub(r'([A-Z])', r'_\1', camel).upper().lstrip('_')
+        if key == 'NONE':
+            continue
+        result[key] = {
+            'name': key.replace('_', ' ').title(),
+            'desc': desc,
+        }
+    return result
+
 def parse_battle_moves(path):
     with open(path) as f:
         content = f.read()
@@ -349,6 +368,7 @@ def parse_base_stats(path):
     }
     types_re = re.compile(r'\.types\s*=\s*\{[^}]+\}')
     type_val_re = re.compile(r'TYPE_(\w+)')
+    abilities_re = re.compile(r'\.abilities\s*=\s*\{([^}]+)\}')
     i = 1
     while i < len(blocks) - 1:
         key = blocks[i].strip()
@@ -362,12 +382,20 @@ def parse_base_stats(path):
             tm = types_re.search(body)
             if tm:
                 type_vals = type_val_re.findall(tm.group(0))
-                # deduplicate mono-types (TYPE_GRASS, TYPE_GRASS -> ['GRASS'])
                 seen = []
                 for t in type_vals:
                     if t not in seen:
                         seen.append(t)
                 stats['types'] = seen
+            am = abilities_re.search(body)
+            if am:
+                abilities = []
+                for a in am.group(1).split(','):
+                    a = a.strip().replace('ABILITY_', '')
+                    if a and a != 'NONE':
+                        abilities.append(a)
+                if abilities:
+                    stats['abilities'] = abilities
             if stats:
                 result[key] = stats
         i += 2
@@ -689,6 +717,10 @@ def build_data():
     )
     print(f"  {len(move_info)} moves")
 
+    print("Parsing abilities...")
+    ability_info = parse_ability_info(os.path.join(BASE, 'src/data/text/abilities.h'))
+    print(f"  {len(ability_info)} abilities")
+
     print("Loading sprites...")
     pokemon_list = []
     # First pass: build all base entries
@@ -717,7 +749,8 @@ def build_data():
             'weight': dex.get('weight', 0),
             'dexDesc': dex.get('desc', ''),
             'types': raw_stats.get('types', []),
-            'stats': {k: v for k, v in raw_stats.items() if k != 'types'},
+            'abilities': [{'key': a, 'name': ability_info.get(a, {}).get('name', a.replace('_', ' ').title())} for a in raw_stats.get('abilities', [])],
+            'stats': {k: v for k, v in raw_stats.items() if k not in ('types', 'abilities')},
             'levelUp': level_up.get(key, []),
             'tmhm': tmhm.get(key, []),
             'egg': egg.get(key, []),
@@ -749,7 +782,8 @@ def build_data():
             'animShinySprite': anim_shiny_sprite,
             'animFrames': anim_frames,
             'types': raw_form_stats.get('types', []),
-            'stats': {k: v for k, v in raw_form_stats.items() if k != 'types'},
+            'abilities': [{'key': a, 'name': ability_info.get(a, {}).get('name', a.replace('_', ' ').title())} for a in raw_form_stats.get('abilities', [])],
+            'stats': {k: v for k, v in raw_form_stats.items() if k not in ('types', 'abilities')},
             'levelUp': level_up.get(key, []),
             'tmhm': tmhm.get(key, []),
             'egg': egg.get(key, []),
@@ -767,6 +801,7 @@ def build_data():
                 'animShinySprite': entry['animShinySprite'],
                 'animFrames': entry['animFrames'],
                 'types': entry['types'],
+                'abilities': entry['abilities'],
                 'stats': entry['stats'],
                 'levelUp': entry['levelUp'],
                 'tmhm': entry['tmhm'],
@@ -847,7 +882,7 @@ def build_data():
 
     pokemon_list.sort(key=lambda p: p['dexNum'])
     print(f"  Total: {len(pokemon_list)} Pokémon")
-    return pokemon_list, move_info
+    return pokemon_list, move_info, ability_info
 
 # --- Generate HTML ---
 
@@ -1768,6 +1803,65 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
   [data-move] { cursor: help; }
   [data-move]:hover { opacity: 0.82; }
 
+  /* Ability badges */
+  .ability-badges { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+  .ability-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    font-family: var(--f-mono);
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--jade-bright);
+    border: 1px solid var(--jade);
+    background: var(--jade-soft);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: help;
+    transition: border-color 0.15s;
+  }
+  .ability-badge:hover { border-color: var(--jade-bright); }
+
+  /* Ability tooltip */
+  #ability-tooltip {
+    position: fixed;
+    display: none;
+    z-index: 9999;
+    background: var(--paper-0);
+    border: 1px solid var(--jade);
+    padding: 14px 16px;
+    min-width: 200px;
+    max-width: 280px;
+    pointer-events: none;
+    box-shadow: 0 30px 60px -20px rgba(0,0,0,0.7);
+  }
+  #ability-tooltip::before {
+    content: "ABILITY";
+    position: absolute;
+    top: -7px; left: 14px;
+    font-family: var(--f-mono);
+    font-size: 9px;
+    color: var(--jade-bright);
+    background: var(--paper-0);
+    padding: 0 6px;
+    letter-spacing: 0.3em;
+  }
+  #ability-tooltip .at-name {
+    font-family: var(--f-serif);
+    font-style: italic;
+    font-size: 20px;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    margin-bottom: 8px;
+    line-height: 1;
+  }
+  #ability-tooltip .at-desc {
+    font-family: var(--f-serif);
+    font-size: 13px;
+    color: var(--ink-dim);
+    line-height: 1.5;
+    font-style: italic;
+  }
+
   /* Back button (mobile) */
   #btn-back {
     display: none;
@@ -1821,6 +1915,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
 </div>
 
 <div id="move-tooltip"></div>
+<div id="ability-tooltip"></div>
 
 <div id="main">
   <div id="welcome">
@@ -1833,6 +1928,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
 <script>
 const DATA = POKEMON_DATA_PLACEHOLDER;
 const MOVES = MOVE_INFO_PLACEHOLDER;
+const ABILITIES = ABILITY_INFO_PLACEHOLDER;
 const dexIdx = {};
 DATA.forEach((p, i) => dexIdx[p.dexNum] = i);
 
@@ -1846,6 +1942,8 @@ const TYPE_COLORS = {
 
 const tt = document.getElementById('move-tooltip');
 let ttTimeout;
+const abilityTt = document.getElementById('ability-tooltip');
+let abilityTtTimeout;
 
 function showTooltip(e, moveName) {
   const info = MOVES[moveName];
@@ -1883,8 +1981,36 @@ function positionTooltip(cx, cy) {
   tt.style.top = y + 'px';
 }
 
+function showAbilityTooltip(e, key) {
+  const info = ABILITIES[key];
+  if (!info) return;
+  abilityTt.innerHTML = `
+    <div class="at-name">${info.name}</div>
+    ${info.desc ? `<div class="at-desc">${info.desc}</div>` : ''}
+  `;
+  abilityTt.style.display = 'block';
+  positionAbilityTooltip(e.clientX, e.clientY);
+}
+
+function positionAbilityTooltip(cx, cy) {
+  const margin = 14;
+  const w = abilityTt.offsetWidth || 280;
+  const h = abilityTt.offsetHeight || 80;
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  let x = cx + margin;
+  let y = cy + margin;
+  if (x + w > vw - margin) x = cx - w - margin;
+  if (x < margin) x = margin;
+  if (y + h > vh - margin) y = cy - h - margin;
+  if (y < margin) y = margin;
+  abilityTt.style.left = x + 'px';
+  abilityTt.style.top = y + 'px';
+}
+
 document.addEventListener('mousemove', e => {
   if (tt.style.display === 'block') positionTooltip(e.clientX, e.clientY);
+  if (abilityTt.style.display === 'block') positionAbilityTooltip(e.clientX, e.clientY);
 });
 
 document.addEventListener('mouseover', e => {
@@ -1895,11 +2021,19 @@ document.addEventListener('mouseover', e => {
     const moveName = raw.replace(/^(?:TM|HM)\d+\s+/, '');
     showTooltip({ clientX: e.clientX, clientY: e.clientY }, moveName);
   }
+  const ael = e.target.closest('[data-ability]');
+  if (ael) {
+    clearTimeout(abilityTtTimeout);
+    showAbilityTooltip({ clientX: e.clientX, clientY: e.clientY }, ael.dataset.ability);
+  }
 });
 
 document.addEventListener('mouseout', e => {
   if (e.target.closest('[data-move]')) {
     ttTimeout = setTimeout(() => { tt.style.display = 'none'; }, 80);
+  }
+  if (e.target.closest('[data-ability]')) {
+    abilityTtTimeout = setTimeout(() => { abilityTt.style.display = 'none'; }, 80);
   }
 });
 
@@ -2106,6 +2240,11 @@ function renderDetail(p, formIdx, shiny) {
     ? `<div class="type-badges">${types.map(t => `<span class="type-badge" style="background:${TYPE_COLORS[t] || '#888'}">${t}</span>`).join('')}</div>`
     : '';
 
+  const abilities = (src.abilities && src.abilities.length ? src.abilities : p.abilities) || [];
+  const abilitiesHtml = abilities.length
+    ? `<div class="ability-badges">${abilities.map(a => `<span class="ability-badge" data-ability="${a.key}">${a.name}</span>`).join('')}</div>`
+    : '';
+
   const category = p.category ? `${p.category} Pokémon` : '';
   const specs = p.category ? `
     <dl class="spec-grid">
@@ -2134,6 +2273,7 @@ function renderDetail(p, formIdx, shiny) {
         <div class="dex-num">Specimen Nº ${dexNum}${category ? ' · ' + category : ''}</div>
         <h2>${p.name}</h2>
         ${typeBadgesHtml}
+        ${abilitiesHtml}
         ${formSwitcher}
         ${p.dexDesc ? `<div class="dex-desc">${p.dexDesc}</div>` : ''}
         ${specs}
@@ -2267,13 +2407,15 @@ renderList(indexedData);
 '''
 
 def generate():
-    pokemon_list, move_info = build_data()
+    pokemon_list, move_info, ability_info = build_data()
 
     data_json = json.dumps(pokemon_list, ensure_ascii=False, separators=(',', ':'))
     move_json = json.dumps(move_info, ensure_ascii=False, separators=(',', ':'))
+    ability_json = json.dumps(ability_info, ensure_ascii=False, separators=(',', ':'))
 
     html = HTML_TEMPLATE.replace('POKEMON_DATA_PLACEHOLDER', data_json)
     html = html.replace('MOVE_INFO_PLACEHOLDER', move_json)
+    html = html.replace('ABILITY_INFO_PLACEHOLDER', ability_json)
 
     docs_dir = os.path.join(BASE, 'docs')
     os.makedirs(docs_dir, exist_ok=True)
