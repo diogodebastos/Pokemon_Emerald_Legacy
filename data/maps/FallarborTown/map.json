@@ -86,7 +86,7 @@
       "movement_range_x": 5,
       "movement_range_y": 5,
       "trainer_type": "TRAINER_TYPE_NORMAL",
-      "trainer_sight_or_berry_tree_id": "3",
+      "trainer_sight_or_berry_tree_id": "0",
       "script": "FallarborTown_EventScript_FrontierStella",
       "flag": "FLAG_HIDE_BATTLE_ROYALE_TRAINERS"
     }

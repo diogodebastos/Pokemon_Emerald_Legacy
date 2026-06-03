@@ -236,7 +236,9 @@ static const u16 sWildSetVars[] = {
 void NormalizeBattleRoyaleSaveState(void)
 {
     u16 mode = VarGet(VAR_BATTLE_ROYALE_MODE);
-    u16 total = VarGet(VAR_BATTLE_ROYALE_TOTAL);
+    u16 total;
+    u16 defeated;
+    u16 remaining;
     u32 i;
 
     // Repair wild set vars that may have been corrupted by old var address collision
@@ -252,16 +254,16 @@ void NormalizeBattleRoyaleSaveState(void)
         return;
     }
 
-    if (total != TRAINER_BATTLE_ROYALE_COUNT)
-    {
-        VarSet(VAR_BATTLE_ROYALE_MODE, 0);
-        VarSet(VAR_BATTLE_ROYALE_REMAINING, 0);
-        VarSet(VAR_BATTLE_ROYALE_TOTAL, 0);
-        VarSet(VAR_BATTLE_ROYALE_DEATHS, 0);
-        FlagSet(FLAG_HIDE_BATTLE_ROYALE_TRAINERS);
-        return;
-    }
+    // Recompute total/remaining from the current eligible trainer set so the
+    // challenge stays in sync no matter how the eligible count changes. This
+    // also self-heals saves that wrongly "completed" against an old fixed total.
+    total = CountTotalEligibleTrainers();
+    defeated = CountDefeatedEligibleTrainers();
+    remaining = (total > defeated) ? total - defeated : 0;
 
+    VarSet(VAR_BATTLE_ROYALE_TOTAL, total);
+    VarSet(VAR_BATTLE_ROYALE_REMAINING, remaining);
+    VarSet(VAR_BATTLE_ROYALE_MODE, remaining == 0 ? 2 : 1);
     FlagClear(FLAG_HIDE_BATTLE_ROYALE_TRAINERS);
 }
 
@@ -272,8 +274,8 @@ bool32 IsBattleRoyaleModeActive(void)
 
 void ActivateBattleRoyaleMode(void)
 {
-    // u16 total = CountTotalEligibleTrainers();
-    u16 total = TRAINER_BATTLE_ROYALE_COUNT;
+    u16 total = CountTotalEligibleTrainers();
+    // u16 total = TRAINER_BATTLE_ROYALE_COUNT;
     u16 defeated = CountDefeatedEligibleTrainers();
 
     VarSet(VAR_BATTLE_ROYALE_MODE, 1);
