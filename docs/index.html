@@ -588,9 +588,30 @@
 
   #dex-toggle .lhs {
     display: inline-flex;
-    align-items: baseline;
+    align-items: center;
     gap: 14px;
   }
+
+  .dex-tabs {
+    display: inline-flex;
+    border: 1px solid var(--rule);
+  }
+  .dex-tab {
+    font-family: var(--f-mono);
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    border: none;
+    background: transparent;
+    color: var(--ink-mut);
+    cursor: pointer;
+    transition: color 0.2s, background 0.2s;
+  }
+  .dex-tab + .dex-tab { border-left: 1px solid var(--rule); }
+  .dex-tab:hover { color: var(--ink-dim); }
+  .dex-tab.active { color: var(--jade-bright); background: var(--jade-soft); }
   #dex-toggle .mono-pre {
     font-family: var(--f-mono);
     font-size: 9px;
@@ -749,10 +770,13 @@
   <div id="dex-drawer">
     <div id="dex-toggle" onclick="toggleDex()">
       <span class="lhs">
-        <span class="mono-pre">The National</span>
-        <span class="title">Pokédex</span>
+        <span class="dex-tabs">
+          <button class="dex-tab active" data-dex="pokedex" onclick="event.stopPropagation(); switchDex('pokedex')">Pokédex</button>
+          <button class="dex-tab" data-dex="trainerdex" onclick="event.stopPropagation(); switchDex('trainerdex')">Trainers</button>
+        </span>
+        <span class="title" id="dex-title">Pokédex</span>
       </span>
-      <span class="count"><b>386</b> Specimens · Hoenn + National</span>
+      <span class="count" id="dex-count"><b>386</b> Specimens · Hoenn + National</span>
       <span style="display:inline-flex;align-items:center;gap:10px;">
         <button id="btn-dex-max" title="Expand to full page" onclick="event.stopPropagation(); toggleMax()">⤢</button>
         <span id="dex-arrow">▲</span>
@@ -875,6 +899,29 @@
       document.getElementById('btn-dex-max').title = 'Expand to full page';
       document.getElementById('btn-dex-max').textContent = '⤢';
     }
+  }
+
+  const DEX_VIEWS = {
+    pokedex:    { src: 'pokedex.html',    title: 'Pokédex',  count: '<b>386</b> Specimens · Hoenn + National' },
+    trainerdex: { src: 'trainerdex.html', title: 'Trainers', count: '<b>74</b> Notable Trainers · Hoenn' },
+  };
+  let currentDex = 'pokedex';
+
+  function switchDex(which) {
+    if (which === currentDex) {
+      if (!document.getElementById('dex-drawer').classList.contains('open')) toggleDex();
+      return;
+    }
+    currentDex = which;
+    const view = DEX_VIEWS[which];
+    const frame = document.getElementById('pokedex-frame');
+    frame.src = view.src;
+    frame.title = view.title;
+    document.getElementById('dex-title').textContent = view.title;
+    document.getElementById('dex-count').innerHTML = view.count;
+    document.querySelectorAll('.dex-tab').forEach(b =>
+      b.classList.toggle('active', b.dataset.dex === which));
+    if (!document.getElementById('dex-drawer').classList.contains('open')) toggleDex();
   }
 
   function toggleMax() {
