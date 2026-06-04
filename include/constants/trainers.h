@@ -357,6 +357,8 @@
 #define TRAINER_CLASS_CHAMPION_STEVEN       0x42
 #define TRAINER_CLASS_LOREKEEPER            0x43
 #define TRAINER_CLASS_WALLY                 0x44
+#define TRAINER_CLASS_SUPERTRAINER          0x45
+#define TRAINER_CLASS_MYTH_TRAINER          0x46
 
 #define TRAINER_ENCOUNTER_MUSIC_MALE         0 // standard male encounter music
 #define TRAINER_ENCOUNTER_MUSIC_FEMALE       1 // standard female encounter music

@@ -15356,6 +15356,8 @@ static const struct TrainerMon sParty_Steven2[] = {
     }
 };
 
+/* Battle Royale Frontier Brains */
+
 static const struct TrainerMon sParty_Anabel[] = {
     {
     .iv = 255,
@@ -17582,169 +17584,154 @@ static const struct TrainerMon sParty_Evern[] = {
 
 /* Battle Royale Frontier Trainers */
 
+// Supertrainer Avos (Orre Colosseum)
 static const struct TrainerMon sParty_FrontierLeon[] = {
-    {.iv = 25, .lvl = 5, .species = SPECIES_BELDUM, .moves = {MOVE_TAKE_DOWN, MOVE_NONE, MOVE_NONE, MOVE_NONE}},
-    {.iv = 25, .lvl = 5, .species = SPECIES_LARVITAR, .moves = {MOVE_BITE, MOVE_LEER, MOVE_NONE, MOVE_NONE}},
-    {.iv = 25, .lvl = 5, .species = SPECIES_BAGON, .moves = {MOVE_RAGE, MOVE_LEER, MOVE_NONE, MOVE_NONE}},
-    {
-    .iv = 0,
-    .lvl = 5,
-    .species = SPECIES_BULBASAUR,
-    }
+    {.iv = 31, .lvl = 80, .species = SPECIES_SCEPTILE, .heldItem = ITEM_LUM_BERRY, .nature = NATURE_JOLLY, .evs = {0, 252, 4, 252, 0, 0}, .moves = {MOVE_EARTHQUAKE, MOVE_BRICK_BREAK, MOVE_AERIAL_ACE, MOVE_CRUSH_CLAW}},
+    {.iv = 31, .lvl = 80, .species = SPECIES_BLAZIKEN, .heldItem = ITEM_BRIGHT_POWDER, .nature = NATURE_ADAMANT, .evs = {0, 252, 0, 252, 4, 0}, .moves = {MOVE_BLAZE_KICK, MOVE_SKY_UPPERCUT, MOVE_EARTHQUAKE, MOVE_ROCK_SLIDE}},
+    {.iv = 31, .lvl = 80, .species = SPECIES_SWAMPERT, .heldItem = ITEM_LEFTOVERS, .nature = NATURE_MODEST, .evs = {252, 0, 0, 0, 252, 4}, .moves = {MOVE_MUD_SHOT, MOVE_MUDDY_WATER, MOVE_BRICK_BREAK, MOVE_ICE_BEAM}},
+    {.iv = 31, .lvl = 80, .species = SPECIES_MEGANIUM, .heldItem = ITEM_QUICK_CLAW, .nature = NATURE_BOLD, .evs = {252, 0, 128, 0, 128, 0}, .moves = {MOVE_GIGA_DRAIN, MOVE_EARTHQUAKE, MOVE_LEECH_SEED, MOVE_ANCIENT_POWER}},
+    {.iv = 31, .lvl = 80, .species = SPECIES_TYPHLOSION, .heldItem = ITEM_FOCUS_BAND, .nature = NATURE_NAIVE, .evs = {0, 128, 0, 252, 128, 0}, .moves = {MOVE_FLAMETHROWER, MOVE_EARTHQUAKE, MOVE_REVERSAL, MOVE_CRUSH_CLAW}},
+    {.iv = 31, .lvl = 80, .species = SPECIES_FERALIGATR, .heldItem = ITEM_SCOPE_LENS, .nature = NATURE_NAUGHTY, .evs = {0, 128, 0, 252, 128, 0}, .moves = {MOVE_SURF, MOVE_ICE_BEAM, MOVE_DRAGON_CLAW, MOVE_CRUNCH}},
 };
 
+// Supertrainer Codel (Tower Colosseum) - Regi explosion squad
 static const struct TrainerMon sParty_FrontierAva[] = {
-    {.iv = 25, .lvl = 7, .species = SPECIES_RALTS, .moves = {MOVE_GROWL, MOVE_CONFUSION, MOVE_NONE, MOVE_NONE}},
-    {.iv = 25, .lvl = 7, .species = SPECIES_TORCHIC, .moves = {MOVE_SCRATCH, MOVE_GROWL, MOVE_FOCUS_ENERGY, MOVE_EMBER}},
-    {.iv = 25, .lvl = 7, .species = SPECIES_SPHEAL, .moves = {MOVE_DEFENSE_CURL, MOVE_POWDER_SNOW, MOVE_GROWL, MOVE_WATER_GUN}},
-    {
-    .iv = 0,
-    .lvl = 7,
-    .species = SPECIES_SQUIRTLE,
-    }
+    {.iv = 31, .lvl = 84, .species = SPECIES_DUSCLOPS, .heldItem = ITEM_LEFTOVERS, .nature = NATURE_IMPISH, .evs = {252, 4, 128, 0, 0, 124}, .moves = {MOVE_IMPRISON, MOVE_PROTECT, MOVE_EARTHQUAKE, MOVE_SHADOW_BALL}},
+    {.iv = 31, .lvl = 84, .species = SPECIES_ELECTRODE, .heldItem = ITEM_CHOICE_BAND, .nature = NATURE_NAIVE, .evs = {0, 4, 0, 252, 252, 0}, .moves = {MOVE_EXPLOSION, MOVE_THUNDERBOLT, MOVE_NONE, MOVE_NONE}},
+    {.iv = 31, .lvl = 84, .species = SPECIES_REGIROCK, .heldItem = ITEM_WHITE_HERB, .nature = NATURE_ADAMANT, .evs = {252, 252, 0, 0, 0, 4}, .moves = {MOVE_EXPLOSION, MOVE_SUPERPOWER, MOVE_ANCIENT_POWER, MOVE_PROTECT}},
+    {.iv = 31, .lvl = 84, .species = SPECIES_GOLEM, .heldItem = ITEM_QUICK_CLAW, .nature = NATURE_ADAMANT, .evs = {252, 252, 0, 0, 0, 4}, .moves = {MOVE_EXPLOSION, MOVE_ROCK_BLAST, MOVE_EARTHQUAKE, MOVE_PROTECT}},
+    {.iv = 31, .lvl = 84, .species = SPECIES_REGISTEEL, .heldItem = ITEM_BRIGHT_POWDER, .nature = NATURE_ADAMANT, .evs = {252, 252, 0, 0, 0, 4}, .moves = {MOVE_EXPLOSION, MOVE_SUPERPOWER, MOVE_BRICK_BREAK, MOVE_PROTECT}},
+    {.iv = 31, .lvl = 84, .species = SPECIES_REGICE, .heldItem = ITEM_LAX_INCENSE, .nature = NATURE_MODEST, .evs = {252, 0, 0, 0, 252, 4}, .moves = {MOVE_EXPLOSION, MOVE_ICE_BEAM, MOVE_THUNDERBOLT, MOVE_PROTECT}},
 };
 
+// Supertrainer Gravet (Orre Colosseum)
 static const struct TrainerMon sParty_FrontierNelson[] = {
-    {.iv = 50, .lvl = 15, .species = SPECIES_DRATINI, .moves = {MOVE_WRAP, MOVE_LEER, MOVE_THUNDER_WAVE, MOVE_TWISTER}},
-    {.iv = 50, .lvl = 15, .species = SPECIES_HORSEA, .moves = {MOVE_BUBBLE, MOVE_SMOKESCREEN, MOVE_LEER, MOVE_WATER_GUN}},
-    {.iv = 50, .lvl = 15, .species = SPECIES_TRAPINCH, .moves = {MOVE_BITE, MOVE_SAND_ATTACK, MOVE_FAINT_ATTACK, MOVE_NONE}},
-    {
-    .iv = 0,
-    .lvl = 15,
-    .species = SPECIES_CHARMANDER,
-    }
+    {.iv = 31, .lvl = 85, .species = SPECIES_NINJASK, .heldItem = ITEM_BRIGHT_POWDER, .nature = NATURE_JOLLY, .evs = {0, 252, 0, 252, 4, 0}, .moves = {MOVE_SWORDS_DANCE, MOVE_PROTECT, MOVE_BATON_PASS, MOVE_SILVER_WIND}},
+    {.iv = 31, .lvl = 85, .species = SPECIES_URSARING, .heldItem = ITEM_SHELL_BELL, .nature = NATURE_ADAMANT, .friendship = TRAINER_MON_FRIENDLY, .evs = {0, 252, 0, 252, 4, 0}, .moves = {MOVE_RETURN, MOVE_EARTHQUAKE, MOVE_BRICK_BREAK, MOVE_HIDDEN_POWER}},
+    {.iv = 31, .lvl = 85, .species = SPECIES_STARMIE, .heldItem = ITEM_LAX_INCENSE, .nature = NATURE_TIMID, .evs = {0, 0, 0, 252, 252, 4}, .moves = {MOVE_SURF, MOVE_ICE_BEAM, MOVE_THUNDERBOLT, MOVE_PSYCHIC}},
+    {.iv = 31, .lvl = 85, .species = SPECIES_MACHAMP, .heldItem = ITEM_LEFTOVERS, .nature = NATURE_ADAMANT, .evs = {252, 252, 0, 4, 0, 0}, .moves = {MOVE_ROCK_SLIDE, MOVE_CROSS_CHOP, MOVE_EARTHQUAKE, MOVE_HYPER_BEAM}},
+    {.iv = 31, .lvl = 85, .species = SPECIES_GYARADOS, .heldItem = ITEM_SCOPE_LENS, .nature = NATURE_ADAMANT, .friendship = TRAINER_MON_FRIENDLY, .evs = {0, 252, 0, 252, 4, 0}, .moves = {MOVE_DRAGON_DANCE, MOVE_RETURN, MOVE_EARTHQUAKE, MOVE_HIDDEN_POWER}},
+    {.iv = 31, .lvl = 85, .species = SPECIES_WOBBUFFET, .heldItem = ITEM_QUICK_CLAW, .nature = NATURE_CALM, .evs = {252, 0, 128, 0, 0, 128}, .moves = {MOVE_COUNTER, MOVE_MIRROR_COAT, MOVE_SAFEGUARD, MOVE_DESTINY_BOND}},
 };
 
+// Supertrainer Lagin (Tower Colosseum)
 static const struct TrainerMon sParty_FrontierHugo[] = {
-    {.iv = 50, .lvl = 17, .species = SPECIES_MACHOP, .moves = {MOVE_LOW_KICK, MOVE_LEER, MOVE_FOCUS_ENERGY, MOVE_KARATE_CHOP}},
-    {.iv = 50, .lvl = 17, .species = SPECIES_MAKUHITA, .moves = {MOVE_TACKLE, MOVE_FOCUS_ENERGY, MOVE_SAND_ATTACK, MOVE_ARM_THRUST}},
-    {.iv = 50, .lvl = 17, .species = SPECIES_SHROOMISH, .moves = {MOVE_ABSORB, MOVE_TACKLE, MOVE_STUN_SPORE, MOVE_LEECH_SEED}},
-    {
-    .iv = 0,
-    .lvl = 17,
-    .species = SPECIES_MEDITITE,
-    }
+    {.iv = 31, .lvl = 84, .species = SPECIES_SHEDINJA, .heldItem = ITEM_LUM_BERRY, .nature = NATURE_ADAMANT, .evs = {0, 252, 0, 252, 4, 0}, .moves = {MOVE_SWORDS_DANCE, MOVE_SHADOW_BALL, MOVE_CONFUSE_RAY, MOVE_SILVER_WIND}},
+    {.iv = 31, .lvl = 84, .species = SPECIES_WOBBUFFET, .heldItem = ITEM_QUICK_CLAW, .nature = NATURE_CALM, .evs = {252, 0, 128, 0, 0, 128}, .moves = {MOVE_ENCORE, MOVE_COUNTER, MOVE_MIRROR_COAT, MOVE_DESTINY_BOND}},
+    {.iv = 31, .lvl = 84, .species = SPECIES_SUICUNE, .heldItem = ITEM_CHESTO_BERRY, .nature = NATURE_MODEST, .evs = {252, 0, 0, 4, 252, 0}, .moves = {MOVE_ICE_BEAM, MOVE_SURF, MOVE_CALM_MIND, MOVE_REST}},
+    {.iv = 31, .lvl = 84, .species = SPECIES_SALAMENCE, .heldItem = ITEM_SCOPE_LENS, .nature = NATURE_NAIVE, .evs = {0, 128, 0, 252, 128, 0}, .moves = {MOVE_HYDRO_PUMP, MOVE_FIRE_BLAST, MOVE_DRAGON_CLAW, MOVE_CRUNCH}},
+    {.iv = 31, .lvl = 84, .species = SPECIES_METAGROSS, .heldItem = ITEM_LEFTOVERS, .nature = NATURE_ADAMANT, .evs = {0, 252, 4, 252, 0, 0}, .moves = {MOVE_METEOR_MASH, MOVE_SHADOW_BALL, MOVE_EARTHQUAKE, MOVE_BRICK_BREAK}},
+    {.iv = 31, .lvl = 84, .species = SPECIES_LATIOS, .heldItem = ITEM_BRIGHT_POWDER, .nature = NATURE_TIMID, .evs = {0, 0, 0, 252, 252, 4}, .moves = {MOVE_LUSTER_PURGE, MOVE_DRAGON_CLAW, MOVE_THUNDERBOLT, MOVE_CALM_MIND}},
 };
 
+// Supertrainer Saya (Orre Colosseum) - rain team
 static const struct TrainerMon sParty_FrontierBryce[] = {
-    {.iv = 50, .lvl = 18, .species = SPECIES_STARYU, .moves = {MOVE_TACKLE, MOVE_HARDEN, MOVE_WATER_GUN, MOVE_RAPID_SPIN}},
-    {.iv = 50, .lvl = 18, .species = SPECIES_KADABRA, .moves = {MOVE_TELEPORT, MOVE_KINESIS, MOVE_CONFUSION, MOVE_DISABLE}},
-    {.iv = 50, .lvl = 18, .species = SPECIES_CHANSEY, .moves = {MOVE_POUND, MOVE_GROWL, MOVE_TAIL_WHIP, MOVE_DOUBLE_SLAP}},
-    {
-    .iv = 0,
-    .lvl = 18,
-    .species = SPECIES_TOTODILE,
-    }
+    {.iv = 31, .lvl = 88, .species = SPECIES_KYOGRE, .heldItem = ITEM_CHESTO_BERRY, .nature = NATURE_MODEST, .evs = {252, 0, 0, 0, 252, 4}, .moves = {MOVE_SURF, MOVE_ICE_BEAM, MOVE_THUNDER, MOVE_REST}},
+    {.iv = 31, .lvl = 88, .species = SPECIES_LUDICOLO, .heldItem = ITEM_LEFTOVERS, .nature = NATURE_MODEST, .evs = {252, 0, 0, 0, 252, 4}, .moves = {MOVE_ICE_BEAM, MOVE_HYDRO_PUMP, MOVE_GIGA_DRAIN, MOVE_LEECH_SEED}},
+    {.iv = 31, .lvl = 88, .species = SPECIES_KINGDRA, .heldItem = ITEM_KINGS_ROCK, .nature = NATURE_MODEST, .evs = {0, 0, 0, 252, 252, 4}, .moves = {MOVE_ICE_BEAM, MOVE_HYDRO_PUMP, MOVE_DRAGON_BREATH, MOVE_RAIN_DANCE}},
+    {.iv = 31, .lvl = 88, .species = SPECIES_ELECTRODE, .heldItem = ITEM_SILK_SCARF, .nature = NATURE_TIMID, .evs = {0, 0, 0, 252, 252, 4}, .moves = {MOVE_THUNDER, MOVE_EXPLOSION, MOVE_RAIN_DANCE, MOVE_LIGHT_SCREEN}},
+    {.iv = 31, .lvl = 88, .species = SPECIES_GOREBYSS, .heldItem = ITEM_LAX_INCENSE, .nature = NATURE_MODEST, .evs = {252, 0, 0, 4, 252, 0}, .moves = {MOVE_ICE_BEAM, MOVE_HYDRO_PUMP, MOVE_PSYCHIC, MOVE_HIDDEN_POWER}},
+    {.iv = 31, .lvl = 88, .species = SPECIES_REGICE, .heldItem = ITEM_BRIGHT_POWDER, .nature = NATURE_MODEST, .evs = {252, 0, 0, 0, 252, 4}, .moves = {MOVE_ICE_BEAM, MOVE_EXPLOSION, MOVE_THUNDER, MOVE_HIDDEN_POWER}},
 };
 
+// Supertrainer Shoo (Orre Colosseum) - sun team
 static const struct TrainerMon sParty_FrontierOscar[] = {
-    {.iv = 75, .lvl = 22, .species = SPECIES_METANG, .moves = {MOVE_TAKE_DOWN, MOVE_CONFUSION, MOVE_METAL_CLAW, MOVE_NONE}},
-    {.iv = 75, .lvl = 22, .species = SPECIES_STARYU, .moves = {MOVE_TACKLE, MOVE_HARDEN, MOVE_WATER_GUN, MOVE_RAPID_SPIN}},
-    {.iv = 75, .lvl = 22, .species = SPECIES_HERACROSS, .moves = {MOVE_TACKLE, MOVE_LEER, MOVE_HORN_ATTACK, MOVE_ENDURE}},
-    {
-    .iv = 0,
-    .lvl = 22,
-    .species = SPECIES_CYNDAQUIL,
-    }
+    {.iv = 31, .lvl = 90, .species = SPECIES_GROUDON, .heldItem = ITEM_QUICK_CLAW, .nature = NATURE_ADAMANT, .friendship = TRAINER_MON_FRIENDLY, .evs = {0, 252, 0, 252, 4, 0}, .moves = {MOVE_EARTHQUAKE, MOVE_ANCIENT_POWER, MOVE_RETURN, MOVE_OVERHEAT}},
+    {.iv = 31, .lvl = 90, .species = SPECIES_SHIFTRY, .heldItem = ITEM_LAX_INCENSE, .nature = NATURE_RASH, .evs = {0, 4, 0, 252, 252, 0}, .moves = {MOVE_EXPLOSION, MOVE_SOLAR_BEAM, MOVE_SHADOW_BALL, MOVE_BRICK_BREAK}},
+    {.iv = 31, .lvl = 90, .species = SPECIES_VILEPLUME, .heldItem = ITEM_KINGS_ROCK, .nature = NATURE_MODEST, .evs = {252, 0, 0, 4, 252, 0}, .moves = {MOVE_SOLAR_BEAM, MOVE_HIDDEN_POWER, MOVE_SLEEP_POWDER, MOVE_SUNNY_DAY}},
+    {.iv = 31, .lvl = 90, .species = SPECIES_HOUNDOOM, .heldItem = ITEM_SCOPE_LENS, .nature = NATURE_NAIVE, .evs = {0, 4, 0, 252, 252, 0}, .moves = {MOVE_SOLAR_BEAM, MOVE_OVERHEAT, MOVE_CRUNCH, MOVE_HIDDEN_POWER}},
+    {.iv = 31, .lvl = 90, .species = SPECIES_ENTEI, .heldItem = ITEM_BRIGHT_POWDER, .nature = NATURE_TIMID, .evs = {0, 0, 0, 252, 252, 4}, .moves = {MOVE_SOLAR_BEAM, MOVE_FIRE_BLAST, MOVE_REFLECT, MOVE_HIDDEN_POWER}},
+    {.iv = 31, .lvl = 90, .species = SPECIES_REGIROCK, .heldItem = ITEM_LEFTOVERS, .nature = NATURE_ADAMANT, .evs = {252, 252, 0, 0, 0, 4}, .moves = {MOVE_SUPERPOWER, MOVE_EXPLOSION, MOVE_ANCIENT_POWER, MOVE_EARTHQUAKE}},
 };
 
+// Supertrainer Buril (Tower Colosseum) - sun team
 static const struct TrainerMon sParty_FrontierMiriam[] = {
-    {.iv = 50, .lvl = 16, .species = SPECIES_RALTS, .moves = {MOVE_GROWL, MOVE_CONFUSION, MOVE_DOUBLE_TEAM, MOVE_TELEPORT}},
-    {.iv = 50, .lvl = 16, .species = SPECIES_MARILL, .moves = {MOVE_TACKLE, MOVE_DEFENSE_CURL, MOVE_WATER_GUN, MOVE_ROLLOUT}},
-    {.iv = 50, .lvl = 16, .species = SPECIES_GASTLY, .moves = {MOVE_LICK, MOVE_SPITE, MOVE_MEAN_LOOK, MOVE_CURSE}},
-    {
-    .iv = 0,
-    .lvl = 16,
-    .species = SPECIES_CHIKORITA,
-    }
+    {.iv = 31, .lvl = 86, .species = SPECIES_GROUDON, .heldItem = ITEM_LEFTOVERS, .nature = NATURE_NAUGHTY, .friendship = TRAINER_MON_UNFRIENDLY, .evs = {0, 252, 0, 4, 252, 0}, .moves = {MOVE_EARTHQUAKE, MOVE_FRUSTRATION, MOVE_OVERHEAT, MOVE_PROTECT}},
+    {.iv = 31, .lvl = 86, .species = SPECIES_SHIFTRY, .heldItem = ITEM_SILK_SCARF, .nature = NATURE_RASH, .evs = {0, 4, 0, 252, 252, 0}, .moves = {MOVE_FAKE_OUT, MOVE_EXPLOSION, MOVE_SOLAR_BEAM, MOVE_PROTECT}},
+    {.iv = 31, .lvl = 86, .species = SPECIES_HOUNDOOM, .heldItem = ITEM_WHITE_HERB, .nature = NATURE_NAIVE, .evs = {0, 4, 0, 252, 252, 0}, .moves = {MOVE_OVERHEAT, MOVE_SOLAR_BEAM, MOVE_CRUNCH, MOVE_PROTECT}},
+    {.iv = 31, .lvl = 86, .species = SPECIES_ENTEI, .heldItem = ITEM_BRIGHT_POWDER, .nature = NATURE_TIMID, .evs = {0, 0, 0, 252, 252, 4}, .moves = {MOVE_FIRE_BLAST, MOVE_SOLAR_BEAM, MOVE_HYPER_BEAM, MOVE_PROTECT}},
+    {.iv = 31, .lvl = 86, .species = SPECIES_JUMPLUFF, .heldItem = ITEM_LAX_INCENSE, .nature = NATURE_JOLLY, .evs = {252, 0, 128, 128, 0, 0}, .moves = {MOVE_HELPING_HAND, MOVE_SLEEP_POWDER, MOVE_SUNNY_DAY, MOVE_ENCORE}},
+    {.iv = 31, .lvl = 86, .species = SPECIES_FLYGON, .heldItem = ITEM_SCOPE_LENS, .nature = NATURE_NAIVE, .evs = {0, 128, 0, 252, 128, 0}, .moves = {MOVE_EARTHQUAKE, MOVE_FIRE_BLAST, MOVE_DRAGON_CLAW, MOVE_PROTECT}},
 };
 
+// Supertrainer Grang (Tower Colosseum) - rain team
 static const struct TrainerMon sParty_FrontierStella[] = {
-    {.iv = 50, .lvl = 17, .species = SPECIES_EEVEE, .moves = {MOVE_TACKLE, MOVE_TAIL_WHIP, MOVE_SAND_ATTACK, MOVE_QUICK_ATTACK}},
-    {.iv = 50, .lvl = 17, .species = SPECIES_STARYU, .moves = {MOVE_TACKLE, MOVE_HARDEN, MOVE_WATER_GUN, MOVE_RAPID_SPIN}},
-    {.iv = 50, .lvl = 17, .species = SPECIES_SMOOCHUM, .moves = {MOVE_POUND, MOVE_LICK, MOVE_SWEET_KISS, MOVE_POWDER_SNOW}},
-    {
-    .iv = 0,
-    .lvl = 17,
-    .species = SPECIES_CATERPIE,
-    }
+    {.iv = 31, .lvl = 88, .species = SPECIES_KYOGRE, .heldItem = ITEM_MYSTIC_WATER, .nature = NATURE_MODEST, .evs = {252, 0, 0, 4, 252, 0}, .moves = {MOVE_WATER_SPOUT, MOVE_THUNDER, MOVE_ICE_BEAM, MOVE_PROTECT}},
+    {.iv = 31, .lvl = 88, .species = SPECIES_MILTANK, .heldItem = ITEM_LUM_BERRY, .nature = NATURE_ADAMANT, .evs = {252, 252, 0, 4, 0, 0}, .moves = {MOVE_HELPING_HAND, MOVE_BRICK_BREAK, MOVE_HYPER_BEAM, MOVE_EARTHQUAKE}},
+    {.iv = 31, .lvl = 88, .species = SPECIES_KINGDRA, .heldItem = ITEM_BRIGHT_POWDER, .nature = NATURE_MODEST, .evs = {0, 0, 0, 252, 252, 4}, .moves = {MOVE_HYDRO_PUMP, MOVE_ICE_BEAM, MOVE_DRAGON_BREATH, MOVE_RAIN_DANCE}},
+    {.iv = 31, .lvl = 88, .species = SPECIES_LUDICOLO, .heldItem = ITEM_LEFTOVERS, .nature = NATURE_MODEST, .evs = {252, 0, 0, 4, 252, 0}, .moves = {MOVE_HYDRO_PUMP, MOVE_ICE_BEAM, MOVE_GIGA_DRAIN, MOVE_RAIN_DANCE}},
+    {.iv = 31, .lvl = 88, .species = SPECIES_MANECTRIC, .heldItem = ITEM_LAX_INCENSE, .nature = NATURE_NAIVE, .evs = {0, 4, 0, 252, 252, 0}, .moves = {MOVE_THUNDER, MOVE_CRUNCH, MOVE_RAIN_DANCE, MOVE_LIGHT_SCREEN}},
+    {.iv = 31, .lvl = 88, .species = SPECIES_SHEDINJA, .heldItem = ITEM_FOCUS_BAND, .nature = NATURE_ADAMANT, .evs = {0, 252, 0, 252, 4, 0}, .moves = {MOVE_SHADOW_BALL, MOVE_SWORDS_DANCE, MOVE_CONFUSE_RAY, MOVE_SILVER_WIND}},
 };
 
+// Supertrainer Hufnak (Tower Colosseum) - sun team
 static const struct TrainerMon sParty_FrontierMaddox[] = {
-    {.iv = 100, .lvl = 28, .species = SPECIES_COMBUSKEN, .moves = {MOVE_EMBER, MOVE_DOUBLE_KICK, MOVE_SAND_ATTACK, MOVE_PECK}},
-    {.iv = 100, .lvl = 28, .species = SPECIES_NUMEL, .moves = {MOVE_EMBER, MOVE_MAGNITUDE, MOVE_FOCUS_ENERGY, MOVE_TAKE_DOWN}},
-    {.iv = 100, .lvl = 28, .species = SPECIES_TORKOAL, .moves = {MOVE_EMBER, MOVE_SMOG, MOVE_CURSE, MOVE_BODY_SLAM}},
-    {
-    .iv = 0,
-    .lvl = 28,
-    .species = SPECIES_WEEDLE,
-    }
+    {.iv = 31, .lvl = 88, .species = SPECIES_GROUDON, .heldItem = ITEM_CHESTO_BERRY, .nature = NATURE_NAUGHTY, .friendship = TRAINER_MON_UNFRIENDLY, .evs = {0, 252, 0, 4, 252, 0}, .moves = {MOVE_EARTHQUAKE, MOVE_FRUSTRATION, MOVE_FIRE_BLAST, MOVE_REST}},
+    {.iv = 31, .lvl = 88, .species = SPECIES_VILEPLUME, .heldItem = ITEM_BRIGHT_POWDER, .nature = NATURE_MODEST, .evs = {252, 0, 0, 4, 252, 0}, .moves = {MOVE_HIDDEN_POWER, MOVE_SOLAR_BEAM, MOVE_SLEEP_POWDER, MOVE_SYNTHESIS}},
+    {.iv = 31, .lvl = 88, .species = SPECIES_SHIFTRY, .heldItem = ITEM_LAX_INCENSE, .nature = NATURE_RASH, .evs = {0, 4, 0, 252, 252, 0}, .moves = {MOVE_SHADOW_BALL, MOVE_EXPLOSION, MOVE_SOLAR_BEAM, MOVE_QUICK_ATTACK}},
+    {.iv = 31, .lvl = 88, .species = SPECIES_BLAZIKEN, .heldItem = ITEM_SALAC_BERRY, .nature = NATURE_HASTY, .evs = {0, 252, 0, 252, 4, 0}, .moves = {MOVE_EARTHQUAKE, MOVE_OVERHEAT, MOVE_ENDURE, MOVE_REVERSAL}},
+    {.iv = 31, .lvl = 88, .species = SPECIES_FLYGON, .heldItem = ITEM_SCOPE_LENS, .nature = NATURE_NAIVE, .evs = {0, 128, 0, 252, 128, 0}, .moves = {MOVE_FIRE_BLAST, MOVE_DRAGON_CLAW, MOVE_CRUNCH, MOVE_SOLAR_BEAM}},
+    {.iv = 31, .lvl = 88, .species = SPECIES_WALREIN, .heldItem = ITEM_LEFTOVERS, .nature = NATURE_MODEST, .evs = {252, 0, 0, 0, 252, 4}, .moves = {MOVE_ICE_BEAM, MOVE_HIDDEN_POWER, MOVE_SHEER_COLD, MOVE_REST}},
 };
 
+// Supertrainer Shun (Orre Colosseum) - explosion/sun squad
 static const struct TrainerMon sParty_FrontierShania[] = {
-    {.iv = 125, .lvl = 31, .species = SPECIES_SKARMORY, .moves = {MOVE_SWIFT, MOVE_AGILITY, MOVE_FURY_ATTACK, MOVE_SAND_ATTACK}},
-    {.iv = 125, .lvl = 31, .species = SPECIES_SWELLOW, .moves = {MOVE_PECK, MOVE_FOCUS_ENERGY, MOVE_QUICK_ATTACK, MOVE_WING_ATTACK}},
-    {.iv = 125, .lvl = 31, .species = SPECIES_SWABLU, .moves = {MOVE_PECK, MOVE_GROWL, MOVE_ASTONISH, MOVE_SING}},
-    {
-    .iv = 0,
-    .lvl = 31,
-    .species = SPECIES_PIDGEOTTO,
-    }
+    {.iv = 31, .lvl = 90, .species = SPECIES_REGIROCK, .heldItem = ITEM_SILK_SCARF, .nature = NATURE_ADAMANT, .evs = {252, 252, 0, 0, 0, 4}, .moves = {MOVE_EXPLOSION, MOVE_SUNNY_DAY, MOVE_ANCIENT_POWER, MOVE_PROTECT}},
+    {.iv = 31, .lvl = 90, .species = SPECIES_SHIFTRY, .heldItem = ITEM_LUM_BERRY, .nature = NATURE_RASH, .evs = {0, 4, 0, 252, 252, 0}, .moves = {MOVE_EXPLOSION, MOVE_FAKE_OUT, MOVE_SOLAR_BEAM, MOVE_SHADOW_BALL}},
+    {.iv = 31, .lvl = 90, .species = SPECIES_GOLEM, .heldItem = ITEM_QUICK_CLAW, .nature = NATURE_ADAMANT, .evs = {252, 252, 0, 0, 0, 4}, .moves = {MOVE_EXPLOSION, MOVE_PROTECT, MOVE_ROCK_BLAST, MOVE_EARTHQUAKE}},
+    {.iv = 31, .lvl = 90, .species = SPECIES_ELECTRODE, .heldItem = ITEM_CHOICE_BAND, .nature = NATURE_NAIVE, .evs = {0, 4, 0, 252, 252, 0}, .moves = {MOVE_EXPLOSION, MOVE_THUNDERBOLT, MOVE_NONE, MOVE_NONE}},
+    {.iv = 31, .lvl = 90, .species = SPECIES_HOUNDOOM, .heldItem = ITEM_WHITE_HERB, .nature = NATURE_NAIVE, .evs = {0, 4, 0, 252, 252, 0}, .moves = {MOVE_OVERHEAT, MOVE_SOLAR_BEAM, MOVE_CRUNCH, MOVE_PROTECT}},
+    {.iv = 31, .lvl = 90, .species = SPECIES_ALAKAZAM, .heldItem = ITEM_LAX_INCENSE, .nature = NATURE_TIMID, .evs = {0, 0, 0, 252, 252, 4}, .moves = {MOVE_PSYCHIC, MOVE_FIRE_PUNCH, MOVE_PROTECT, MOVE_ICE_PUNCH}},
 };
 
+// Supertrainer Okamoo (Orre Colosseum)
 static const struct TrainerMon sParty_FrontierTyler[] = {
-    {.iv = 125, .lvl = 33, .species = SPECIES_SHELGON, .moves = {MOVE_DRAGON_CLAW, MOVE_FLAMETHROWER, MOVE_BRICK_BREAK, MOVE_PROTECT}},
-    {.iv = 125, .lvl = 33, .species = SPECIES_METANG, .moves = {MOVE_TAKE_DOWN, MOVE_CONFUSION, MOVE_METAL_CLAW, MOVE_SCARY_FACE}},
-    {.iv = 125, .lvl = 33, .species = SPECIES_VIGOROTH, .moves = {MOVE_SLASH, MOVE_COUNTER, MOVE_ENCORE, MOVE_FOCUS_ENERGY}},
-    {
-    .iv = 0,
-    .lvl = 33,
-    .species = SPECIES_RATICATE,
-    }
+    {.iv = 31, .lvl = 92, .species = SPECIES_NINJASK, .heldItem = ITEM_LUM_BERRY, .nature = NATURE_JOLLY, .evs = {0, 252, 0, 252, 4, 0}, .moves = {MOVE_SWORDS_DANCE, MOVE_AERIAL_ACE, MOVE_BATON_PASS, MOVE_PROTECT}},
+    {.iv = 31, .lvl = 92, .species = SPECIES_TOGETIC, .heldItem = ITEM_LAX_INCENSE, .nature = NATURE_BOLD, .evs = {252, 0, 128, 0, 0, 128}, .moves = {MOVE_FOLLOW_ME, MOVE_LIGHT_SCREEN, MOVE_REFLECT, MOVE_ENCORE}},
+    {.iv = 31, .lvl = 92, .species = SPECIES_FERALIGATR, .heldItem = ITEM_SCOPE_LENS, .nature = NATURE_ADAMANT, .evs = {0, 252, 0, 252, 4, 0}, .moves = {MOVE_BRICK_BREAK, MOVE_SLASH, MOVE_CRUNCH, MOVE_HYDRO_PUMP}},
+    {.iv = 31, .lvl = 92, .species = SPECIES_HERACROSS, .heldItem = ITEM_SALAC_BERRY, .nature = NATURE_ADAMANT, .evs = {0, 252, 0, 252, 4, 0}, .moves = {MOVE_MEGAHORN, MOVE_EARTHQUAKE, MOVE_ENDURE, MOVE_REVERSAL}},
+    {.iv = 31, .lvl = 92, .species = SPECIES_URSARING, .heldItem = ITEM_CHESTO_BERRY, .nature = NATURE_ADAMANT, .friendship = TRAINER_MON_FRIENDLY, .evs = {0, 252, 0, 252, 4, 0}, .moves = {MOVE_RETURN, MOVE_AERIAL_ACE, MOVE_BRICK_BREAK, MOVE_REST}},
+    {.iv = 31, .lvl = 92, .species = SPECIES_SCIZOR, .heldItem = ITEM_FOCUS_BAND, .nature = NATURE_ADAMANT, .evs = {0, 252, 4, 252, 0, 0}, .moves = {MOVE_SWORDS_DANCE, MOVE_BATON_PASS, MOVE_AERIAL_ACE, MOVE_SILVER_WIND}},
 };
 
+// Supertrainer Huron (Orre Colosseum)
 static const struct TrainerMon sParty_FrontierCarrie[] = {
-    {.iv = 200, .lvl = 42, .species = SPECIES_STARYU, .moves = {MOVE_SURF, MOVE_PSYCHIC, MOVE_THUNDERBOLT, MOVE_RECOVER}},
-    {.iv = 200, .lvl = 42, .species = SPECIES_DUSCLOPS, .moves = {MOVE_SHADOW_BALL, MOVE_CONFUSE_RAY, MOVE_WILL_O_WISP, MOVE_TOXIC}},
-    {.iv = 200, .lvl = 42, .species = SPECIES_SABLEYE, .moves = {MOVE_SHADOW_BALL, MOVE_BRICK_BREAK, MOVE_TOXIC, MOVE_NIGHT_SHADE}},
-    {
-    .iv = 0,
-    .lvl = 42,
-    .species = SPECIES_FEAROW,
-    }
+    {.iv = 31, .lvl = 95, .species = SPECIES_SUICUNE, .heldItem = ITEM_CHESTO_BERRY, .nature = NATURE_MODEST, .evs = {252, 0, 0, 4, 252, 0}, .moves = {MOVE_ICE_BEAM, MOVE_HYDRO_PUMP, MOVE_CALM_MIND, MOVE_REST}},
+    {.iv = 31, .lvl = 95, .species = SPECIES_RHYDON, .heldItem = ITEM_QUICK_CLAW, .nature = NATURE_ADAMANT, .evs = {252, 252, 0, 0, 0, 4}, .moves = {MOVE_MEGAHORN, MOVE_EARTHQUAKE, MOVE_ROCK_BLAST, MOVE_PROTECT}},
+    {.iv = 31, .lvl = 95, .species = SPECIES_SWELLOW, .heldItem = ITEM_CHOICE_BAND, .nature = NATURE_JOLLY, .friendship = TRAINER_MON_FRIENDLY, .evs = {0, 252, 0, 252, 4, 0}, .moves = {MOVE_RETURN, MOVE_AERIAL_ACE, MOVE_HYPER_BEAM, MOVE_QUICK_ATTACK}},
+    {.iv = 31, .lvl = 95, .species = SPECIES_LATIOS, .heldItem = ITEM_SOUL_DEW, .nature = NATURE_TIMID, .evs = {0, 0, 0, 252, 252, 4}, .moves = {MOVE_PSYCHIC, MOVE_THUNDERBOLT, MOVE_DRAGON_CLAW, MOVE_ICE_BEAM}},
+    {.iv = 31, .lvl = 95, .species = SPECIES_METAGROSS, .heldItem = ITEM_SCOPE_LENS, .nature = NATURE_ADAMANT, .evs = {0, 252, 4, 252, 0, 0}, .moves = {MOVE_METEOR_MASH, MOVE_EARTHQUAKE, MOVE_SHADOW_BALL, MOVE_PROTECT}},
+    {.iv = 31, .lvl = 95, .species = SPECIES_WALREIN, .heldItem = ITEM_LEFTOVERS, .nature = NATURE_MODEST, .evs = {252, 0, 0, 0, 252, 4}, .moves = {MOVE_ICE_BEAM, MOVE_WATERFALL, MOVE_SHEER_COLD, MOVE_PROTECT}},
 };
 
+// Myth Trainer Infin (Orre Colosseum)
 static const struct TrainerMon sParty_FrontierChaz[] = {
-    {.iv = 200, .lvl = 44, .species = SPECIES_MANECTRIC, .moves = {MOVE_THUNDERBOLT, MOVE_FLAMETHROWER, MOVE_CRUNCH, MOVE_THUNDER_WAVE}},
-    {.iv = 200, .lvl = 44, .species = SPECIES_ELECTRODE, .moves = {MOVE_THUNDERBOLT, MOVE_EXPLOSION, MOVE_RAIN_DANCE, MOVE_THUNDER}},
-    {.iv = 200, .lvl = 44, .species = SPECIES_MAGNETON, .moves = {MOVE_THUNDERBOLT, MOVE_THUNDER_WAVE, MOVE_HIDDEN_POWER, MOVE_EXPLOSION}},
-    {
-    .iv = 0,
-    .lvl = 44,
-    .species = SPECIES_ARBOK,
-    }
+    {.iv = 31, .lvl = 100, .species = SPECIES_KYOGRE, .heldItem = ITEM_CHESTO_BERRY, .nature = NATURE_MODEST, .evs = {252, 0, 0, 0, 252, 4}, .moves = {MOVE_SURF, MOVE_ICE_BEAM, MOVE_THUNDER, MOVE_REST}},
+    {.iv = 31, .lvl = 100, .species = SPECIES_SLAKING, .heldItem = ITEM_CHOICE_BAND, .nature = NATURE_ADAMANT, .evs = {0, 252, 0, 252, 4, 0}, .moves = {MOVE_HYPER_BEAM, MOVE_EARTHQUAKE, MOVE_SHADOW_BALL, MOVE_NONE}},
+    {.iv = 31, .lvl = 100, .species = SPECIES_LATIAS, .heldItem = ITEM_BRIGHT_POWDER, .nature = NATURE_MODEST, .evs = {252, 0, 0, 4, 252, 0}, .moves = {MOVE_CALM_MIND, MOVE_ICE_BEAM, MOVE_DRAGON_CLAW, MOVE_PSYCHIC}},
+    {.iv = 31, .lvl = 100, .species = SPECIES_LATIOS, .heldItem = ITEM_SOUL_DEW, .nature = NATURE_TIMID, .evs = {0, 0, 0, 252, 252, 4}, .moves = {MOVE_SURF, MOVE_THUNDER, MOVE_DRAGON_CLAW, MOVE_PSYCHIC}},
+    {.iv = 31, .lvl = 100, .species = SPECIES_HERACROSS, .heldItem = ITEM_SALAC_BERRY, .nature = NATURE_ADAMANT, .evs = {0, 252, 0, 252, 4, 0}, .moves = {MOVE_MEGAHORN, MOVE_EARTHQUAKE, MOVE_ENDURE, MOVE_REVERSAL}},
+    {.iv = 31, .lvl = 100, .species = SPECIES_RAYQUAZA, .heldItem = ITEM_LEFTOVERS, .nature = NATURE_ADAMANT, .evs = {0, 252, 4, 252, 0, 0}, .moves = {MOVE_AERIAL_ACE, MOVE_EXTREME_SPEED, MOVE_EARTHQUAKE, MOVE_DRAGON_DANCE}},
 };
 
+// Supertrainer Garvon (Tower Colosseum)
 static const struct TrainerMon sParty_FrontierDorine[] = {
-    {.iv = 125, .lvl = 33, .species = SPECIES_WAILMER, .moves = {MOVE_SURF, MOVE_ROLLOUT, MOVE_WHIRLPOOL, MOVE_REST}},
-    {.iv = 125, .lvl = 33, .species = SPECIES_SEADRA, .moves = {MOVE_SURF, MOVE_SMOKESCREEN, MOVE_TWISTER, MOVE_AGILITY}},
-    {.iv = 125, .lvl = 33, .species = SPECIES_LOMBRE, .moves = {MOVE_SURF, MOVE_ABSORB, MOVE_NATURE_POWER, MOVE_FAKE_OUT}},
-    {
-    .iv = 0,
-    .lvl = 33,
-    .species = SPECIES_NIDOQUEEN,
-    }
+    {.iv = 31, .lvl = 86, .species = SPECIES_CROBAT, .heldItem = ITEM_SCOPE_LENS, .nature = NATURE_NAIVE, .evs = {0, 128, 0, 252, 128, 0}, .moves = {MOVE_SHADOW_BALL, MOVE_CONFUSE_RAY, MOVE_SLUDGE_BOMB, MOVE_AERIAL_ACE}},
+    {.iv = 31, .lvl = 86, .species = SPECIES_MILTANK, .heldItem = ITEM_SALAC_BERRY, .nature = NATURE_ADAMANT, .evs = {0, 252, 0, 252, 4, 0}, .moves = {MOVE_ENDURE, MOVE_REVERSAL, MOVE_EARTHQUAKE, MOVE_BODY_SLAM}},
+    {.iv = 31, .lvl = 86, .species = SPECIES_RAIKOU, .heldItem = ITEM_BRIGHT_POWDER, .nature = NATURE_NAIVE, .evs = {0, 4, 0, 252, 252, 0}, .moves = {MOVE_THUNDERBOLT, MOVE_CRUNCH, MOVE_HIDDEN_POWER, MOVE_QUICK_ATTACK}},
+    {.iv = 31, .lvl = 86, .species = SPECIES_SLAKING, .heldItem = ITEM_CHOICE_BAND, .nature = NATURE_ADAMANT, .evs = {0, 252, 0, 252, 4, 0}, .moves = {MOVE_HYPER_BEAM, MOVE_SHADOW_BALL, MOVE_EARTHQUAKE, MOVE_NONE}},
+    {.iv = 31, .lvl = 86, .species = SPECIES_RAYQUAZA, .heldItem = ITEM_LEFTOVERS, .nature = NATURE_ADAMANT, .evs = {0, 252, 4, 252, 0, 0}, .moves = {MOVE_DRAGON_DANCE, MOVE_EXTREME_SPEED, MOVE_EARTHQUAKE, MOVE_AERIAL_ACE}},
+    {.iv = 31, .lvl = 86, .species = SPECIES_LATIAS, .heldItem = ITEM_LAX_INCENSE, .nature = NATURE_MODEST, .evs = {252, 0, 0, 4, 252, 0}, .moves = {MOVE_MIST_BALL, MOVE_DRAGON_CLAW, MOVE_CALM_MIND, MOVE_SURF}},
 };
 
+// Myth Trainer Inity (Orre Colosseum)
 static const struct TrainerMon sParty_FrontierRaul[] = {
-    {.iv = 200, .lvl = 48, .species = SPECIES_METAGROSS, .moves = {MOVE_METEOR_MASH, MOVE_EARTHQUAKE, MOVE_PSYCHIC, MOVE_EXPLOSION}},
-    {.iv = 200, .lvl = 48, .species = SPECIES_SALAMENCE, .moves = {MOVE_DRAGON_CLAW, MOVE_FLAMETHROWER, MOVE_BRICK_BREAK, MOVE_PROTECT}},
-    {.iv = 200, .lvl = 48, .species = SPECIES_SWAMPERT, .moves = {MOVE_EARTHQUAKE, MOVE_SURF, MOVE_ICE_BEAM, MOVE_COUNTER}},
-    {
-    .iv = 0,
-    .lvl = 48,
-    .species = SPECIES_NIDOKING,
-    }
+    {.iv = 31, .lvl = 100, .species = SPECIES_LATIAS, .heldItem = ITEM_LEFTOVERS, .nature = NATURE_MODEST, .evs = {252, 0, 0, 4, 252, 0}, .moves = {MOVE_CALM_MIND, MOVE_ICE_BEAM, MOVE_MIST_BALL, MOVE_DRAGON_CLAW}},
+    {.iv = 31, .lvl = 100, .species = SPECIES_LATIOS, .heldItem = ITEM_SOUL_DEW, .nature = NATURE_TIMID, .evs = {0, 0, 0, 252, 252, 4}, .moves = {MOVE_PSYCHIC, MOVE_DRAGON_CLAW, MOVE_THUNDER, MOVE_SOLAR_BEAM}},
+    {.iv = 31, .lvl = 100, .species = SPECIES_KYOGRE, .heldItem = ITEM_BRIGHT_POWDER, .nature = NATURE_MODEST, .evs = {252, 0, 0, 4, 252, 0}, .moves = {MOVE_WATER_SPOUT, MOVE_ICE_BEAM, MOVE_THUNDER, MOVE_PROTECT}},
+    {.iv = 31, .lvl = 100, .species = SPECIES_SALAMENCE, .heldItem = ITEM_SCOPE_LENS, .nature = NATURE_NAIVE, .evs = {0, 128, 0, 252, 128, 0}, .moves = {MOVE_FIRE_BLAST, MOVE_DRAGON_CLAW, MOVE_HYDRO_PUMP, MOVE_CRUNCH}},
+    {.iv = 31, .lvl = 100, .species = SPECIES_GROUDON, .heldItem = ITEM_LAX_INCENSE, .nature = NATURE_NAUGHTY, .evs = {0, 252, 0, 4, 252, 0}, .moves = {MOVE_EARTHQUAKE, MOVE_ANCIENT_POWER, MOVE_OVERHEAT, MOVE_PROTECT}},
+    {.iv = 31, .lvl = 100, .species = SPECIES_SLAKING, .heldItem = ITEM_CHOICE_BAND, .nature = NATURE_ADAMANT, .evs = {0, 252, 0, 252, 4, 0}, .moves = {MOVE_HYPER_BEAM, MOVE_EARTHQUAKE, MOVE_SHADOW_BALL, MOVE_NONE}},
 };
 
 static const struct TrainerMon sParty_FrontierJaxon[] = {
@@ -17934,26 +17921,24 @@ static const struct TrainerMon sParty_FrontierClare[] = {
     }
 };
 
+// Supertrainer Tangut (Phenac Stadium) - starters team
 static const struct TrainerMon sParty_FrontierTess[] = {
-    {.iv = 150, .lvl = 35, .species = SPECIES_GYARADOS, .moves = {MOVE_SURF, MOVE_BITE, MOVE_DRAGON_DANCE, MOVE_RETURN}},
-    {.iv = 150, .lvl = 35, .species = SPECIES_STARYU, .moves = {MOVE_SURF, MOVE_THUNDERBOLT, MOVE_ICE_BEAM, MOVE_RECOVER}},
-    {.iv = 150, .lvl = 35, .species = SPECIES_SHARPEDO, .moves = {MOVE_CRUNCH, MOVE_SURF, MOVE_SCARY_FACE, MOVE_SLASH}},
-    {
-    .iv = 0,
-    .lvl = 35,
-    .species = SPECIES_KINGLER,
-    }
+    {.iv = 31, .lvl = 78, .species = SPECIES_TREECKO, .heldItem = ITEM_LUM_BERRY, .nature = NATURE_HASTY, .evs = {0, 128, 0, 252, 128, 0}, .moves = {MOVE_BITE, MOVE_GIGA_DRAIN, MOVE_AERIAL_ACE, MOVE_QUICK_ATTACK}},
+    {.iv = 31, .lvl = 78, .species = SPECIES_TORCHIC, .heldItem = ITEM_SITRUS_BERRY, .nature = NATURE_NAIVE, .evs = {0, 128, 0, 252, 128, 0}, .moves = {MOVE_SAND_ATTACK, MOVE_FLAMETHROWER, MOVE_SLASH, MOVE_QUICK_ATTACK}},
+    {.iv = 31, .lvl = 78, .species = SPECIES_MUDKIP, .heldItem = ITEM_FOCUS_BAND, .nature = NATURE_ADAMANT, .evs = {252, 252, 0, 4, 0, 0}, .moves = {MOVE_WATERFALL, MOVE_TAKE_DOWN, MOVE_DIG, MOVE_MIRROR_COAT}},
+    {.iv = 31, .lvl = 78, .species = SPECIES_PIKACHU, .heldItem = ITEM_LIGHT_BALL, .nature = NATURE_TIMID, .evs = {0, 0, 0, 252, 252, 4}, .moves = {MOVE_THUNDERBOLT, MOVE_SLAM, MOVE_LIGHT_SCREEN, MOVE_THUNDER_WAVE}},
+    {.iv = 31, .lvl = 78, .species = SPECIES_CLAMPERL, .heldItem = ITEM_DEEP_SEA_TOOTH, .nature = NATURE_MODEST, .evs = {252, 0, 0, 0, 252, 4}, .moves = {MOVE_WATERFALL, MOVE_CONFUSE_RAY, MOVE_RAIN_DANCE, MOVE_BLIZZARD}},
+    {.iv = 31, .lvl = 78, .species = SPECIES_WYNAUT, .heldItem = ITEM_LAX_INCENSE, .nature = NATURE_CALM, .evs = {252, 0, 128, 0, 0, 128}, .moves = {MOVE_COUNTER, MOVE_MIRROR_COAT, MOVE_ENCORE, MOVE_SAFEGUARD}},
 };
 
+// Supertrainer Holoh (Under Colosseum) - twins rain team
 static const struct TrainerMon sParty_FrontierVince[] = {
-    {.iv = 150, .lvl = 35, .species = SPECIES_SEALEO, .moves = {MOVE_SURF, MOVE_ICE_BEAM, MOVE_BODY_SLAM, MOVE_REST}},
-    {.iv = 150, .lvl = 35, .species = SPECIES_SEADRA, .moves = {MOVE_SURF, MOVE_SMOKESCREEN, MOVE_TWISTER, MOVE_AGILITY}},
-    {.iv = 150, .lvl = 35, .species = SPECIES_TENTACRUEL, .moves = {MOVE_SURF, MOVE_SLUDGE_BOMB, MOVE_ICE_BEAM, MOVE_BARRIER}},
-    {
-    .iv = 0,
-    .lvl = 35,
-    .species = SPECIES_EXEGGCUTE,
-    }
+    {.iv = 31, .lvl = 80, .species = SPECIES_PLUSLE, .heldItem = ITEM_MAGNET, .nature = NATURE_NAIVE, .friendship = TRAINER_MON_FRIENDLY, .evs = {0, 4, 0, 252, 252, 0}, .moves = {MOVE_QUICK_ATTACK, MOVE_RETURN, MOVE_HIDDEN_POWER, MOVE_THUNDER}},
+    {.iv = 31, .lvl = 80, .species = SPECIES_MINUN, .heldItem = ITEM_BRIGHT_POWDER, .nature = NATURE_NAIVE, .friendship = TRAINER_MON_FRIENDLY, .evs = {0, 4, 0, 252, 252, 0}, .moves = {MOVE_THUNDER, MOVE_RETURN, MOVE_HIDDEN_POWER, MOVE_RAIN_DANCE}},
+    {.iv = 31, .lvl = 80, .species = SPECIES_VOLBEAT, .heldItem = ITEM_LAX_INCENSE, .nature = NATURE_MODEST, .evs = {252, 0, 0, 4, 252, 0}, .moves = {MOVE_THUNDER, MOVE_TAIL_GLOW, MOVE_BATON_PASS, MOVE_LIGHT_SCREEN}},
+    {.iv = 31, .lvl = 80, .species = SPECIES_ILLUMISE, .heldItem = ITEM_SCOPE_LENS, .nature = NATURE_MODEST, .evs = {252, 0, 0, 4, 252, 0}, .moves = {MOVE_RAIN_DANCE, MOVE_THUNDER, MOVE_HELPING_HAND, MOVE_ENCORE}},
+    {.iv = 31, .lvl = 80, .species = SPECIES_SOLROCK, .heldItem = ITEM_CHESTO_BERRY, .nature = NATURE_CAREFUL, .evs = {252, 128, 0, 0, 0, 128}, .moves = {MOVE_ROCK_TOMB, MOVE_COSMIC_POWER, MOVE_SHADOW_BALL, MOVE_REST}},
+    {.iv = 31, .lvl = 80, .species = SPECIES_LUNATONE, .heldItem = ITEM_LEFTOVERS, .nature = NATURE_MODEST, .evs = {252, 0, 0, 4, 252, 0}, .moves = {MOVE_HYPNOSIS, MOVE_CALM_MIND, MOVE_PSYCHIC, MOVE_HIDDEN_POWER}},
 };
 
 static const struct TrainerMon sParty_FrontierBryon[] = {
@@ -17967,48 +17952,44 @@ static const struct TrainerMon sParty_FrontierBryon[] = {
     }
 };
 
+// Supertrainer Kauson (Phenac Stadium) - babies team
 static const struct TrainerMon sParty_FrontierGillian[] = {
-    {.iv = 150, .lvl = 35, .species = SPECIES_LANTURN, .moves = {MOVE_SURF, MOVE_THUNDERBOLT, MOVE_ICE_BEAM, MOVE_THUNDER_WAVE}},
-    {.iv = 150, .lvl = 35, .species = SPECIES_STARYU, .moves = {MOVE_SURF, MOVE_THUNDERBOLT, MOVE_RECOVER, MOVE_RAPID_SPIN}},
-    {.iv = 150, .lvl = 35, .species = SPECIES_AZUMARILL, .moves = {MOVE_SURF, MOVE_RETURN, MOVE_BRICK_BREAK, MOVE_RAIN_DANCE}},
-    {
-    .iv = 0,
-    .lvl = 35,
-    .species = SPECIES_MAROWAK,
-    }
+    {.iv = 31, .lvl = 78, .species = SPECIES_MACHOP, .heldItem = ITEM_QUICK_CLAW, .nature = NATURE_ADAMANT, .evs = {252, 252, 0, 4, 0, 0}, .moves = {MOVE_BRICK_BREAK, MOVE_EARTHQUAKE, MOVE_FIRE_BLAST, MOVE_ROCK_SLIDE}},
+    {.iv = 31, .lvl = 78, .species = SPECIES_ABRA, .heldItem = ITEM_SCOPE_LENS, .nature = NATURE_TIMID, .evs = {0, 0, 0, 252, 252, 4}, .moves = {MOVE_PSYCHIC, MOVE_FIRE_PUNCH, MOVE_THUNDER_PUNCH, MOVE_ICE_PUNCH}},
+    {.iv = 31, .lvl = 78, .species = SPECIES_HOUNDOUR, .heldItem = ITEM_FOCUS_BAND, .nature = NATURE_NAIVE, .evs = {0, 128, 0, 252, 128, 0}, .moves = {MOVE_FLAMETHROWER, MOVE_BITE, MOVE_SMOG, MOVE_REVERSAL}},
+    {.iv = 31, .lvl = 78, .species = SPECIES_POOCHYENA, .heldItem = ITEM_BRIGHT_POWDER, .nature = NATURE_ADAMANT, .evs = {0, 252, 0, 252, 4, 0}, .moves = {MOVE_BITE, MOVE_SCARY_FACE, MOVE_SWAGGER, MOVE_POISON_FANG}},
+    {.iv = 31, .lvl = 78, .species = SPECIES_RALTS, .heldItem = ITEM_LAX_INCENSE, .nature = NATURE_MODEST, .evs = {252, 0, 0, 4, 252, 0}, .moves = {MOVE_PSYCHIC, MOVE_LIGHT_SCREEN, MOVE_SHOCK_WAVE, MOVE_WILL_O_WISP}},
+    {.iv = 31, .lvl = 78, .species = SPECIES_MAKUHITA, .heldItem = ITEM_LEFTOVERS, .nature = NATURE_ADAMANT, .evs = {252, 252, 0, 0, 0, 4}, .moves = {MOVE_SEISMIC_TOSS, MOVE_EARTHQUAKE, MOVE_FORESIGHT, MOVE_REVENGE}},
 };
 
+// Supertrainer Gally (Pyrite Colosseum) - unevolved team
 static const struct TrainerMon sParty_FrontierDavin[] = {
-    {.iv = 150, .lvl = 36, .species = SPECIES_GYARADOS, .moves = {MOVE_SURF, MOVE_RETURN, MOVE_DRAGON_DANCE, MOVE_BITE}},
-    {.iv = 150, .lvl = 36, .species = SPECIES_SHARPEDO, .moves = {MOVE_CRUNCH, MOVE_SURF, MOVE_SCARY_FACE, MOVE_SLASH}},
-    {.iv = 150, .lvl = 36, .species = SPECIES_CRAWDAUNT, .moves = {MOVE_CRUNCH, MOVE_SURF, MOVE_KNOCK_OFF, MOVE_SWORDS_DANCE}},
-    {
-    .iv = 0,
-    .lvl = 36,
-    .species = SPECIES_HITMONLEE,
-    }
+    {.iv = 31, .lvl = 80, .species = SPECIES_NOSEPASS, .heldItem = ITEM_QUICK_CLAW, .nature = NATURE_QUIET, .evs = {252, 0, 128, 0, 128, 0}, .moves = {MOVE_THUNDER_WAVE, MOVE_ROCK_SLIDE, MOVE_THUNDERBOLT, MOVE_MAGNITUDE}},
+    {.iv = 31, .lvl = 80, .species = SPECIES_LOMBRE, .heldItem = ITEM_LEFTOVERS, .nature = NATURE_BOLD, .evs = {252, 0, 128, 0, 128, 0}, .moves = {MOVE_RAIN_DANCE, MOVE_TOXIC, MOVE_WATER_PULSE, MOVE_LEECH_SEED}},
+    {.iv = 31, .lvl = 80, .species = SPECIES_NUZLEAF, .heldItem = ITEM_BLACK_GLASSES, .nature = NATURE_ADAMANT, .evs = {0, 252, 0, 252, 4, 0}, .moves = {MOVE_SWAGGER, MOVE_TORMENT, MOVE_FAINT_ATTACK, MOVE_LEECH_SEED}},
+    {.iv = 31, .lvl = 80, .species = SPECIES_CLAMPERL, .heldItem = ITEM_DEEP_SEA_SCALE, .nature = NATURE_BOLD, .evs = {252, 0, 128, 0, 0, 128}, .moves = {MOVE_CLAMP, MOVE_IRON_DEFENSE, MOVE_TOXIC, MOVE_CONFUSE_RAY}},
+    {.iv = 31, .lvl = 80, .species = SPECIES_LILEEP, .heldItem = ITEM_HARD_STONE, .nature = NATURE_CALM, .evs = {252, 0, 128, 0, 128, 0}, .moves = {MOVE_ACID, MOVE_ANCIENT_POWER, MOVE_GIGA_DRAIN, MOVE_BARRIER}},
+    {.iv = 31, .lvl = 80, .species = SPECIES_ANORITH, .heldItem = ITEM_SILVER_POWDER, .nature = NATURE_ADAMANT, .evs = {0, 252, 0, 252, 4, 0}, .moves = {MOVE_ROCK_BLAST, MOVE_FURY_CUTTER, MOVE_METAL_CLAW, MOVE_SWORDS_DANCE}},
 };
 
+// Supertrainer Charl (Pyrite Colosseum) - baby team
 static const struct TrainerMon sParty_FrontierTrevon[] = {
-    {.iv = 150, .lvl = 36, .species = SPECIES_SEADRA, .moves = {MOVE_SURF, MOVE_ICE_BEAM, MOVE_SMOKESCREEN, MOVE_TWISTER}},
-    {.iv = 150, .lvl = 36, .species = SPECIES_TENTACRUEL, .moves = {MOVE_SURF, MOVE_SLUDGE_BOMB, MOVE_ICE_BEAM, MOVE_TOXIC}},
-    {.iv = 150, .lvl = 36, .species = SPECIES_SEALEO, .moves = {MOVE_SURF, MOVE_ICE_BEAM, MOVE_BODY_SLAM, MOVE_REST}},
-    {
-    .iv = 0,
-    .lvl = 36,
-    .species = SPECIES_HITMONCHAN,
-    }
+    {.iv = 31, .lvl = 80, .species = SPECIES_PIKACHU, .heldItem = ITEM_LIGHT_BALL, .nature = NATURE_NAIVE, .evs = {0, 128, 0, 252, 128, 0}, .moves = {MOVE_THUNDER_WAVE, MOVE_BRICK_BREAK, MOVE_THUNDERBOLT, MOVE_IRON_TAIL}},
+    {.iv = 31, .lvl = 80, .species = SPECIES_PHANPY, .heldItem = ITEM_SALAC_BERRY, .nature = NATURE_ADAMANT, .evs = {0, 252, 0, 252, 4, 0}, .moves = {MOVE_ENDURE, MOVE_FLAIL, MOVE_EARTHQUAKE, MOVE_ANCIENT_POWER}},
+    {.iv = 31, .lvl = 80, .species = SPECIES_PSYDUCK, .heldItem = ITEM_QUICK_CLAW, .nature = NATURE_MODEST, .evs = {252, 0, 0, 4, 252, 0}, .moves = {MOVE_ICE_BEAM, MOVE_HYDRO_PUMP, MOVE_CROSS_CHOP, MOVE_PSYCHIC}},
+    {.iv = 31, .lvl = 80, .species = SPECIES_CHIKORITA, .heldItem = ITEM_SCOPE_LENS, .nature = NATURE_CAREFUL, .evs = {252, 128, 0, 0, 0, 128}, .moves = {MOVE_RAZOR_LEAF, MOVE_BODY_SLAM, MOVE_SYNTHESIS, MOVE_ANCIENT_POWER}},
+    {.iv = 31, .lvl = 80, .species = SPECIES_TEDDIURSA, .heldItem = ITEM_BRIGHT_POWDER, .nature = NATURE_ADAMANT, .evs = {0, 252, 0, 252, 4, 0}, .moves = {MOVE_AERIAL_ACE, MOVE_BRICK_BREAK, MOVE_SLASH, MOVE_EARTHQUAKE}},
+    {.iv = 31, .lvl = 80, .species = SPECIES_VULPIX, .heldItem = ITEM_LUM_BERRY, .nature = NATURE_TIMID, .evs = {0, 0, 0, 252, 252, 4}, .moves = {MOVE_FIRE_BLAST, MOVE_WILL_O_WISP, MOVE_CONFUSE_RAY, MOVE_FAINT_ATTACK}},
 };
 
+// Supertrainer Tardel (Orre Colosseum)
 static const struct TrainerMon sParty_FrontierMateo[] = {
-    {.iv = 150, .lvl = 36, .species = SPECIES_CORSOLA, .moves = {MOVE_SURF, MOVE_ROCK_SLIDE, MOVE_RECOVER, MOVE_TOXIC}},
-    {.iv = 150, .lvl = 36, .species = SPECIES_STARYU, .moves = {MOVE_SURF, MOVE_THUNDERBOLT, MOVE_ICE_BEAM, MOVE_RECOVER}},
-    {.iv = 150, .lvl = 36, .species = SPECIES_GYARADOS, .moves = {MOVE_SURF, MOVE_RETURN, MOVE_DRAGON_DANCE, MOVE_BITE}},
-    {
-    .iv = 0,
-    .lvl = 36,
-    .species = SPECIES_HITMONTOP,
-    }
+    {.iv = 31, .lvl = 82, .species = SPECIES_ALAKAZAM, .heldItem = ITEM_BRIGHT_POWDER, .nature = NATURE_TIMID, .evs = {0, 0, 0, 252, 252, 4}, .moves = {MOVE_PSYCHIC, MOVE_THUNDER_PUNCH, MOVE_FIRE_PUNCH, MOVE_ICE_PUNCH}},
+    {.iv = 31, .lvl = 82, .species = SPECIES_BRELOOM, .heldItem = ITEM_FOCUS_BAND, .nature = NATURE_ADAMANT, .evs = {0, 252, 0, 252, 4, 0}, .moves = {MOVE_SPORE, MOVE_HELPING_HAND, MOVE_BRICK_BREAK, MOVE_SLUDGE_BOMB}},
+    {.iv = 31, .lvl = 82, .species = SPECIES_METAGROSS, .heldItem = ITEM_QUICK_CLAW, .nature = NATURE_ADAMANT, .evs = {0, 252, 4, 252, 0, 0}, .moves = {MOVE_PSYCHIC, MOVE_METEOR_MASH, MOVE_AERIAL_ACE, MOVE_SHADOW_BALL}},
+    {.iv = 31, .lvl = 82, .species = SPECIES_FLYGON, .heldItem = ITEM_SHELL_BELL, .nature = NATURE_ADAMANT, .friendship = TRAINER_MON_FRIENDLY, .evs = {0, 252, 0, 252, 4, 0}, .moves = {MOVE_DRAGON_BREATH, MOVE_RETURN, MOVE_CRUNCH, MOVE_ROCK_TOMB}},
+    {.iv = 31, .lvl = 82, .species = SPECIES_UMBREON, .heldItem = ITEM_LEFTOVERS, .nature = NATURE_CALM, .evs = {252, 0, 128, 0, 0, 128}, .moves = {MOVE_PROTECT, MOVE_HELPING_HAND, MOVE_TOXIC, MOVE_CONFUSE_RAY}},
+    {.iv = 31, .lvl = 82, .species = SPECIES_MILTANK, .heldItem = ITEM_LUM_BERRY, .nature = NATURE_ADAMANT, .evs = {252, 252, 0, 4, 0, 0}, .moves = {MOVE_SHADOW_BALL, MOVE_BODY_SLAM, MOVE_BRICK_BREAK, MOVE_HELPING_HAND}},
 };
 
 static const struct TrainerMon sParty_GrindingNurse[] = {

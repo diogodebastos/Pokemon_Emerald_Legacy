@@ -61,7 +61,7 @@ EverGrandeCity_Text_NurseReady:
 	.string "I'm ready whenever you are!$"
 
 EverGrandeCity_EventScript_FrontierRaul::
-	trainerbattle_single TRAINER_FRONTIER_RAUL, BattleRoyale_Text_GenericIntro, BattleRoyale_Text_GenericDefeated
-	msgbox BattleRoyale_Text_GenericPostBattle, MSGBOX_AUTOCLOSE
+	trainerbattle_single TRAINER_FRONTIER_RAUL, BattleRoyale_Text_InityIntro, BattleRoyale_Text_InityDefeated
+	msgbox BattleRoyale_Text_InityPostBattle, MSGBOX_AUTOCLOSE
 	end
 

@@ -466,6 +466,6 @@ LavaridgeTown_Text_HerbShopSign:
 
 
 LavaridgeTown_EventScript_FrontierMaddox::
-	trainerbattle_single TRAINER_FRONTIER_MADDOX, BattleRoyale_Text_GenericIntro, BattleRoyale_Text_GenericDefeated
-	msgbox BattleRoyale_Text_GenericPostBattle, MSGBOX_AUTOCLOSE
+	trainerbattle_single TRAINER_FRONTIER_MADDOX, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
+	msgbox BattleRoyale_Text_SupertrainerPostBattle, MSGBOX_AUTOCLOSE
 	end

@@ -26,6 +26,55 @@ BattleRoyale_Text_GenericDefeated:
 BattleRoyale_Text_GenericPostBattle:
 	.string "I won't forget this battle.$"
 
+BattleRoyale_Text_SupertrainerIntro:
+	.string "So you've climbed your way up to\n"
+	.string "face a SUPERTRAINER.\p"
+	.string "Only the elite of the ORRE\n"
+	.string "COLOSSEUM earn this title.\p"
+	.string "Show me you belong here!$"
+
+BattleRoyale_Text_SupertrainerDefeated:
+	.string "Incredible…!\p"
+	.string "You battle like a true\n"
+	.string "COLOSSEUM champion!$"
+
+BattleRoyale_Text_SupertrainerPostBattle:
+	.string "A SUPERTRAINER never forgets a\n"
+	.string "battle like that.\p"
+	.string "ORRE would be proud.$"
+
+BattleRoyale_Text_InfinIntro:
+	.string "I am INFIN, a MYTH TRAINER.\p"
+	.string "Legends are not born. They are\n"
+	.string "forged in battle.\p"
+	.string "Let us see which legend stands\n"
+	.string "when this is over!$"
+
+BattleRoyale_Text_InfinDefeated:
+	.string "So… a new legend is born today.\p"
+	.string "The myth lives on through you.$"
+
+BattleRoyale_Text_InfinPostBattle:
+	.string "Remember this battle, challenger.\p"
+	.string "You have written yourself into\n"
+	.string "the legends of ORRE.$"
+
+BattleRoyale_Text_InityIntro:
+	.string "I am INITY, the final MYTH\n"
+	.string "TRAINER.\p"
+	.string "Beyond me there is nothing but\n"
+	.string "legend itself.\p"
+	.string "Prove you are worthy of it!$"
+
+BattleRoyale_Text_InityDefeated:
+	.string "Unbelievable…\p"
+	.string "You have surpassed the myth!$"
+
+BattleRoyale_Text_InityPostBattle:
+	.string "There is no one left to stand\n"
+	.string "in your way.\p"
+	.string "Today, you became the legend.$"
+
 BattleRoyale_Text_NolandIntro:
 	.string "I'm NOLAND, the FACTORY HEAD!\p"
 	.string "I've studied the data on every\n"
