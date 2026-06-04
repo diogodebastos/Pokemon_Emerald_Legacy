@@ -3979,12 +3979,11 @@ const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_Rayquaza = {
     .paletteSlot = PALSLOT_NPC_3,
     .shadowSize = SHADOW_SIZE_M,
     .inanimate = FALSE,
-    .compressed = TRUE,
     .tracks = TRACKS_FOOT,
     .oam = &gObjectEventBaseOam_64x64,
     .subspriteTables = sOamTables_64x64,
     .anims = sAnimTable_Rayquaza,
-    .images = sPicTable_RayquazaStill,
+    .images = sPicTable_RayquazaCutscene,
     .affineAnims = gDummySpriteAffineAnimTable,
 };
 
