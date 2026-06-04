@@ -21,7 +21,19 @@ SkyPillar_Top_EventScript_TryRemoveRayquaza::
 SkyPillar_Top_OnTransition:
 	call_if_lt VAR_SKY_PILLAR_STATE, 2, SkyPillar_Top_EventScript_SetCleanLayout
 	call_if_ge VAR_SKY_PILLAR_STATE, 2, SkyPillar_Top_EventScript_TryShowRayquaza
+	@ Keep the shiny-converter NPC hidden until the Rayquaza/Zinnia sequence at the
+	@ top is complete (Zinnia defeated), so it's a post-game-only convenience NPC.
+	call_if_set FLAG_DEFEATED_ZINNIA, SkyPillar_Top_EventScript_ShowShinyConverter
+	call_if_unset FLAG_DEFEATED_ZINNIA, SkyPillar_Top_EventScript_HideShinyConverter
 	end
+
+SkyPillar_Top_EventScript_ShowShinyConverter::
+	clearflag FLAG_HIDE_SKY_PILLAR_TOP_SHINY_CONVERTER
+	return
+
+SkyPillar_Top_EventScript_HideShinyConverter::
+	setflag FLAG_HIDE_SKY_PILLAR_TOP_SHINY_CONVERTER
+	return
 
 SkyPillar_Top_EventScript_SetCleanLayout::
 	setmaplayoutindex LAYOUT_SKY_PILLAR_TOP_CLEAN

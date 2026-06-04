@@ -77,7 +77,7 @@
       "trainer_type": "TRAINER_TYPE_NONE",
       "trainer_sight_or_berry_tree_id": "0",
       "script": "SkyPillar_Top_EventScript_ShinyConverter",
-      "flag": "0"
+      "flag": "FLAG_HIDE_SKY_PILLAR_TOP_SHINY_CONVERTER"
     }
   ],
   "warp_events": [
