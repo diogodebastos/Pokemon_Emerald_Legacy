@@ -42,6 +42,7 @@ MauvilleCity_BikeShop_EventScript_NotFar::
 
 MauvilleCity_BikeShop_EventScript_YesFar::
 	setflag FLAG_RECEIVED_BIKE
+	setflag FLAG_UNLOCKED_BIKE_SWITCHING
 	goto MauvilleCity_BikeShop_EventScript_ChooseBike
 	end
 
@@ -64,6 +65,7 @@ MauvilleCity_BikeShop_EventScript_ComeBackToSwitchBikes::
 	end
 
 MauvilleCity_BikeShop_EventScript_AskSwitchBikes::
+	setflag FLAG_UNLOCKED_BIKE_SWITCHING
 	msgbox MauvilleCity_BikeShop_Text_WantToSwitchBikes, MSGBOX_YESNO
 	goto_if_eq VAR_RESULT, YES, MauvilleCity_BikeShop_EventScript_SwitchBikes
 	goto_if_eq VAR_RESULT, NO, MauvilleCity_BikeShop_EventScript_KeepBike
