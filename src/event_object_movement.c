@@ -2073,6 +2073,14 @@ static void RefreshFollowerGraphics(struct ObjectEvent *objEvent) {
     }
 }
 
+// Public: set an already-spawned overworld Pokémon object's shininess and
+// reload its palette/graphics (used by the overworld spawn system).
+void SetOverworldMonShiny(struct ObjectEvent *objEvent, bool8 shiny)
+{
+    objEvent->shiny = shiny;
+    RefreshFollowerGraphics(objEvent);
+}
+
 // Like CastformDataTypeChange, but for overworld weather
 static u8 GetOverworldCastformForm(void) {
     switch (GetCurrentWeather())

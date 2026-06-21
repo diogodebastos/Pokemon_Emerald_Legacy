@@ -11,6 +11,8 @@
 #include "constants/event_objects.h"
 #include "constants/event_object_movement.h"
 #include "constants/items.h"
+#include "constants/flags.h"
+#include "event_data.h"
 
 // Visible wild Pokemon spawning. See include/overworld_spawns.h.
 
@@ -24,6 +26,7 @@
 #define SPAWN_RING_MIN          3   // min/max tile distance from player to spawn
 #define SPAWN_RING_MAX          6
 #define SPAWN_PLACEMENT_TRIES   8
+#define OW_SHINY_CHANCE         512 // 1-in-N chance a spawn is shiny
 
 struct OverworldSpawn
 {
@@ -31,6 +34,7 @@ struct OverworldSpawn
     u8 localId;
     u16 species;
     u8 level;
+    bool8 shiny;
 };
 
 static struct OverworldSpawn sOverworldSpawns[MAX_OVERWORLD_SPAWNS];
@@ -58,6 +62,7 @@ static void ClearSpawnSlot(struct OverworldSpawn *spawn)
     spawn->active = FALSE;
     spawn->species = SPECIES_NONE;
     spawn->level = 0;
+    spawn->shiny = FALSE;
 }
 
 void RemoveAllOverworldSpawns(void)
@@ -153,6 +158,7 @@ static bool8 TrySpawnOne(void)
         bool8 waterMon;
         u16 species;
         u8 level;
+        bool8 shiny;
         struct ObjectEventTemplate template;
         u8 objId;
 
@@ -174,6 +180,8 @@ static bool8 TrySpawnOne(void)
         if (!GetOverworldSpawnMon(waterMon, &species, &level))
             continue;
 
+        shiny = (Random() % OW_SHINY_CHANCE) == 0;
+
         template = (struct ObjectEventTemplate){
             .localId = slot->localId,
             .graphicsId = OBJ_EVENT_GFX_MON_BASE + species,
@@ -190,9 +198,13 @@ static bool8 TrySpawnOne(void)
         if (objId >= OBJECT_EVENTS_COUNT)
             return FALSE; // out of object event slots
 
+        if (shiny)
+            SetOverworldMonShiny(&gObjectEvents[objId], TRUE);
+
         slot->active = TRUE;
         slot->species = species;
         slot->level = level;
+        slot->shiny = shiny;
         return TRUE;
     }
     return FALSE;
@@ -245,6 +257,11 @@ bool8 TryStartOverworldSpawnBattle(u8 direction)
     spawn = FindSpawnByLocalId(gObjectEvents[objId].localId);
     if (spawn == NULL)
         return FALSE;
+
+    // Force the battle mon shiny to match the overworld sprite. CreateScriptedWildMon
+    // uses OT_ID_PLAYER_ID, which honors FLAG_SHINY_CREATION (cleared after use).
+    if (spawn->shiny)
+        FlagSet(FLAG_SHINY_CREATION);
 
     CreateScriptedWildMon(spawn->species, spawn->level, ITEM_NONE);
     RemoveObjectEventByLocalIdAndMap(spawn->localId,
