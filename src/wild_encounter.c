@@ -1093,6 +1093,38 @@ u16 GetLocalWaterMon(void)
     return SPECIES_NONE;
 }
 
+// Used by the overworld spawn system to pick a species/level from the current
+// map's land or water encounter table. Returns FALSE if the map has no table
+// for the requested area.
+bool8 GetOverworldSpawnMon(bool8 waterMon, u16 *species, u8 *level)
+{
+    u16 headerId = GetCurrentMapWildMonHeaderId();
+    const struct WildPokemonInfo *monsInfo;
+    u8 monIndex;
+
+    if (headerId == HEADER_NONE)
+        return FALSE;
+
+    if (waterMon)
+    {
+        monsInfo = gWildMonHeaders[headerId].waterMonsInfo;
+        if (monsInfo == NULL)
+            return FALSE;
+        monIndex = ChooseWildMonIndex_WaterRock();
+    }
+    else
+    {
+        monsInfo = gWildMonHeaders[headerId].landMonsInfo;
+        if (monsInfo == NULL)
+            return FALSE;
+        monIndex = ChooseWildMonIndex_Land();
+    }
+
+    *species = monsInfo->wildPokemon[monIndex].species;
+    *level = ChooseWildMonLevel(&monsInfo->wildPokemon[monIndex]);
+    return TRUE;
+}
+
 bool8 UpdateRepelCounter(void)
 {
     u16 steps;

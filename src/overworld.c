@@ -60,6 +60,7 @@
 #include "tv.h"
 #include "scanline_effect.h"
 #include "wild_encounter.h"
+#include "overworld_spawns.h"
 #include "frontier_util.h"
 #include "constants/abilities.h"
 #include "constants/layouts.h"
@@ -190,6 +191,7 @@ void (*gFieldCallback)(void);
 bool8 (*gFieldCallback2)(void);
 u8 gLocalLinkPlayerId; // This is our player id in a multiplayer mode.
 u8 gFieldLinkPlayerCount;
+bool8 gDebugWalkThroughWalls;
 
 EWRAM_DATA static u8 sObjectEventLoadFlag = 0;
 EWRAM_DATA struct WarpData gLastUsedWarp = {0};
@@ -364,7 +366,7 @@ void DoWhiteOut(void)
     {
         DoSoftReset();
     }
-
+    
     if (IsBattleRoyaleModeActive())
     {
         VarSet(VAR_BATTLE_ROYALE_DEATHS, VarGet(VAR_BATTLE_ROYALE_DEATHS) + 1);
@@ -815,6 +817,7 @@ void LoadMapFromCameraTransition(u8 mapGroup, u8 mapNum)
     LoadObjEventTemplatesFromHeader();
     TrySetMapSaveWarpStatus();
     ClearTempFieldEventData();
+    RemoveAllOverworldSpawns();
     ResetCyclingRoadChallengeData();
     RestartWildEncounterImmunitySteps();
     TryUpdateRandomTrainerRematches(mapGroup, mapNum);
@@ -865,6 +868,7 @@ static void LoadMapFromWarp(bool32 a1)
     CheckLeftFriendsSecretBase();
     TrySetMapSaveWarpStatus();
     ClearTempFieldEventData();
+    RemoveAllOverworldSpawns();
     ResetCyclingRoadChallengeData();
     RestartWildEncounterImmunitySteps();
     TryUpdateRandomTrainerRematches(gSaveBlock1Ptr->location.mapGroup, gSaveBlock1Ptr->location.mapNum);
@@ -1458,6 +1462,14 @@ bool32 IsOverworldLinkActive(void)
 static void DoCB1_Overworld(u16 newKeys, u16 heldKeys)
 {
     struct FieldInput inputStruct;
+
+    /* Toggle walk-through-walls with A+B+SELECT */
+    if ((heldKeys & (A_BUTTON | B_BUTTON | SELECT_BUTTON)) == (A_BUTTON | B_BUTTON | SELECT_BUTTON)
+     && (newKeys & (A_BUTTON | B_BUTTON | SELECT_BUTTON)))
+    {
+        gDebugWalkThroughWalls = !gDebugWalkThroughWalls;
+        PlaySE(gDebugWalkThroughWalls ? SE_PC_ON : SE_PC_OFF);
+    }
 
     UpdatePlayerAvatarTransitionState();
     FieldClearPlayerInput(&inputStruct);

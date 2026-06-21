@@ -19,6 +19,7 @@
 #include "match_call.h"
 #include "metatile_behavior.h"
 #include "overworld.h"
+#include "overworld_spawns.h"
 #include "pokemon.h"
 #include "safari_zone.h"
 #include "script.h"
@@ -565,6 +566,7 @@ static bool8 TryStartStepCountScript(u16 metatileBehavior)
     IncrementRematchStepCounter();
     UpdateFriendshipStepCounter();
     UpdateFarawayIslandStepCounter();
+    UpdateOverworldSpawns();
 
     if (!(gPlayerAvatar.flags & PLAYER_AVATAR_FLAG_FORCED_MOVE) && !MetatileBehavior_IsForcedMovementTile(metatileBehavior))
     {
@@ -699,6 +701,11 @@ void RestartWildEncounterImmunitySteps(void)
 
 static bool8 CheckStandardWildEncounter(u16 metatileBehavior)
 {
+    // When visible overworld spawns are enabled, they replace the invisible
+    // step-based RNG encounters.
+    if (gSaveBlock2Ptr->optionsOverworldSpawns)
+        return FALSE;
+
     if (sWildEncounterImmunitySteps < 4)
     {
         sWildEncounterImmunitySteps++;
