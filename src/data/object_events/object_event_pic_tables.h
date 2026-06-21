@@ -5208,6 +5208,14 @@ static const struct SpriteFrameImage sPicTable_CastformSnowy[] = {
     overworld_frame(gObjectEventPic_CastformSnowy, 4, 4, 4),
     overworld_frame(gObjectEventPic_CastformSnowy, 4, 4, 5),
 };
+static const struct SpriteFrameImage sPicTable_CastformSandy[] = {
+    overworld_frame(gObjectEventPic_CastformSandy, 4, 4, 0),
+    overworld_frame(gObjectEventPic_CastformSandy, 4, 4, 1),
+    overworld_frame(gObjectEventPic_CastformSandy, 4, 4, 2),
+    overworld_frame(gObjectEventPic_CastformSandy, 4, 4, 3),
+    overworld_frame(gObjectEventPic_CastformSandy, 4, 4, 4),
+    overworld_frame(gObjectEventPic_CastformSandy, 4, 4, 5),
+};
 static const struct SpriteFrameImage sPicTable_Kecleon[] = {
     overworld_frame(gObjectEventPic_Kecleon, 4, 4, 0),
     overworld_frame(gObjectEventPic_Kecleon, 4, 4, 1),

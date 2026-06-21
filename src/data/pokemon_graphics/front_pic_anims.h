@@ -4222,6 +4222,12 @@ static const union AnimCmd sAnim_Castform_3[] =
     ANIMCMD_END,
 };
 
+static const union AnimCmd sAnim_Castform_4[] =
+{
+    ANIMCMD_FRAME(4, 1),
+    ANIMCMD_END,
+};
+
 static const union AnimCmd sAnim_Volbeat_1[] =
 {
     ANIMCMD_FRAME(0, 11),
@@ -5226,6 +5232,7 @@ static const union AnimCmd *const sAnims_Castform[] ={
     sAnim_Castform_1,
     sAnim_Castform_2,
     sAnim_Castform_3,
+    sAnim_Castform_4,
 };
 SINGLE_ANIMATION(Volbeat);
 SINGLE_ANIMATION(Illumise);

@@ -2404,7 +2404,7 @@ u8 CastformDataTypeChange(u8 battler)
     }
     if (!WEATHER_HAS_EFFECT)
         return 0; // No change
-    if (!(gBattleWeather & (B_WEATHER_RAIN | B_WEATHER_SUN | B_WEATHER_HAIL)) && !IS_BATTLER_OF_TYPE(battler, TYPE_NORMAL))
+    if (!(gBattleWeather & (B_WEATHER_RAIN | B_WEATHER_SUN | B_WEATHER_HAIL | B_WEATHER_SANDSTORM)) && !IS_BATTLER_OF_TYPE(battler, TYPE_NORMAL))
     {
         SET_BATTLER_TYPE(battler, TYPE_NORMAL);
         formChange = CASTFORM_NORMAL + 1;
@@ -2423,6 +2423,11 @@ u8 CastformDataTypeChange(u8 battler)
     {
         SET_BATTLER_TYPE(battler, TYPE_ICE);
         formChange = CASTFORM_ICE + 1;
+    }
+    if (gBattleWeather & B_WEATHER_SANDSTORM && !IS_BATTLER_OF_TYPE(battler, TYPE_ROCK))
+    {
+        SET_BATTLER_TYPE(battler, TYPE_ROCK);
+        formChange = CASTFORM_SAND + 1;
     }
     return formChange;
 }

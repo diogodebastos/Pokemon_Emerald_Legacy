@@ -511,6 +511,7 @@ const u8 gInitialMovementTypeFacingDirections[NUM_MOVEMENT_TYPES] = {
 #define OBJ_EVENT_PAL_TAG_CASTFORM_SUNNY          0x1130
 #define OBJ_EVENT_PAL_TAG_CASTFORM_RAINY          0x1131
 #define OBJ_EVENT_PAL_TAG_CASTFORM_SNOWY          0x1132
+#define OBJ_EVENT_PAL_TAG_CASTFORM_SANDY          0x116B
 #define OBJ_EVENT_PAL_TAG_DEOXYS_ATTACK           0x1133
 #define OBJ_EVENT_PAL_TAG_DEOXYS_DEFENSE          0x1134
 #define OBJ_EVENT_PAL_TAG_DEOXYS_SPEED            0x1135
@@ -623,6 +624,7 @@ static const struct SpritePalette sObjectEventSpritePalettes[] = {
     {gObjectEventPal_CastformSunny,         OBJ_EVENT_PAL_TAG_CASTFORM_SUNNY},
     {gObjectEventPal_CastformRainy,         OBJ_EVENT_PAL_TAG_CASTFORM_RAINY},
     {gObjectEventPal_CastformSnowy,         OBJ_EVENT_PAL_TAG_CASTFORM_SNOWY},
+    {gObjectEventPal_CastformSandy,         OBJ_EVENT_PAL_TAG_CASTFORM_SANDY},
     #if OW_MON_POKEBALLS
     // Vanilla
     {gObjectEventPal_MasterBall,            OBJ_EVENT_PAL_TAG_BALL_MASTER},
@@ -2084,6 +2086,8 @@ static u8 GetOverworldCastformForm(void) {
         return CASTFORM_WATER;
     case WEATHER_SNOW:
         return CASTFORM_ICE;
+    case WEATHER_SANDSTORM:
+        return CASTFORM_SAND;
     }
     return CASTFORM_NORMAL;
 }

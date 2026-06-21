@@ -576,6 +576,7 @@ CASTFORM_COSMETIC = [
     ('Sunny',  'castform/sunny',  ['FIRE']),
     ('Rainy',  'castform/rainy',  ['WATER']),
     ('Snowy',  'castform/snowy',  ['ICE']),
+    ('Sandy',  'castform/sandy',  ['ROCK']),
 ]
 
 def _apply_shiny_palette(img, sprite_dir):

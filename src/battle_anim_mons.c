@@ -51,13 +51,14 @@ static const struct UCoords8 sBattlerCoords[][MAX_BATTLERS_COUNT] =
     },
 };
 
-// One entry for each of the four Castform forms.
+// One entry for each of the Castform forms.
 const struct MonCoords gCastformFrontSpriteCoords[NUM_CASTFORM_FORMS] =
 {
     [CASTFORM_NORMAL] = { .size = MON_COORDS_SIZE(32, 32), .y_offset = 17 },
     [CASTFORM_FIRE]   = { .size = MON_COORDS_SIZE(48, 48), .y_offset =  9 },
     [CASTFORM_WATER]  = { .size = MON_COORDS_SIZE(32, 48), .y_offset =  9 },
     [CASTFORM_ICE]    = { .size = MON_COORDS_SIZE(64, 48), .y_offset =  8 },
+    [CASTFORM_SAND]   = { .size = MON_COORDS_SIZE(64, 48), .y_offset =  8 },
 };
 
 static const u8 sCastformElevations[NUM_CASTFORM_FORMS] =
@@ -66,15 +67,17 @@ static const u8 sCastformElevations[NUM_CASTFORM_FORMS] =
     [CASTFORM_FIRE]   = 14,
     [CASTFORM_WATER]  = 13,
     [CASTFORM_ICE]    = 13,
+    [CASTFORM_SAND]   = 3, // grounded (rock base), unlike the floating cloud forms
 };
 
-// Y position of the backsprite for each of the four Castform forms.
+// Y position of the backsprite for each of the Castform forms.
 static const u8 sCastformBackSpriteYCoords[NUM_CASTFORM_FORMS] =
 {
     [CASTFORM_NORMAL] = 0,
     [CASTFORM_FIRE]   = 0,
     [CASTFORM_WATER]  = 0,
     [CASTFORM_ICE]    = 0,
+    [CASTFORM_SAND]   = 10, // grounded (rock base): push player back sprite down, unlike floating cloud forms
 };
 
 // Placeholders for Pokémon sprites to be created for a move animation effect (e.g. Role Play / Snatch)
