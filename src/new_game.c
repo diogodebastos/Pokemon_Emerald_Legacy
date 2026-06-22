@@ -97,6 +97,7 @@ static void SetDefaultOptions(void)
     gSaveBlock2Ptr->optionsBattleStyle = OPTIONS_BATTLE_STYLE_SHIFT;
     gSaveBlock2Ptr->optionsBattleSceneOff = FALSE;
     gSaveBlock2Ptr->regionMapZoom = FALSE;
+    gSaveBlock2Ptr->optionsOverworldSpawns = TRUE; // visible overworld spawns on by default (opt-in)
 }
 
 static void ClearPokedexFlags(void)

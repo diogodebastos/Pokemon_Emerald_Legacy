@@ -35,6 +35,7 @@ bool8 DoesCurrentMapHaveFishingMons(void);
 void FishingWildEncounter(u8 rod);
 u16 GetLocalWildMon(bool8 *isWaterMon);
 u16 GetLocalWaterMon(void);
+bool8 GetOverworldSpawnMon(bool8 waterMon, u16 *species, u8 *level);
 bool8 UpdateRepelCounter(void);
 
 #endif // GUARD_WILD_ENCOUNTER_H

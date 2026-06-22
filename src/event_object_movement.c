@@ -2073,6 +2073,16 @@ static void RefreshFollowerGraphics(struct ObjectEvent *objEvent) {
     }
 }
 
+// Public: (re)apply shininess to an already-spawned overworld Pokémon object,
+// reloading its palette via the same FollowerSetGraphics path that renders shiny
+// followers. Idempotent (the dynamic palette loader returns the cached slot if
+// already loaded), so the overworld spawn system can call it every step to keep
+// a wandering shiny's palette from being reset.
+void SetOverworldMonShiny(struct ObjectEvent *objEvent, bool8 shiny)
+{
+    FollowerSetGraphics(objEvent, OW_SPECIES(objEvent), OW_FORM(objEvent), shiny);
+}
+
 // Like CastformDataTypeChange, but for overworld weather
 static u8 GetOverworldCastformForm(void) {
     switch (GetCurrentWeather())

@@ -11,6 +11,7 @@
 #include "menu.h"
 #include "metatile_behavior.h"
 #include "overworld.h"
+#include "overworld_spawns.h"
 #include "party_menu.h"
 #include "random.h"
 #include "rotating_gate.h"
@@ -618,6 +619,10 @@ static void PlayerNotOnBikeMoving(u8 direction, u16 heldKeys)
             PlayerNotOnBikeCollideWithFarawayIslandMew(direction);
             return;
         }
+        else if (collision == COLLISION_OBJECT_EVENT && TryStartOverworldSpawnBattle(direction))
+        {
+            return;
+        }
         else
         {
             u8 adjustedCollision = collision - COLLISION_STOP_SURFING;
@@ -654,6 +659,9 @@ static u8 CheckForPlayerAvatarCollision(u8 direction)
 {
     s16 x, y;
     struct ObjectEvent *playerObjEvent = &gObjectEvents[gPlayerAvatar.objectEventId];
+
+    if (gDebugWalkThroughWalls)
+        return COLLISION_NONE;
 
     x = playerObjEvent->currentCoords.x;
     y = playerObjEvent->currentCoords.y;

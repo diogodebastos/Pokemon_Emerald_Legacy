@@ -6,6 +6,7 @@
 #include "field_specials.h"
 #include "metatile_behavior.h"
 #include "overworld.h"
+#include "overworld_spawns.h"
 #include "sound.h"
 #include "constants/map_types.h"
 #include "constants/songs.h"
@@ -227,6 +228,8 @@ static void MachBikeTransition_TrySpeedUp(u8 direction)
                 Bike_SetBikeStill();
                 if (collision == COLLISION_OBJECT_EVENT && IsPlayerCollidingWithFarawayIslandMew(direction))
                     PlayerOnBikeCollideWithFarawayIslandMew(direction);
+                else if (collision == COLLISION_OBJECT_EVENT && TryStartOverworldSpawnBattle(direction))
+                    ; // overworld spawn battle started
                 else if (collision < COLLISION_STOP_SURFING || collision > COLLISION_ROTATING_GATE)
                     PlayerOnBikeCollide(direction);
             }
@@ -262,6 +265,8 @@ static void MachBikeTransition_TrySlowDown(u8 direction)
             Bike_SetBikeStill();
             if (collision == COLLISION_OBJECT_EVENT && IsPlayerCollidingWithFarawayIslandMew(direction))
                 PlayerOnBikeCollideWithFarawayIslandMew(direction);
+            else if (collision == COLLISION_OBJECT_EVENT && TryStartOverworldSpawnBattle(direction))
+                ; // overworld spawn battle started
             else if (collision < COLLISION_STOP_SURFING || collision > COLLISION_ROTATING_GATE)
                 PlayerOnBikeCollide(direction);
         }
@@ -558,6 +563,8 @@ static void AcroBikeTransition_Moving(u8 direction)
             PlayerJumpLedge(direction);
         else if (collision == COLLISION_OBJECT_EVENT && IsPlayerCollidingWithFarawayIslandMew(direction))
             PlayerOnBikeCollideWithFarawayIslandMew(direction);
+        else if (collision == COLLISION_OBJECT_EVENT && TryStartOverworldSpawnBattle(direction))
+            ; // overworld spawn battle started
         else if (collision < COLLISION_STOP_SURFING || collision > COLLISION_ROTATING_GATE)
             PlayerOnBikeCollide(direction);
     }
@@ -865,8 +872,13 @@ static u8 GetBikeCollision(u8 direction)
 {
     u8 metatileBehavior;
     struct ObjectEvent *playerObjEvent = &gObjectEvents[gPlayerAvatar.objectEventId];
-    s16 x = playerObjEvent->currentCoords.x;
-    s16 y = playerObjEvent->currentCoords.y;
+    s16 x, y;
+
+    if (gDebugWalkThroughWalls)
+        return COLLISION_NONE;
+
+    x = playerObjEvent->currentCoords.x;
+    y = playerObjEvent->currentCoords.y;
     MoveCoords(direction, &x, &y);
     metatileBehavior = MapGridGetMetatileBehaviorAt(x, y);
     return GetBikeCollisionAt(playerObjEvent, x, y, direction, metatileBehavior);
