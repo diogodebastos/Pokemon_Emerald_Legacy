@@ -15,7 +15,9 @@
 #include "window.h"
 #include "gba/m4a_internal.h"
 #include "constants/rgb.h"
+#include "constants/characters.h"
 #include "event_data.h"
+#include "overworld.h"
 
 #define tMenuSelection data[0]
 #define tTextSpeed data[1]
@@ -25,6 +27,7 @@
 #define tButtonMode data[5]
 #define tWindowFrameType data[6]
 #define tOverworldSpawns data[7]
+#define tWalkThroughWalls data[8]
 
 enum
 {
@@ -35,6 +38,7 @@ enum
     MENUITEM_BUTTONMODE,
     MENUITEM_FRAMETYPE,
     MENUITEM_OWSPAWNS,
+    MENUITEM_WALKTHROUGHWALLS,
     MENUITEM_CANCEL,
     MENUITEM_COUNT,
 };
@@ -45,42 +49,50 @@ enum
     WIN_OPTIONS
 };
 
-// Per-row vertical spacing. Compressed from 16 to 14 so all MENUITEM_COUNT rows
-// fit within the fixed options window (MENUITEM_COUNT * 14 <= window height).
-#define MENUITEM_SPACING  14
+// Scrolling options menu. Spacing restored to the vanilla 16px; the fixed
+// WIN_OPTIONS interior is 112px so MENUITEMS_ON_SCREEN rows are visible at once
+// (7 * 16 = 112) and the list scrolls when MENUITEM_COUNT exceeds that.
+#define MENUITEM_SPACING     16
+#define MENUITEMS_ON_SCREEN  7
+// First display row's screen-space top (WIN_OPTIONS sits at tile row 5 = 40px).
+#define MENU_TOP_PX          40
 
-#define YPOS_TEXTSPEED    (MENUITEM_TEXTSPEED * MENUITEM_SPACING)
-#define YPOS_BATTLESCENE  (MENUITEM_BATTLESCENE * MENUITEM_SPACING)
-#define YPOS_BATTLESTYLE  (MENUITEM_BATTLESTYLE * MENUITEM_SPACING)
-#define YPOS_SOUND        (MENUITEM_SOUND * MENUITEM_SPACING)
-#define YPOS_BUTTONMODE   (MENUITEM_BUTTONMODE * MENUITEM_SPACING)
-#define YPOS_FRAMETYPE    (MENUITEM_FRAMETYPE * MENUITEM_SPACING)
-#define YPOS_OWSPAWNS     (MENUITEM_OWSPAWNS * MENUITEM_SPACING)
+// Per-item choices are drawn at the y of whatever screen row the item currently
+// occupies, so positions are computed at runtime from the scroll offset rather
+// than fixed YPOS_* constants.
+#define ROW_Y(row)  ((row) * MENUITEM_SPACING)
 
 static void Task_OptionMenuFadeIn(u8 taskId);
 static void Task_OptionMenuProcessInput(u8 taskId);
 static void Task_OptionMenuSave(u8 taskId);
 static void Task_OptionMenuFadeOut(u8 taskId);
-static void HighlightOptionMenuItem(u8 selection);
+static void HighlightOptionMenuItem(u8 visibleRow);
 static u8 TextSpeed_ProcessInput(u8 selection);
-static void TextSpeed_DrawChoices(u8 selection);
+static void TextSpeed_DrawChoices(u8 selection, u8 y);
 static u8 BattleScene_ProcessInput(u8 selection);
-static void BattleScene_DrawChoices(u8 selection);
+static void BattleScene_DrawChoices(u8 selection, u8 y);
 static u8 BattleStyle_ProcessInput(u8 selection);
-static void BattleStyle_DrawChoices(u8 selection);
+static void BattleStyle_DrawChoices(u8 selection, u8 y);
 static u8 Sound_ProcessInput(u8 selection);
-static void Sound_DrawChoices(u8 selection);
+static void Sound_DrawChoices(u8 selection, u8 y);
 static u8 FrameType_ProcessInput(u8 selection);
-static void FrameType_DrawChoices(u8 selection);
+static void FrameType_DrawChoices(u8 selection, u8 y);
 static u8 ButtonMode_ProcessInput(u8 selection);
-static void ButtonMode_DrawChoices(u8 selection);
+static void ButtonMode_DrawChoices(u8 selection, u8 y);
 static u8 OverworldSpawns_ProcessInput(u8 selection);
-static void OverworldSpawns_DrawChoices(u8 selection);
+static void OverworldSpawns_DrawChoices(u8 selection, u8 y);
+static u8 WalkThroughWalls_ProcessInput(u8 selection);
+static void WalkThroughWalls_DrawChoices(u8 selection, u8 y);
+static void ScrollToSelection(u8 taskId);
 static void DrawHeaderText(void);
-static void DrawOptionMenuTexts(void);
+static void DrawItemChoices(u8 taskId, u8 item, u8 y);
+static void DrawVisibleOptions(u8 taskId);
+static void DrawScrollIndicators(void);
 static void DrawBgWindowFrames(void);
 
 EWRAM_DATA static bool8 sArrowPressed = FALSE;
+// Index of the first (topmost) menu item currently visible in the window.
+EWRAM_DATA static u8 sScrollOffset = 0;
 
 static const u16 sOptionMenuText_Pal[] = INCBIN_U16("graphics/interface/option_menu_text.gbapal");
 // note: this is only used in the Japanese release
@@ -95,6 +107,7 @@ static const u8 *const sOptionMenuItemsNames[MENUITEM_COUNT] =
     [MENUITEM_BUTTONMODE]  = gText_ButtonMode,
     [MENUITEM_FRAMETYPE]   = gText_Frame,
     [MENUITEM_OWSPAWNS]    = gText_OverworldSpawns,
+    [MENUITEM_WALKTHROUGHWALLS] = gText_WalkThroughWalls,
     [MENUITEM_CANCEL]      = gText_OptionMenuCancel,
 };
 
@@ -228,7 +241,6 @@ void CB2_InitOptionMenu(void)
         break;
     case 8:
         PutWindowTilemap(WIN_OPTIONS);
-        DrawOptionMenuTexts();
         gMain.state++;
     case 9:
         DrawBgWindowFrames();
@@ -246,17 +258,13 @@ void CB2_InitOptionMenu(void)
         gTasks[taskId].tButtonMode = gSaveBlock2Ptr->optionsButtonMode;
         gTasks[taskId].tWindowFrameType = gSaveBlock2Ptr->optionsWindowFrameType;
         gTasks[taskId].tOverworldSpawns = gSaveBlock2Ptr->optionsOverworldSpawns;
+        // Walk-through-walls is a non-persistent session global (never saved,
+        // off on boot), so read its live value rather than a SaveBlock field.
+        gTasks[taskId].tWalkThroughWalls = gDebugWalkThroughWalls;
 
-        TextSpeed_DrawChoices(gTasks[taskId].tTextSpeed);
-        BattleScene_DrawChoices(gTasks[taskId].tBattleSceneOff);
-        BattleStyle_DrawChoices(gTasks[taskId].tBattleStyle);
-        Sound_DrawChoices(gTasks[taskId].tSound);
-        ButtonMode_DrawChoices(gTasks[taskId].tButtonMode);
-        FrameType_DrawChoices(gTasks[taskId].tWindowFrameType);
-        OverworldSpawns_DrawChoices(gTasks[taskId].tOverworldSpawns);
-        HighlightOptionMenuItem(gTasks[taskId].tMenuSelection);
-
-        CopyWindowToVram(WIN_OPTIONS, COPYWIN_FULL);
+        sScrollOffset = 0;
+        DrawVisibleOptions(taskId);
+        HighlightOptionMenuItem(gTasks[taskId].tMenuSelection - sScrollOffset);
         gMain.state++;
         break;
     }
@@ -291,7 +299,7 @@ static void Task_OptionMenuProcessInput(u8 taskId)
             gTasks[taskId].tMenuSelection--;
         else
             gTasks[taskId].tMenuSelection = MENUITEM_CANCEL;
-        HighlightOptionMenuItem(gTasks[taskId].tMenuSelection);
+        ScrollToSelection(taskId);
     }
     else if (JOY_NEW(DPAD_DOWN))
     {
@@ -299,11 +307,13 @@ static void Task_OptionMenuProcessInput(u8 taskId)
             gTasks[taskId].tMenuSelection++;
         else
             gTasks[taskId].tMenuSelection = 0;
-        HighlightOptionMenuItem(gTasks[taskId].tMenuSelection);
+        ScrollToSelection(taskId);
     }
     else
     {
         u8 previousOption;
+        // Screen-space y of the currently selected row (always on-screen).
+        u8 y = ROW_Y(gTasks[taskId].tMenuSelection - sScrollOffset);
 
         switch (gTasks[taskId].tMenuSelection)
         {
@@ -312,49 +322,56 @@ static void Task_OptionMenuProcessInput(u8 taskId)
             gTasks[taskId].tTextSpeed = TextSpeed_ProcessInput(gTasks[taskId].tTextSpeed);
 
             if (previousOption != gTasks[taskId].tTextSpeed)
-                TextSpeed_DrawChoices(gTasks[taskId].tTextSpeed);
+                TextSpeed_DrawChoices(gTasks[taskId].tTextSpeed, y);
             break;
         case MENUITEM_BATTLESCENE:
             previousOption = gTasks[taskId].tBattleSceneOff;
             gTasks[taskId].tBattleSceneOff = BattleScene_ProcessInput(gTasks[taskId].tBattleSceneOff);
 
             if (previousOption != gTasks[taskId].tBattleSceneOff)
-                BattleScene_DrawChoices(gTasks[taskId].tBattleSceneOff);
+                BattleScene_DrawChoices(gTasks[taskId].tBattleSceneOff, y);
             break;
         case MENUITEM_BATTLESTYLE:
             previousOption = gTasks[taskId].tBattleStyle;
             gTasks[taskId].tBattleStyle = BattleStyle_ProcessInput(gTasks[taskId].tBattleStyle);
 
             if (previousOption != gTasks[taskId].tBattleStyle)
-                BattleStyle_DrawChoices(gTasks[taskId].tBattleStyle);
+                BattleStyle_DrawChoices(gTasks[taskId].tBattleStyle, y);
             break;
         case MENUITEM_SOUND:
             previousOption = gTasks[taskId].tSound;
             gTasks[taskId].tSound = Sound_ProcessInput(gTasks[taskId].tSound);
 
             if (previousOption != gTasks[taskId].tSound)
-                Sound_DrawChoices(gTasks[taskId].tSound);
+                Sound_DrawChoices(gTasks[taskId].tSound, y);
             break;
         case MENUITEM_BUTTONMODE:
             previousOption = gTasks[taskId].tButtonMode;
             gTasks[taskId].tButtonMode = ButtonMode_ProcessInput(gTasks[taskId].tButtonMode);
 
             if (previousOption != gTasks[taskId].tButtonMode)
-                ButtonMode_DrawChoices(gTasks[taskId].tButtonMode);
+                ButtonMode_DrawChoices(gTasks[taskId].tButtonMode, y);
             break;
         case MENUITEM_FRAMETYPE:
             previousOption = gTasks[taskId].tWindowFrameType;
             gTasks[taskId].tWindowFrameType = FrameType_ProcessInput(gTasks[taskId].tWindowFrameType);
 
             if (previousOption != gTasks[taskId].tWindowFrameType)
-                FrameType_DrawChoices(gTasks[taskId].tWindowFrameType);
+                FrameType_DrawChoices(gTasks[taskId].tWindowFrameType, y);
             break;
         case MENUITEM_OWSPAWNS:
             previousOption = gTasks[taskId].tOverworldSpawns;
             gTasks[taskId].tOverworldSpawns = OverworldSpawns_ProcessInput(gTasks[taskId].tOverworldSpawns);
 
             if (previousOption != gTasks[taskId].tOverworldSpawns)
-                OverworldSpawns_DrawChoices(gTasks[taskId].tOverworldSpawns);
+                OverworldSpawns_DrawChoices(gTasks[taskId].tOverworldSpawns, y);
+            break;
+        case MENUITEM_WALKTHROUGHWALLS:
+            previousOption = gTasks[taskId].tWalkThroughWalls;
+            gTasks[taskId].tWalkThroughWalls = WalkThroughWalls_ProcessInput(gTasks[taskId].tWalkThroughWalls);
+
+            if (previousOption != gTasks[taskId].tWalkThroughWalls)
+                WalkThroughWalls_DrawChoices(gTasks[taskId].tWalkThroughWalls, y);
             break;
         default:
             return;
@@ -377,6 +394,8 @@ static void Task_OptionMenuSave(u8 taskId)
     gSaveBlock2Ptr->optionsButtonMode = gTasks[taskId].tButtonMode;
     gSaveBlock2Ptr->optionsWindowFrameType = gTasks[taskId].tWindowFrameType;
     gSaveBlock2Ptr->optionsOverworldSpawns = gTasks[taskId].tOverworldSpawns;
+    // Apply to the live session global; intentionally not written to SaveBlock.
+    gDebugWalkThroughWalls = gTasks[taskId].tWalkThroughWalls;
 
     BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 16, RGB_BLACK);
     gTasks[taskId].func = Task_OptionMenuFadeOut;
@@ -392,10 +411,30 @@ static void Task_OptionMenuFadeOut(u8 taskId)
     }
 }
 
-static void HighlightOptionMenuItem(u8 index)
+// visibleRow is the on-screen row (0..MENUITEMS_ON_SCREEN-1) of the selection,
+// i.e. tMenuSelection - sScrollOffset, not the absolute item index.
+static void HighlightOptionMenuItem(u8 visibleRow)
 {
     SetGpuReg(REG_OFFSET_WIN0H, WIN_RANGE(16, DISPLAY_WIDTH - 16));
-    SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(index * MENUITEM_SPACING + 40, index * MENUITEM_SPACING + 40 + MENUITEM_SPACING));
+    SetGpuReg(REG_OFFSET_WIN0V, WIN_RANGE(ROW_Y(visibleRow) + MENU_TOP_PX, ROW_Y(visibleRow) + MENU_TOP_PX + MENUITEM_SPACING));
+}
+
+// Recompute the scroll offset so the current selection stays on-screen, redraw
+// the visible page if the window content changed, then move the highlight.
+static void ScrollToSelection(u8 taskId)
+{
+    u8 selection = gTasks[taskId].tMenuSelection;
+    u8 oldOffset = sScrollOffset;
+
+    if (selection < sScrollOffset)
+        sScrollOffset = selection;
+    else if (selection >= sScrollOffset + MENUITEMS_ON_SCREEN)
+        sScrollOffset = selection - MENUITEMS_ON_SCREEN + 1;
+
+    if (sScrollOffset != oldOffset)
+        DrawVisibleOptions(taskId);
+
+    HighlightOptionMenuItem(selection - sScrollOffset);
 }
 
 static void DrawOptionMenuChoice(const u8 *text, u8 x, u8 y, u8 style)
@@ -439,7 +478,7 @@ static u8 TextSpeed_ProcessInput(u8 selection)
     return selection;
 }
 
-static void TextSpeed_DrawChoices(u8 selection)
+static void TextSpeed_DrawChoices(u8 selection, u8 y)
 {
     u8 styles[3];
     s32 widthSlow, widthMid, widthFast, xMid;
@@ -449,7 +488,7 @@ static void TextSpeed_DrawChoices(u8 selection)
     styles[2] = 0;
     styles[selection] = 1;
 
-    DrawOptionMenuChoice(gText_TextSpeedSlow, 104, YPOS_TEXTSPEED, styles[0]);
+    DrawOptionMenuChoice(gText_TextSpeedSlow, 104, y, styles[0]);
 
     widthSlow = GetStringWidth(FONT_NORMAL, gText_TextSpeedSlow, 0);
     widthMid = GetStringWidth(FONT_NORMAL, gText_TextSpeedMid, 0);
@@ -457,9 +496,9 @@ static void TextSpeed_DrawChoices(u8 selection)
 
     widthMid -= 94;
     xMid = (widthSlow - widthMid - widthFast) / 2 + 104;
-    DrawOptionMenuChoice(gText_TextSpeedMid, xMid, YPOS_TEXTSPEED, styles[1]);
+    DrawOptionMenuChoice(gText_TextSpeedMid, xMid, y, styles[1]);
 
-    DrawOptionMenuChoice(gText_TextSpeedFast, GetStringRightAlignXOffset(FONT_NORMAL, gText_TextSpeedFast, 198), YPOS_TEXTSPEED, styles[2]);
+    DrawOptionMenuChoice(gText_TextSpeedFast, GetStringRightAlignXOffset(FONT_NORMAL, gText_TextSpeedFast, 198), y, styles[2]);
 }
 
 static u8 BattleScene_ProcessInput(u8 selection)
@@ -473,7 +512,7 @@ static u8 BattleScene_ProcessInput(u8 selection)
     return selection;
 }
 
-static void BattleScene_DrawChoices(u8 selection)
+static void BattleScene_DrawChoices(u8 selection, u8 y)
 {
     u8 styles[2];
 
@@ -481,8 +520,8 @@ static void BattleScene_DrawChoices(u8 selection)
     styles[1] = 0;
     styles[selection] = 1;
 
-    DrawOptionMenuChoice(gText_BattleSceneOn, 104, YPOS_BATTLESCENE, styles[0]);
-    DrawOptionMenuChoice(gText_BattleSceneOff, GetStringRightAlignXOffset(FONT_NORMAL, gText_BattleSceneOff, 198), YPOS_BATTLESCENE, styles[1]);
+    DrawOptionMenuChoice(gText_BattleSceneOn, 104, y, styles[0]);
+    DrawOptionMenuChoice(gText_BattleSceneOff, GetStringRightAlignXOffset(FONT_NORMAL, gText_BattleSceneOff, 198), y, styles[1]);
 }
 
 static u8 BattleStyle_ProcessInput(u8 selection)
@@ -496,7 +535,7 @@ static u8 BattleStyle_ProcessInput(u8 selection)
     return selection;
 }
 
-static void BattleStyle_DrawChoices(u8 selection)
+static void BattleStyle_DrawChoices(u8 selection, u8 y)
 {
     u8 styles[2];
 
@@ -505,13 +544,13 @@ static void BattleStyle_DrawChoices(u8 selection)
 
     if (FlagGet(FLAG_HARD)){
         styles[1] = 1;
-        DrawOptionMenuChoice(gText_BattleStyleSet, 104, YPOS_BATTLESTYLE, styles[1]);
+        DrawOptionMenuChoice(gText_BattleStyleSet, 104, y, styles[1]);
         return;
     }
     styles[selection] = 1;
 
-    DrawOptionMenuChoice(gText_BattleStyleShift, 104, YPOS_BATTLESTYLE, styles[0]);
-    DrawOptionMenuChoice(gText_BattleStyleSet, GetStringRightAlignXOffset(FONT_NORMAL, gText_BattleStyleSet, 198), YPOS_BATTLESTYLE, styles[1]);
+    DrawOptionMenuChoice(gText_BattleStyleShift, 104, y, styles[0]);
+    DrawOptionMenuChoice(gText_BattleStyleSet, GetStringRightAlignXOffset(FONT_NORMAL, gText_BattleStyleSet, 198), y, styles[1]);
 }
 
 static u8 Sound_ProcessInput(u8 selection)
@@ -526,7 +565,7 @@ static u8 Sound_ProcessInput(u8 selection)
     return selection;
 }
 
-static void Sound_DrawChoices(u8 selection)
+static void Sound_DrawChoices(u8 selection, u8 y)
 {
     u8 styles[2];
 
@@ -534,8 +573,8 @@ static void Sound_DrawChoices(u8 selection)
     styles[1] = 0;
     styles[selection] = 1;
 
-    DrawOptionMenuChoice(gText_SoundMono, 104, YPOS_SOUND, styles[0]);
-    DrawOptionMenuChoice(gText_SoundStereo, GetStringRightAlignXOffset(FONT_NORMAL, gText_SoundStereo, 198), YPOS_SOUND, styles[1]);
+    DrawOptionMenuChoice(gText_SoundMono, 104, y, styles[0]);
+    DrawOptionMenuChoice(gText_SoundStereo, GetStringRightAlignXOffset(FONT_NORMAL, gText_SoundStereo, 198), y, styles[1]);
 }
 
 static u8 FrameType_ProcessInput(u8 selection)
@@ -565,7 +604,7 @@ static u8 FrameType_ProcessInput(u8 selection)
     return selection;
 }
 
-static void FrameType_DrawChoices(u8 selection)
+static void FrameType_DrawChoices(u8 selection, u8 y)
 {
     u8 text[16];
     u8 n = selection + 1;
@@ -592,8 +631,8 @@ static void FrameType_DrawChoices(u8 selection)
 
     text[i] = EOS;
 
-    DrawOptionMenuChoice(gText_FrameType, 104, YPOS_FRAMETYPE, 0);
-    DrawOptionMenuChoice(text, 128, YPOS_FRAMETYPE, 1);
+    DrawOptionMenuChoice(gText_FrameType, 104, y, 0);
+    DrawOptionMenuChoice(text, 128, y, 1);
 }
 
 static u8 ButtonMode_ProcessInput(u8 selection)
@@ -619,7 +658,7 @@ static u8 ButtonMode_ProcessInput(u8 selection)
     return selection;
 }
 
-static void ButtonMode_DrawChoices(u8 selection)
+static void ButtonMode_DrawChoices(u8 selection, u8 y)
 {
     s32 widthNormal, widthLR, widthLA, xLR;
     u8 styles[3];
@@ -629,7 +668,7 @@ static void ButtonMode_DrawChoices(u8 selection)
     styles[2] = 0;
     styles[selection] = 1;
 
-    DrawOptionMenuChoice(gText_ButtonTypeNormal, 104, YPOS_BUTTONMODE, styles[0]);
+    DrawOptionMenuChoice(gText_ButtonTypeNormal, 104, y, styles[0]);
 
     widthNormal = GetStringWidth(FONT_NORMAL, gText_ButtonTypeNormal, 0);
     widthLR = GetStringWidth(FONT_NORMAL, gText_ButtonTypeLR, 0);
@@ -637,9 +676,9 @@ static void ButtonMode_DrawChoices(u8 selection)
 
     widthLR -= 94;
     xLR = (widthNormal - widthLR - widthLA) / 2 + 104;
-    DrawOptionMenuChoice(gText_ButtonTypeLR, xLR, YPOS_BUTTONMODE, styles[1]);
+    DrawOptionMenuChoice(gText_ButtonTypeLR, xLR, y, styles[1]);
 
-    DrawOptionMenuChoice(gText_ButtonTypeLEqualsA, GetStringRightAlignXOffset(FONT_NORMAL, gText_ButtonTypeLEqualsA, 198), YPOS_BUTTONMODE, styles[2]);
+    DrawOptionMenuChoice(gText_ButtonTypeLEqualsA, GetStringRightAlignXOffset(FONT_NORMAL, gText_ButtonTypeLEqualsA, 198), y, styles[2]);
 }
 
 static u8 OverworldSpawns_ProcessInput(u8 selection)
@@ -653,7 +692,7 @@ static u8 OverworldSpawns_ProcessInput(u8 selection)
     return selection;
 }
 
-static void OverworldSpawns_DrawChoices(u8 selection)
+static void OverworldSpawns_DrawChoices(u8 selection, u8 y)
 {
     u8 styles[2];
 
@@ -661,8 +700,31 @@ static void OverworldSpawns_DrawChoices(u8 selection)
     styles[1] = 0;
     styles[selection] = 1;
 
-    DrawOptionMenuChoice(gText_BattleSceneOff, 104, YPOS_OWSPAWNS, styles[0]);
-    DrawOptionMenuChoice(gText_BattleSceneOn, GetStringRightAlignXOffset(FONT_NORMAL, gText_BattleSceneOn, 198), YPOS_OWSPAWNS, styles[1]);
+    DrawOptionMenuChoice(gText_BattleSceneOff, 104, y, styles[0]);
+    DrawOptionMenuChoice(gText_BattleSceneOn, GetStringRightAlignXOffset(FONT_NORMAL, gText_BattleSceneOn, 198), y, styles[1]);
+}
+
+static u8 WalkThroughWalls_ProcessInput(u8 selection)
+{
+    if (JOY_NEW(DPAD_LEFT | DPAD_RIGHT))
+    {
+        selection ^= 1;
+        sArrowPressed = TRUE;
+    }
+
+    return selection;
+}
+
+static void WalkThroughWalls_DrawChoices(u8 selection, u8 y)
+{
+    u8 styles[2];
+
+    styles[0] = 0;
+    styles[1] = 0;
+    styles[selection] = 1;
+
+    DrawOptionMenuChoice(gText_BattleSceneOff, 104, y, styles[0]);
+    DrawOptionMenuChoice(gText_BattleSceneOn, GetStringRightAlignXOffset(FONT_NORMAL, gText_BattleSceneOn, 198), y, styles[1]);
 }
 
 static void DrawHeaderText(void)
@@ -672,13 +734,58 @@ static void DrawHeaderText(void)
     CopyWindowToVram(WIN_HEADER, COPYWIN_FULL);
 }
 
-static void DrawOptionMenuTexts(void)
+// Draw the L/R selectable choices for a single item at screen-space y.
+static void DrawItemChoices(u8 taskId, u8 item, u8 y)
 {
-    u8 i;
+    switch (item)
+    {
+    case MENUITEM_TEXTSPEED:        TextSpeed_DrawChoices(gTasks[taskId].tTextSpeed, y);            break;
+    case MENUITEM_BATTLESCENE:      BattleScene_DrawChoices(gTasks[taskId].tBattleSceneOff, y);     break;
+    case MENUITEM_BATTLESTYLE:      BattleStyle_DrawChoices(gTasks[taskId].tBattleStyle, y);        break;
+    case MENUITEM_SOUND:            Sound_DrawChoices(gTasks[taskId].tSound, y);                    break;
+    case MENUITEM_BUTTONMODE:       ButtonMode_DrawChoices(gTasks[taskId].tButtonMode, y);          break;
+    case MENUITEM_FRAMETYPE:        FrameType_DrawChoices(gTasks[taskId].tWindowFrameType, y);      break;
+    case MENUITEM_OWSPAWNS:         OverworldSpawns_DrawChoices(gTasks[taskId].tOverworldSpawns, y); break;
+    case MENUITEM_WALKTHROUGHWALLS: WalkThroughWalls_DrawChoices(gTasks[taskId].tWalkThroughWalls, y); break;
+    case MENUITEM_CANCEL:           break; // no choices
+    }
+}
+
+// Small up/down arrows on the right edge indicating off-screen items.
+static void DrawScrollIndicators(void)
+{
+    u8 arrow[2];
+
+    arrow[1] = EOS;
+    if (sScrollOffset > 0)
+    {
+        arrow[0] = CHAR_UP_ARROW;
+        AddTextPrinterParameterized(WIN_OPTIONS, FONT_NORMAL, arrow, 200, ROW_Y(0) + 1, TEXT_SKIP_DRAW, NULL);
+    }
+    if (sScrollOffset + MENUITEMS_ON_SCREEN < MENUITEM_COUNT)
+    {
+        arrow[0] = CHAR_DOWN_ARROW;
+        AddTextPrinterParameterized(WIN_OPTIONS, FONT_NORMAL, arrow, 200, ROW_Y(MENUITEMS_ON_SCREEN - 1) + 1, TEXT_SKIP_DRAW, NULL);
+    }
+}
+
+// Redraw the whole options window for the current scroll offset: each visible
+// item's name + choices, plus the scroll arrows.
+static void DrawVisibleOptions(u8 taskId)
+{
+    u8 row, item, y;
 
     FillWindowPixelBuffer(WIN_OPTIONS, PIXEL_FILL(1));
-    for (i = 0; i < MENUITEM_COUNT; i++)
-        AddTextPrinterParameterized(WIN_OPTIONS, FONT_NORMAL, sOptionMenuItemsNames[i], 8, (i * MENUITEM_SPACING) + 1, TEXT_SKIP_DRAW, NULL);
+    for (row = 0; row < MENUITEMS_ON_SCREEN; row++)
+    {
+        item = sScrollOffset + row;
+        if (item >= MENUITEM_COUNT)
+            break;
+        y = ROW_Y(row);
+        AddTextPrinterParameterized(WIN_OPTIONS, FONT_NORMAL, sOptionMenuItemsNames[item], 8, y + 1, TEXT_SKIP_DRAW, NULL);
+        DrawItemChoices(taskId, item, y);
+    }
+    DrawScrollIndicators();
     CopyWindowToVram(WIN_OPTIONS, COPYWIN_FULL);
 }
 
