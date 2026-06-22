@@ -701,9 +701,10 @@ void RestartWildEncounterImmunitySteps(void)
 
 static bool8 CheckStandardWildEncounter(u16 metatileBehavior)
 {
-    // When visible overworld spawns are enabled, they replace the invisible
-    // step-based RNG encounters.
-    if (gSaveBlock2Ptr->optionsOverworldSpawns)
+    // When visible overworld spawns are active, they replace the invisible
+    // step-based RNG encounters. On maps where spawns are force-disabled (e.g.
+    // the desert), this is FALSE and the normal RNG encounters resume.
+    if (AreOverworldSpawnsActive())
         return FALSE;
 
     if (sWildEncounterImmunitySteps < 4)

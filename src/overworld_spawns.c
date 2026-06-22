@@ -11,6 +11,7 @@
 #include "constants/event_objects.h"
 #include "constants/event_object_movement.h"
 #include "constants/pokemon.h"
+#include "constants/maps.h"
 
 // Visible wild Pokemon spawning. See include/overworld_spawns.h.
 
@@ -47,9 +48,24 @@ static const u8 sShinyOverworldSpawnScript[] = { 0x7d, 0x00, 0x00, 0x80 };
 static struct OverworldSpawn sOverworldSpawns[MAX_OVERWORLD_SPAWNS];
 static u8 sSpawnStepTimer;
 
+// Maps where overworld spawns are force-disabled regardless of the option.
+// The Route 111 desert is all deep sand under a sandstorm: wandering TRACKS_FOOT
+// spawns flood the sprite pool with footprint field effects on top of the
+// weather sprites and break the map, so spawns are suppressed there.
+static bool8 IsOverworldSpawnsBlockedMap(void)
+{
+    return gSaveBlock1Ptr->location.mapGroup == MAP_GROUP(ROUTE111)
+        && gSaveBlock1Ptr->location.mapNum == MAP_NUM(ROUTE111);
+}
+
+bool8 AreOverworldSpawnsActive(void)
+{
+    return gSaveBlock2Ptr->optionsOverworldSpawns && !IsOverworldSpawnsBlockedMap();
+}
+
 static bool8 OverworldSpawnsEnabled(void)
 {
-    return gSaveBlock2Ptr->optionsOverworldSpawns;
+    return AreOverworldSpawnsActive();
 }
 
 static struct OverworldSpawn *FindSpawnByLocalId(u8 localId)
@@ -187,6 +203,13 @@ static bool8 TrySpawnOne(void)
 
         behavior = MapGridGetMetatileBehaviorAt(cx, cy);
         if (!ClassifySpawnTile(behavior, &waterMon))
+            continue;
+
+        // Land spawns must land on a walkable (collision-free) tile so mons
+        // never appear inside cave walls or other impassable terrain that still
+        // carries an encounter behavior. Water spawns are exempt: surfable water
+        // metatiles carry a collision bit, so this check would reject them all.
+        if (!waterMon && MapGridGetCollisionAt(cx, cy) != 0)
             continue;
 
         // Tile already occupied by another object event.

@@ -1122,6 +1122,13 @@ bool8 GetOverworldSpawnMon(bool8 waterMon, u16 *species, u8 *level)
 
     *species = monsInfo->wildPokemon[monIndex].species;
     *level = ChooseWildMonLevel(&monsInfo->wildPokemon[monIndex]);
+
+    // Respect an active Repel: don't spawn mons weaker than the lead party mon,
+    // matching the RNG-encounter behavior (overworld spawns bypass the normal
+    // CheckStandardWildEncounter path, so the repel gate must be applied here).
+    if (!IsWildLevelAllowedByRepel(*level))
+        return FALSE;
+
     return TRUE;
 }
 
