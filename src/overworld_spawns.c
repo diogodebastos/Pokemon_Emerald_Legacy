@@ -5,14 +5,12 @@
 #include "fieldmap.h"
 #include "metatile_behavior.h"
 #include "random.h"
-#include "script_pokemon_util.h"
 #include "battle_setup.h"
 #include "wild_encounter.h"
+#include "pokemon.h"
 #include "constants/event_objects.h"
 #include "constants/event_object_movement.h"
-#include "constants/items.h"
-#include "constants/flags.h"
-#include "event_data.h"
+#include "constants/pokemon.h"
 
 // Visible wild Pokemon spawning. See include/overworld_spawns.h.
 
@@ -26,7 +24,6 @@
 #define SPAWN_RING_MIN          3   // min/max tile distance from player to spawn
 #define SPAWN_RING_MAX          6
 #define SPAWN_PLACEMENT_TRIES   8
-#define OW_SHINY_CHANCE         512 // 1-in-N chance a spawn is shiny
 
 struct OverworldSpawn
 {
@@ -35,7 +32,17 @@ struct OverworldSpawn
     u16 species;
     u8 level;
     bool8 shiny;
+    u32 personality; // rolled at spawn; battle mon is created with this exact PID
 };
+
+// Encodes shininess into a spawn template's script the way map-placed
+// overworld Pokémon do: a leading `bufferspeciesname` (0x7d) command whose
+// species halfword carries form (bits 10-14) and shiny (bit 15). Read once by
+// InitObjectEventStateFromTemplate to set objectEvent->shiny BEFORE the sprite
+// and palette are created, so the shiny palette loads from the start and every
+// sprite-recreate path honors it. Never executed (special spawns have no
+// map-template interaction script).
+static const u8 sShinyOverworldSpawnScript[] = { 0x7d, 0x00, 0x00, 0x80 };
 
 static struct OverworldSpawn sOverworldSpawns[MAX_OVERWORLD_SPAWNS];
 static u8 sSpawnStepTimer;
@@ -63,6 +70,7 @@ static void ClearSpawnSlot(struct OverworldSpawn *spawn)
     spawn->species = SPECIES_NONE;
     spawn->level = 0;
     spawn->shiny = FALSE;
+    spawn->personality = 0;
 }
 
 void RemoveAllOverworldSpawns(void)
@@ -81,9 +89,12 @@ void RemoveAllOverworldSpawns(void)
     sSpawnStepTimer = 0;
 }
 
-// Remove any spawns whose object event has scrolled off-screen or otherwise
-// vanished, freeing the slot for a fresh spawn near the player.
-static void DespawnDistantMons(void)
+// Per-step upkeep for active spawns: remove ones that scrolled off-screen or
+// vanished (freeing the slot), and re-assert shininess on the rest. A wandering
+// shiny's palette can otherwise get reset to normal when its sprite is touched
+// by the object-event system; followers avoid this via continuous
+// FollowerSetGraphics upkeep, so we mirror that here.
+static void MaintainSpawns(void)
 {
     u8 i, objId;
 
@@ -104,6 +115,10 @@ static void DespawnDistantMons(void)
                                              gSaveBlock1Ptr->location.mapNum,
                                              gSaveBlock1Ptr->location.mapGroup);
             ClearSpawnSlot(&sOverworldSpawns[i]);
+        }
+        else if (sOverworldSpawns[i].shiny)
+        {
+            SetOverworldMonShiny(&gObjectEvents[objId], TRUE);
         }
     }
 }
@@ -159,6 +174,7 @@ static bool8 TrySpawnOne(void)
         u16 species;
         u8 level;
         bool8 shiny;
+        u32 personality;
         struct ObjectEventTemplate template;
         u8 objId;
 
@@ -180,7 +196,13 @@ static bool8 TrySpawnOne(void)
         if (!GetOverworldSpawnMon(waterMon, &species, &level))
             continue;
 
-        shiny = (Random() % OW_SHINY_CHANCE) == 0;
+        // Roll the personality (PID) once and derive shininess from it against the
+        // player's OT ID — the same way the battle mon's shininess is determined.
+        // The battle mon is later created with this exact PID (see
+        // StartOverworldSpawnBattle), so overworld and battle shininess always match,
+        // at the game's natural shiny rate (SHINY_ODDS / 65536).
+        personality = Random32();
+        shiny = IsShinyOtIdPersonality(T1_READ_32(gSaveBlock2Ptr->playerTrainerId), personality);
 
         template = (struct ObjectEventTemplate){
             .localId = slot->localId,
@@ -192,6 +214,8 @@ static bool8 TrySpawnOne(void)
             .movementType = MOVEMENT_TYPE_WANDER_AROUND,
             .movementRangeX = 2,
             .movementRangeY = 2,
+            // Bake shininess in so the shiny palette loads at sprite creation.
+            .script = shiny ? sShinyOverworldSpawnScript : NULL,
         };
 
         objId = SpawnSpecialObjectEvent(&template);
@@ -205,6 +229,7 @@ static bool8 TrySpawnOne(void)
         slot->species = species;
         slot->level = level;
         slot->shiny = shiny;
+        slot->personality = personality;
         return TRUE;
     }
     return FALSE;
@@ -224,7 +249,7 @@ void UpdateOverworldSpawns(void)
         return;
     }
 
-    DespawnDistantMons();
+    MaintainSpawns();
 
     if (sSpawnStepTimer != 0)
     {
@@ -258,12 +283,14 @@ bool8 TryStartOverworldSpawnBattle(u8 direction)
     if (spawn == NULL)
         return FALSE;
 
-    // Force the battle mon shiny to match the overworld sprite. CreateScriptedWildMon
-    // uses OT_ID_PLAYER_ID, which honors FLAG_SHINY_CREATION (cleared after use).
-    if (spawn->shiny)
-        FlagSet(FLAG_SHINY_CREATION);
+    // Create the battle mon with the exact PID rolled at spawn (and the player's OT
+    // ID, which spawn-time shininess was computed against), so its shininess matches
+    // the overworld sprite. Building it with a fixed personality keeps the encrypted
+    // substructures consistent (unlike stamping the PID after creation).
+    ZeroEnemyPartyMons();
+    CreateMon(&gEnemyParty[0], spawn->species, spawn->level, USE_RANDOM_IVS,
+              TRUE, spawn->personality, OT_ID_PLAYER_ID, 0);
 
-    CreateScriptedWildMon(spawn->species, spawn->level, ITEM_NONE);
     RemoveObjectEventByLocalIdAndMap(spawn->localId,
                                      gSaveBlock1Ptr->location.mapNum,
                                      gSaveBlock1Ptr->location.mapGroup);
