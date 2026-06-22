@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx wrangler pages deploy:*)",
+      "Bash(wrangler pages deploy:*)"
+    ]
+  }
+}

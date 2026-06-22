@@ -69,5 +69,9 @@ __pycache__/
 *.pyc
 
 # pictures
-pokeemerald*.pngnotes.md
+pokeemerald*.png
+notes.md
 pokeemerald-*.png
+
+# Claude Code personal/local settings (machine-specific permissions)
+.claude/settings.local.json
