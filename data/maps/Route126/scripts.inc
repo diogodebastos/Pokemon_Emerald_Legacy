@@ -64,6 +64,6 @@ Route126_EventScript_RematchPablo::
 
 
 Route126_EventScript_FrontierWilson::
-	trainerbattle_single TRAINER_FRONTIER_WILSON, BattleRoyale_Text_GenericIntro, BattleRoyale_Text_GenericDefeated
-	msgbox BattleRoyale_Text_GenericPostBattle, MSGBOX_AUTOCLOSE
+	trainerbattle_single TRAINER_FRONTIER_WILSON, BattleRoyale_Text_JohtoIntro, BattleRoyale_Text_JohtoDefeated
+	msgbox BattleRoyale_Text_JohtoPostBattle, MSGBOX_AUTOCLOSE
 	end

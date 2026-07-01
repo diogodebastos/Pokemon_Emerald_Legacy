@@ -75,3 +75,6 @@ pokeemerald-*.png
 
 # Claude Code personal/local settings (machine-specific permissions)
 .claude/settings.local.json
+
+# Local-only skill: deploys ROM to my Steam Deck over SSH (contains LAN IP/user)
+.claude/skills/deploy-to-steamdeck/

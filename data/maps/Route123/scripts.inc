@@ -218,6 +218,6 @@ Route123_Text_BerryMastersHouse:
 
 
 Route123_EventScript_Terry::
-	trainerbattle_single TRAINER_TERRY, BattleRoyale_Text_GenericIntro, BattleRoyale_Text_GenericDefeated
-	msgbox BattleRoyale_Text_GenericPostBattle, MSGBOX_AUTOCLOSE
+	trainerbattle_single TRAINER_TERRY, BattleRoyale_Text_KantoIntro, BattleRoyale_Text_KantoDefeated
+	msgbox BattleRoyale_Text_KantoPostBattle, MSGBOX_AUTOCLOSE
 	end

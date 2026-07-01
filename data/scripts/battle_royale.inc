@@ -26,6 +26,37 @@ BattleRoyale_Text_GenericDefeated:
 BattleRoyale_Text_GenericPostBattle:
 	.string "I won't forget this battle.$"
 
+@ Shared dialogue for the Kanto Gym Leaders / Elite Four / Champion (issue #5)
+BattleRoyale_Text_KantoIntro:
+	.string "So you've climbed to face one of\n"
+	.string "KANTO's finest.\p"
+	.string "Show me the power that carried you\n"
+	.string "all the way here!$"
+
+BattleRoyale_Text_KantoDefeated:
+	.string "Incredible…\p"
+	.string "You battle like a true KANTO\n"
+	.string "CHAMPION!$"
+
+BattleRoyale_Text_KantoPostBattle:
+	.string "KANTO would be proud of a battle\n"
+	.string "like that one.$"
+
+@ Shared dialogue for the Johto Gym Leaders (issue #5)
+BattleRoyale_Text_JohtoIntro:
+	.string "A challenger from far away!\p"
+	.string "Let me show you the strength of\n"
+	.string "a JOHTO GYM LEADER!$"
+
+BattleRoyale_Text_JohtoDefeated:
+	.string "Well done…\p"
+	.string "You've earned the respect of\n"
+	.string "JOHTO's very best.$"
+
+BattleRoyale_Text_JohtoPostBattle:
+	.string "Visit JOHTO someday. That battle\n"
+	.string "was unforgettable.$"
+
 BattleRoyale_Text_SupertrainerIntro:
 	.string "So you've climbed your way up to\n"
 	.string "face a SUPERTRAINER.\p"

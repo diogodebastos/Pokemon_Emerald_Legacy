@@ -208,6 +208,6 @@ Route117_Text_DayCareSign:
 
 
 Route117_EventScript_FrontierErick::
-	trainerbattle_single TRAINER_FRONTIER_ERICK, BattleRoyale_Text_GenericIntro, BattleRoyale_Text_GenericDefeated
-	msgbox BattleRoyale_Text_GenericPostBattle, MSGBOX_AUTOCLOSE
+	trainerbattle_single TRAINER_FRONTIER_ERICK, BattleRoyale_Text_JohtoIntro, BattleRoyale_Text_JohtoDefeated
+	msgbox BattleRoyale_Text_JohtoPostBattle, MSGBOX_AUTOCLOSE
 	end

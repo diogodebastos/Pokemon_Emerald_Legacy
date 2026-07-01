@@ -471,6 +471,6 @@ Route116_Text_TrainerTipsBagHasPockets:
 	.string "the lowered stat will be BLUE.$"
 
 Route116_EventScript_FrontierSkyler::
-	trainerbattle_single TRAINER_FRONTIER_SKYLER, BattleRoyale_Text_GenericIntro, BattleRoyale_Text_GenericDefeated
-	msgbox BattleRoyale_Text_GenericPostBattle, MSGBOX_AUTOCLOSE
+	trainerbattle_single TRAINER_FRONTIER_SKYLER, BattleRoyale_Text_JohtoIntro, BattleRoyale_Text_JohtoDefeated
+	msgbox BattleRoyale_Text_JohtoPostBattle, MSGBOX_AUTOCLOSE
 	end

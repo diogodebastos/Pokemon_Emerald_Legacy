@@ -38,6 +38,29 @@ static const union AnimCmd *const sAnims_ExpertM[] ={
     sAnim_GeneralFrame0,
 };
 
+// Kanto Gym Leaders / Elite Four / Champion (Battle Royale)
+static const union AnimCmd *const sAnims_Brock[] = { sAnim_GeneralFrame0, };
+static const union AnimCmd *const sAnims_Misty[] = { sAnim_GeneralFrame0, };
+static const union AnimCmd *const sAnims_LtSurge[] = { sAnim_GeneralFrame0, };
+static const union AnimCmd *const sAnims_Erika[] = { sAnim_GeneralFrame0, };
+static const union AnimCmd *const sAnims_Koga[] = { sAnim_GeneralFrame0, };
+static const union AnimCmd *const sAnims_Sabrina[] = { sAnim_GeneralFrame0, };
+static const union AnimCmd *const sAnims_Blaine[] = { sAnim_GeneralFrame0, };
+static const union AnimCmd *const sAnims_Giovanni[] = { sAnim_GeneralFrame0, };
+static const union AnimCmd *const sAnims_Lorelei[] = { sAnim_GeneralFrame0, };
+static const union AnimCmd *const sAnims_Bruno[] = { sAnim_GeneralFrame0, };
+static const union AnimCmd *const sAnims_Agatha[] = { sAnim_GeneralFrame0, };
+static const union AnimCmd *const sAnims_Lance[] = { sAnim_GeneralFrame0, };
+static const union AnimCmd *const sAnims_Blue[] = { sAnim_GeneralFrame0, };
+static const union AnimCmd *const sAnims_Falkner[] = { sAnim_GeneralFrame0, };
+static const union AnimCmd *const sAnims_Bugsy[] = { sAnim_GeneralFrame0, };
+static const union AnimCmd *const sAnims_Whitney[] = { sAnim_GeneralFrame0, };
+static const union AnimCmd *const sAnims_Morty[] = { sAnim_GeneralFrame0, };
+static const union AnimCmd *const sAnims_Chuck[] = { sAnim_GeneralFrame0, };
+static const union AnimCmd *const sAnims_Jasmine[] = { sAnim_GeneralFrame0, };
+static const union AnimCmd *const sAnims_Pryce[] = { sAnim_GeneralFrame0, };
+static const union AnimCmd *const sAnims_Clair[] = { sAnim_GeneralFrame0, };
+
 static const union AnimCmd *const sAnims_AquaAdminM[] ={
     sAnim_GeneralFrame0,
 };
@@ -394,6 +417,27 @@ const union AnimCmd *const *const gTrainerFrontAnimsPtrTable[] =
     [TRAINER_PIC_SWIMMER_M] = sAnims_SwimmerM,
     [TRAINER_PIC_MAGMA_GRUNT_M] = sAnims_MagmaGruntM,
     [TRAINER_PIC_EXPERT_M] = sAnims_ExpertM,
+    [TRAINER_PIC_BROCK] = sAnims_Brock,
+    [TRAINER_PIC_MISTY] = sAnims_Misty,
+    [TRAINER_PIC_LT_SURGE] = sAnims_LtSurge,
+    [TRAINER_PIC_ERIKA] = sAnims_Erika,
+    [TRAINER_PIC_KOGA] = sAnims_Koga,
+    [TRAINER_PIC_SABRINA] = sAnims_Sabrina,
+    [TRAINER_PIC_BLAINE] = sAnims_Blaine,
+    [TRAINER_PIC_GIOVANNI] = sAnims_Giovanni,
+    [TRAINER_PIC_LORELEI] = sAnims_Lorelei,
+    [TRAINER_PIC_BRUNO] = sAnims_Bruno,
+    [TRAINER_PIC_AGATHA] = sAnims_Agatha,
+    [TRAINER_PIC_LANCE] = sAnims_Lance,
+    [TRAINER_PIC_BLUE] = sAnims_Blue,
+    [TRAINER_PIC_FALKNER] = sAnims_Falkner,
+    [TRAINER_PIC_BUGSY] = sAnims_Bugsy,
+    [TRAINER_PIC_WHITNEY] = sAnims_Whitney,
+    [TRAINER_PIC_MORTY] = sAnims_Morty,
+    [TRAINER_PIC_CHUCK] = sAnims_Chuck,
+    [TRAINER_PIC_JASMINE] = sAnims_Jasmine,
+    [TRAINER_PIC_PRYCE] = sAnims_Pryce,
+    [TRAINER_PIC_CLAIR] = sAnims_Clair,
     [TRAINER_PIC_AQUA_ADMIN_M] = sAnims_AquaAdminM,
     [TRAINER_PIC_BLACK_BELT] = sAnims_BlackBelt,
     [TRAINER_PIC_AQUA_ADMIN_F] = sAnims_AquaAdminF,

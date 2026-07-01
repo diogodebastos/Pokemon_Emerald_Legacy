@@ -261,6 +261,29 @@
 #define OBJ_EVENT_GFX_JOLTEON                    257
 #define OBJ_EVENT_GFX_UMBREON                    258
 #define OBJ_EVENT_GFX_ESPEON                     259
+// Kanto Gym Leaders / Elite Four / Champion (Battle Royale, sprites from pokefirered)
+#define OBJ_EVENT_GFX_BROCK                      260
+#define OBJ_EVENT_GFX_MISTY                      261
+#define OBJ_EVENT_GFX_LT_SURGE                   262
+#define OBJ_EVENT_GFX_ERIKA                      263
+#define OBJ_EVENT_GFX_KOGA                       264
+#define OBJ_EVENT_GFX_SABRINA                    265
+#define OBJ_EVENT_GFX_BLAINE                     266
+#define OBJ_EVENT_GFX_GIOVANNI                   267
+#define OBJ_EVENT_GFX_LORELEI                    268
+#define OBJ_EVENT_GFX_BRUNO                      269
+#define OBJ_EVENT_GFX_AGATHA                     270
+#define OBJ_EVENT_GFX_LANCE                      271
+#define OBJ_EVENT_GFX_BLUE                       272
+// Johto Gym Leaders (Battle Royale, overworld sprites from PokemonHnS / Gen-3-style Johto set)
+#define OBJ_EVENT_GFX_FALKNER                    273
+#define OBJ_EVENT_GFX_BUGSY                      274
+#define OBJ_EVENT_GFX_WHITNEY                    275
+#define OBJ_EVENT_GFX_MORTY                      276
+#define OBJ_EVENT_GFX_CHUCK                      277
+#define OBJ_EVENT_GFX_JASMINE                    278
+#define OBJ_EVENT_GFX_PRYCE                      279
+#define OBJ_EVENT_GFX_CLAIR                      280
 
 // NOTE: By default, the max value for NUM_OBJ_EVENT_GFX is 239.
 //

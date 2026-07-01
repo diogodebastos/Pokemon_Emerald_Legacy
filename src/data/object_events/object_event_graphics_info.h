@@ -2525,6 +2525,50 @@ const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_Tate = {
     .affineAnims = gDummySpriteAffineAnimTable,
 };
 
+// Kanto Gym Leaders / Elite Four / Champion (Battle Royale, from pokefirered).
+// paletteTag/paletteSlot pairing preserved from FireRed (GREEN->3, BLUE->1, WHITE->4, PINK->2).
+#define KANTO_LEADER_GFX_INFO(name, palTag, palSlot)                    \
+const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_##name = { \
+    .tileTag = TAG_NONE,                                                \
+    .paletteTag = palTag,                                              \
+    .reflectionPaletteTag = OBJ_EVENT_PAL_TAG_NONE,                    \
+    .size = 256,                                                       \
+    .width = 16,                                                       \
+    .height = 32,                                                      \
+    .paletteSlot = palSlot,                                            \
+    .shadowSize = SHADOW_SIZE_M,                                       \
+    .inanimate = FALSE,                                               \
+    .compressed = FALSE,                                              \
+    .tracks = TRACKS_FOOT,                                            \
+    .oam = &gObjectEventBaseOam_16x32,                                \
+    .subspriteTables = sOamTables_16x32,                             \
+    .anims = sAnimTable_Standard,                                     \
+    .images = sPicTable_##name,                                      \
+    .affineAnims = gDummySpriteAffineAnimTable,                     \
+}
+KANTO_LEADER_GFX_INFO(Brock,    OBJ_EVENT_PAL_TAG_NPC_GREEN, PALSLOT_NPC_3);
+KANTO_LEADER_GFX_INFO(Misty,    OBJ_EVENT_PAL_TAG_NPC_BLUE,  PALSLOT_NPC_1);
+KANTO_LEADER_GFX_INFO(LtSurge,  OBJ_EVENT_PAL_TAG_NPC_GREEN, PALSLOT_NPC_3);
+KANTO_LEADER_GFX_INFO(Erika,    OBJ_EVENT_PAL_TAG_NPC_BLUE,  PALSLOT_NPC_1);
+KANTO_LEADER_GFX_INFO(Koga,     OBJ_EVENT_PAL_TAG_NPC_WHITE, PALSLOT_NPC_4);
+KANTO_LEADER_GFX_INFO(Sabrina,  OBJ_EVENT_PAL_TAG_NPC_BLUE,  PALSLOT_NPC_1);
+KANTO_LEADER_GFX_INFO(Blaine,   OBJ_EVENT_PAL_TAG_NPC_PINK,  PALSLOT_NPC_2);
+KANTO_LEADER_GFX_INFO(Giovanni, OBJ_EVENT_PAL_TAG_NPC_WHITE, PALSLOT_NPC_4);
+KANTO_LEADER_GFX_INFO(Lorelei,  OBJ_EVENT_PAL_TAG_NPC_WHITE, PALSLOT_NPC_4);
+KANTO_LEADER_GFX_INFO(Bruno,    OBJ_EVENT_PAL_TAG_NPC_WHITE, PALSLOT_NPC_4);
+KANTO_LEADER_GFX_INFO(Agatha,   OBJ_EVENT_PAL_TAG_NPC_PINK,  PALSLOT_NPC_2);
+KANTO_LEADER_GFX_INFO(Lance,    OBJ_EVENT_PAL_TAG_NPC_WHITE, PALSLOT_NPC_4);
+KANTO_LEADER_GFX_INFO(Blue,     OBJ_EVENT_PAL_TAG_NPC_GREEN, PALSLOT_NPC_3);
+// Johto Gym Leaders (Battle Royale, from PokemonHnS) - each has its own palette (one on screen per route)
+KANTO_LEADER_GFX_INFO(Falkner,  OBJ_EVENT_PAL_TAG_JOHTO_FALKNER, PALSLOT_NPC_1);
+KANTO_LEADER_GFX_INFO(Bugsy,    OBJ_EVENT_PAL_TAG_JOHTO_BUGSY,   PALSLOT_NPC_1);
+KANTO_LEADER_GFX_INFO(Whitney,  OBJ_EVENT_PAL_TAG_JOHTO_WHITNEY, PALSLOT_NPC_1);
+KANTO_LEADER_GFX_INFO(Morty,    OBJ_EVENT_PAL_TAG_JOHTO_MORTY,   PALSLOT_NPC_1);
+KANTO_LEADER_GFX_INFO(Chuck,    OBJ_EVENT_PAL_TAG_JOHTO_CHUCK,   PALSLOT_NPC_1);
+KANTO_LEADER_GFX_INFO(Jasmine,  OBJ_EVENT_PAL_TAG_JOHTO_JASMINE, PALSLOT_NPC_1);
+KANTO_LEADER_GFX_INFO(Pryce,    OBJ_EVENT_PAL_TAG_JOHTO_PRYCE,   PALSLOT_NPC_1);
+KANTO_LEADER_GFX_INFO(Clair,    OBJ_EVENT_PAL_TAG_JOHTO_CLAIR,   PALSLOT_NPC_1);
+
 const struct ObjectEventGraphicsInfo gObjectEventGraphicsInfo_Wallace = {
     .tileTag = TAG_NONE,
     .paletteTag = OBJ_EVENT_PAL_TAG_NPC_4,

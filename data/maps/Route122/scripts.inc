@@ -3,6 +3,6 @@ Route122_MapScripts::
 
 
 Route122_EventScript_FrontierJoyce::
-	trainerbattle_single TRAINER_FRONTIER_JOYCE, BattleRoyale_Text_GenericIntro, BattleRoyale_Text_GenericDefeated
-	msgbox BattleRoyale_Text_GenericPostBattle, MSGBOX_AUTOCLOSE
+	trainerbattle_single TRAINER_FRONTIER_JOYCE, BattleRoyale_Text_JohtoIntro, BattleRoyale_Text_JohtoDefeated
+	msgbox BattleRoyale_Text_JohtoPostBattle, MSGBOX_AUTOCLOSE
 	end

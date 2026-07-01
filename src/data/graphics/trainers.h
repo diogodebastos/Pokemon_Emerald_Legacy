@@ -28,6 +28,52 @@ const u32 gTrainerPalette_MagmaGruntM[] = INCBIN_U32("graphics/trainers/front_pi
 const u32 gTrainerFrontPic_ExpertM[] = INCBIN_U32("graphics/trainers/front_pics/expert_m.4bpp.lz");
 const u32 gTrainerPalette_ExpertM[] = INCBIN_U32("graphics/trainers/front_pics/expert_m.gbapal.lz");
 
+// Kanto Gym Leaders / Elite Four / Champion (Battle Royale, from pokefirered)
+const u32 gTrainerFrontPic_Brock[] = INCBIN_U32("graphics/trainers/front_pics/leader_brock.4bpp.lz");
+const u32 gTrainerPalette_Brock[] = INCBIN_U32("graphics/trainers/front_pics/leader_brock.gbapal.lz");
+const u32 gTrainerFrontPic_Misty[] = INCBIN_U32("graphics/trainers/front_pics/leader_misty.4bpp.lz");
+const u32 gTrainerPalette_Misty[] = INCBIN_U32("graphics/trainers/front_pics/leader_misty.gbapal.lz");
+const u32 gTrainerFrontPic_LtSurge[] = INCBIN_U32("graphics/trainers/front_pics/leader_lt_surge.4bpp.lz");
+const u32 gTrainerPalette_LtSurge[] = INCBIN_U32("graphics/trainers/front_pics/leader_lt_surge.gbapal.lz");
+const u32 gTrainerFrontPic_Erika[] = INCBIN_U32("graphics/trainers/front_pics/leader_erika.4bpp.lz");
+const u32 gTrainerPalette_Erika[] = INCBIN_U32("graphics/trainers/front_pics/leader_erika.gbapal.lz");
+const u32 gTrainerFrontPic_Koga[] = INCBIN_U32("graphics/trainers/front_pics/leader_koga.4bpp.lz");
+const u32 gTrainerPalette_Koga[] = INCBIN_U32("graphics/trainers/front_pics/leader_koga.gbapal.lz");
+const u32 gTrainerFrontPic_Sabrina[] = INCBIN_U32("graphics/trainers/front_pics/leader_sabrina.4bpp.lz");
+const u32 gTrainerPalette_Sabrina[] = INCBIN_U32("graphics/trainers/front_pics/leader_sabrina.gbapal.lz");
+const u32 gTrainerFrontPic_Blaine[] = INCBIN_U32("graphics/trainers/front_pics/leader_blaine.4bpp.lz");
+const u32 gTrainerPalette_Blaine[] = INCBIN_U32("graphics/trainers/front_pics/leader_blaine.gbapal.lz");
+const u32 gTrainerFrontPic_Giovanni[] = INCBIN_U32("graphics/trainers/front_pics/leader_giovanni.4bpp.lz");
+const u32 gTrainerPalette_Giovanni[] = INCBIN_U32("graphics/trainers/front_pics/leader_giovanni.gbapal.lz");
+const u32 gTrainerFrontPic_Lorelei[] = INCBIN_U32("graphics/trainers/front_pics/elite_four_lorelei.4bpp.lz");
+const u32 gTrainerPalette_Lorelei[] = INCBIN_U32("graphics/trainers/front_pics/elite_four_lorelei.gbapal.lz");
+const u32 gTrainerFrontPic_Bruno[] = INCBIN_U32("graphics/trainers/front_pics/elite_four_bruno.4bpp.lz");
+const u32 gTrainerPalette_Bruno[] = INCBIN_U32("graphics/trainers/front_pics/elite_four_bruno.gbapal.lz");
+const u32 gTrainerFrontPic_Agatha[] = INCBIN_U32("graphics/trainers/front_pics/elite_four_agatha.4bpp.lz");
+const u32 gTrainerPalette_Agatha[] = INCBIN_U32("graphics/trainers/front_pics/elite_four_agatha.gbapal.lz");
+const u32 gTrainerFrontPic_Lance[] = INCBIN_U32("graphics/trainers/front_pics/elite_four_lance.4bpp.lz");
+const u32 gTrainerPalette_Lance[] = INCBIN_U32("graphics/trainers/front_pics/elite_four_lance.gbapal.lz");
+const u32 gTrainerFrontPic_Blue[] = INCBIN_U32("graphics/trainers/front_pics/champion_blue.4bpp.lz");
+const u32 gTrainerPalette_Blue[] = INCBIN_U32("graphics/trainers/front_pics/champion_blue.gbapal.lz");
+
+// Johto Gym Leaders (Battle Royale, from pokeheartgold / HGSS)
+const u32 gTrainerFrontPic_Falkner[] = INCBIN_U32("graphics/trainers/front_pics/leader_falkner.4bpp.lz");
+const u32 gTrainerPalette_Falkner[] = INCBIN_U32("graphics/trainers/front_pics/leader_falkner.gbapal.lz");
+const u32 gTrainerFrontPic_Bugsy[] = INCBIN_U32("graphics/trainers/front_pics/leader_bugsy.4bpp.lz");
+const u32 gTrainerPalette_Bugsy[] = INCBIN_U32("graphics/trainers/front_pics/leader_bugsy.gbapal.lz");
+const u32 gTrainerFrontPic_Whitney[] = INCBIN_U32("graphics/trainers/front_pics/leader_whitney.4bpp.lz");
+const u32 gTrainerPalette_Whitney[] = INCBIN_U32("graphics/trainers/front_pics/leader_whitney.gbapal.lz");
+const u32 gTrainerFrontPic_Morty[] = INCBIN_U32("graphics/trainers/front_pics/leader_morty.4bpp.lz");
+const u32 gTrainerPalette_Morty[] = INCBIN_U32("graphics/trainers/front_pics/leader_morty.gbapal.lz");
+const u32 gTrainerFrontPic_Chuck[] = INCBIN_U32("graphics/trainers/front_pics/leader_chuck.4bpp.lz");
+const u32 gTrainerPalette_Chuck[] = INCBIN_U32("graphics/trainers/front_pics/leader_chuck.gbapal.lz");
+const u32 gTrainerFrontPic_Jasmine[] = INCBIN_U32("graphics/trainers/front_pics/leader_jasmine.4bpp.lz");
+const u32 gTrainerPalette_Jasmine[] = INCBIN_U32("graphics/trainers/front_pics/leader_jasmine.gbapal.lz");
+const u32 gTrainerFrontPic_Pryce[] = INCBIN_U32("graphics/trainers/front_pics/leader_pryce.4bpp.lz");
+const u32 gTrainerPalette_Pryce[] = INCBIN_U32("graphics/trainers/front_pics/leader_pryce.gbapal.lz");
+const u32 gTrainerFrontPic_Clair[] = INCBIN_U32("graphics/trainers/front_pics/leader_clair.4bpp.lz");
+const u32 gTrainerPalette_Clair[] = INCBIN_U32("graphics/trainers/front_pics/leader_clair.gbapal.lz");
+
 const u32 gTrainerFrontPic_AquaAdminM[] = INCBIN_U32("graphics/trainers/front_pics/aqua_admin_m.4bpp.lz");
 const u32 gTrainerPalette_AquaAdminM[] = INCBIN_U32("graphics/trainers/front_pics/aqua_admin_m.gbapal.lz");
 

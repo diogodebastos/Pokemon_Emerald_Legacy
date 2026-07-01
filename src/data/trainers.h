@@ -2077,15 +2077,15 @@ const struct Trainer gTrainers[] = {
         .party = TRAINER_MON(sParty_Jack),
     },
 
-    [TRAINER_DUDLEY] =
+    [TRAINER_DUDLEY] = // Battle Royale: Lt. Surge (issue #5)
     {
-        .trainerClass = TRAINER_CLASS_SWIMMER_M,
-        .encounterMusic_gender = TRAINER_ENCOUNTER_MUSIC_SWIMMER,
-        .trainerPic = TRAINER_PIC_SWIMMER_M,
-        .trainerName = _("DUDLEY"),
+        .trainerClass = TRAINER_CLASS_LEADER,
+        .encounterMusic_gender = TRAINER_ENCOUNTER_MUSIC_INTENSE,
+        .trainerPic = TRAINER_PIC_LT_SURGE,
+        .trainerName = _("LT.SURGE"),
         .items = {},
         .doubleBattle = TRUE,
-        .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE,
+        .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY | AI_SCRIPT_SETUP_FIRST_TURN | AI_SCRIPT_HP_AWARE | AI_SCRIPT_DOUBLE_BATTLE,
         .party = TRAINER_MON(sParty_Dudley),
     },
 
@@ -5545,15 +5545,15 @@ const struct Trainer gTrainers[] = {
         .party = TRAINER_MON(sParty_Linda),
     },
 
-    [TRAINER_KAYLEE] =
+    [TRAINER_KAYLEE] = // Battle Royale: Koga (issue #5)
     {
-        .trainerClass = TRAINER_CLASS_SWIMMER_F,
-        .encounterMusic_gender = F_TRAINER_FEMALE | TRAINER_ENCOUNTER_MUSIC_SWIMMER,
-        .trainerPic = TRAINER_PIC_SWIMMER_F,
-        .trainerName = _("KAYLEE"),
+        .trainerClass = TRAINER_CLASS_LEADER,
+        .encounterMusic_gender = TRAINER_ENCOUNTER_MUSIC_INTENSE,
+        .trainerPic = TRAINER_PIC_KOGA,
+        .trainerName = _("KOGA"),
         .items = {},
         .doubleBattle = TRUE,
-        .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE,
+        .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY | AI_SCRIPT_SETUP_FIRST_TURN | AI_SCRIPT_HP_AWARE | AI_SCRIPT_DOUBLE_BATTLE,
         .party = TRAINER_MON(sParty_Kaylee),
     },
 
@@ -6973,15 +6973,15 @@ const struct Trainer gTrainers[] = {
         .party = TRAINER_MON(sParty_Clarence),
     },
 
-    [TRAINER_TERRY] =
+    [TRAINER_TERRY] = // Battle Royale: Erika (issue #5)
     {
-        .trainerClass = TRAINER_CLASS_PSYCHIC,
+        .trainerClass = TRAINER_CLASS_LEADER,
         .encounterMusic_gender = F_TRAINER_FEMALE | TRAINER_ENCOUNTER_MUSIC_INTENSE,
-        .trainerPic = TRAINER_PIC_PSYCHIC_F,
-        .trainerName = _("TERRY"),
+        .trainerPic = TRAINER_PIC_ERIKA,
+        .trainerName = _("ERIKA"),
         .items = {},
         .doubleBattle = TRUE,
-        .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE,
+        .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY | AI_SCRIPT_SETUP_FIRST_TURN | AI_SCRIPT_HP_AWARE | AI_SCRIPT_DOUBLE_BATTLE,
         .party = TRAINER_MON(sParty_Terry),
     },
 
@@ -7609,15 +7609,15 @@ const struct Trainer gTrainers[] = {
         .party = TRAINER_MON(sParty_Lucas2),
     },
 
-    [TRAINER_MIKE_1] =
+    [TRAINER_MIKE_1] = // Battle Royale: Blaine (issue #5)
     {
-        .trainerClass = TRAINER_CLASS_HIKER,
-        .encounterMusic_gender = TRAINER_ENCOUNTER_MUSIC_HIKER,
-        .trainerPic = TRAINER_PIC_HIKER,
-        .trainerName = _("MIKE"),
+        .trainerClass = TRAINER_CLASS_LEADER,
+        .encounterMusic_gender = TRAINER_ENCOUNTER_MUSIC_INTENSE,
+        .trainerPic = TRAINER_PIC_BLAINE,
+        .trainerName = _("BLAINE"),
         .items = {},
         .doubleBattle = TRUE,
-        .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE,
+        .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY | AI_SCRIPT_SETUP_FIRST_TURN | AI_SCRIPT_HP_AWARE | AI_SCRIPT_DOUBLE_BATTLE,
         .party = TRAINER_MON(sParty_Mike1),
     },
 
@@ -10649,23 +10649,24 @@ const struct Trainer gTrainers[] = {
     [TRAINER_FRONTIER_CHAZ] = {.trainerClass = TRAINER_CLASS_MYTH_TRAINER, .encounterMusic_gender = TRAINER_ENCOUNTER_MUSIC_INTENSE, .trainerPic = TRAINER_PIC_PALACE_MAVEN_SPENSER, .trainerName = _("INFIN"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY | AI_SCRIPT_SETUP_FIRST_TURN | AI_SCRIPT_HP_AWARE | AI_SCRIPT_DOUBLE_BATTLE, .party = TRAINER_MON(sParty_FrontierChaz)},
     [TRAINER_FRONTIER_DORINE] = {.trainerClass = TRAINER_CLASS_SUPERTRAINER, .encounterMusic_gender = TRAINER_ENCOUNTER_MUSIC_INTENSE, .trainerPic = TRAINER_PIC_EXPERT_M, .trainerName = _("GARVON"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY | AI_SCRIPT_SETUP_FIRST_TURN | AI_SCRIPT_HP_AWARE | AI_SCRIPT_DOUBLE_BATTLE, .party = TRAINER_MON(sParty_FrontierDorine)},
     [TRAINER_FRONTIER_RAUL] = {.trainerClass = TRAINER_CLASS_MYTH_TRAINER, .encounterMusic_gender = TRAINER_ENCOUNTER_MUSIC_INTENSE, .trainerPic = TRAINER_PIC_PALACE_MAVEN_SPENSER, .trainerName = _("INITY"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY | AI_SCRIPT_SETUP_FIRST_TURN | AI_SCRIPT_HP_AWARE | AI_SCRIPT_DOUBLE_BATTLE, .party = TRAINER_MON(sParty_FrontierRaul)},
-    [TRAINER_FRONTIER_JAXON] = {.trainerClass = TRAINER_CLASS_YOUNGSTER, .encounterMusic_gender = TRAINER_ENCOUNTER_MUSIC_MALE, .trainerPic = TRAINER_PIC_YOUNGSTER, .trainerName = _("JAXON"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY, .party = TRAINER_MON(sParty_FrontierJaxon)},
-    [TRAINER_FRONTIER_EMILEE] = {.trainerClass = TRAINER_CLASS_LASS, .encounterMusic_gender = F_TRAINER_FEMALE | TRAINER_ENCOUNTER_MUSIC_GIRL, .trainerPic = TRAINER_PIC_LASS, .trainerName = _("EMILEE"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY, .party = TRAINER_MON(sParty_FrontierEmilee)},
-    [TRAINER_FRONTIER_ARMANDO] = {.trainerClass = TRAINER_CLASS_RUIN_MANIAC, .encounterMusic_gender = TRAINER_ENCOUNTER_MUSIC_HIKER, .trainerPic = TRAINER_PIC_RUIN_MANIAC, .trainerName = _("ARMANDO"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY, .party = TRAINER_MON(sParty_FrontierArmando)},
-    [TRAINER_FRONTIER_JOSIE] = {.trainerClass = TRAINER_CLASS_PICNICKER, .encounterMusic_gender = F_TRAINER_FEMALE | TRAINER_ENCOUNTER_MUSIC_GIRL, .trainerPic = TRAINER_PIC_PICNICKER, .trainerName = _("JOSIE"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY, .party = TRAINER_MON(sParty_FrontierJosie)},
-    [TRAINER_FRONTIER_PEDRO] = {.trainerClass = TRAINER_CLASS_SWIMMER_M, .encounterMusic_gender = TRAINER_ENCOUNTER_MUSIC_SWIMMER, .trainerPic = TRAINER_PIC_SWIMMER_M, .trainerName = _("PEDRO"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY, .party = TRAINER_MON(sParty_FrontierPedro)},
-    [TRAINER_FRONTIER_ELAINE] = {.trainerClass = TRAINER_CLASS_SWIMMER_F, .encounterMusic_gender = F_TRAINER_FEMALE | TRAINER_ENCOUNTER_MUSIC_SWIMMER, .trainerPic = TRAINER_PIC_SWIMMER_F, .trainerName = _("ELAINE"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY, .party = TRAINER_MON(sParty_FrontierElaine)},
-    [TRAINER_FRONTIER_GAVIN] = {.trainerClass = TRAINER_CLASS_SWIMMER_M, .encounterMusic_gender = TRAINER_ENCOUNTER_MUSIC_SWIMMER, .trainerPic = TRAINER_PIC_SWIMMER_M, .trainerName = _("GAVIN"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY, .party = TRAINER_MON(sParty_FrontierGavin)},
-    [TRAINER_FRONTIER_TODD] = {.trainerClass = TRAINER_CLASS_NINJA_BOY, .encounterMusic_gender = TRAINER_ENCOUNTER_MUSIC_SUSPICIOUS, .trainerPic = TRAINER_PIC_NINJA_BOY, .trainerName = _("TODD"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY, .party = TRAINER_MON(sParty_FrontierTodd)},
-    [TRAINER_FRONTIER_RUTH] = {.trainerClass = TRAINER_CLASS_CAMPER, .encounterMusic_gender = TRAINER_ENCOUNTER_MUSIC_MALE, .trainerPic = TRAINER_PIC_CAMPER, .trainerName = _("RUTH"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY, .party = TRAINER_MON(sParty_FrontierRuth)},
-    [TRAINER_FRONTIER_MELODY] = {.trainerClass = TRAINER_CLASS_BATTLE_GIRL, .encounterMusic_gender = F_TRAINER_FEMALE | TRAINER_ENCOUNTER_MUSIC_INTENSE, .trainerPic = TRAINER_PIC_BATTLE_GIRL, .trainerName = _("MELODY"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY, .party = TRAINER_MON(sParty_FrontierMelody)},
-    [TRAINER_FRONTIER_SKYLER] = {.trainerClass = TRAINER_CLASS_BUG_CATCHER, .encounterMusic_gender = TRAINER_ENCOUNTER_MUSIC_MALE, .trainerPic = TRAINER_PIC_BUG_CATCHER, .trainerName = _("SKYLER"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY, .party = TRAINER_MON(sParty_FrontierSkyler)},
-    [TRAINER_FRONTIER_ERICK] = {.trainerClass = TRAINER_CLASS_PKMN_BREEDER, .encounterMusic_gender = TRAINER_ENCOUNTER_MUSIC_MALE, .trainerPic = TRAINER_PIC_POKEMON_BREEDER_M, .trainerName = _("ERICK"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY, .party = TRAINER_MON(sParty_FrontierErick)},
-    [TRAINER_FRONTIER_JOYCE] = {.trainerClass = TRAINER_CLASS_SWIMMER_F, .encounterMusic_gender = F_TRAINER_FEMALE | TRAINER_ENCOUNTER_MUSIC_SWIMMER, .trainerPic = TRAINER_PIC_SWIMMER_F, .trainerName = _("JOYCE"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY, .party = TRAINER_MON(sParty_FrontierJoyce)},
-    [TRAINER_FRONTIER_MALORY] = {.trainerClass = TRAINER_CLASS_SWIMMER_F, .encounterMusic_gender = F_TRAINER_FEMALE | TRAINER_ENCOUNTER_MUSIC_SWIMMER, .trainerPic = TRAINER_PIC_SWIMMER_F, .trainerName = _("MALORY"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY, .party = TRAINER_MON(sParty_FrontierMalory)},
-    [TRAINER_FRONTIER_ESTHER] = {.trainerClass = TRAINER_CLASS_SWIMMER_F, .encounterMusic_gender = F_TRAINER_FEMALE | TRAINER_ENCOUNTER_MUSIC_SWIMMER, .trainerPic = TRAINER_PIC_SWIMMER_F, .trainerName = _("ESTHER"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY, .party = TRAINER_MON(sParty_FrontierEsther)},
-    [TRAINER_FRONTIER_WILSON] = {.trainerClass = TRAINER_CLASS_SWIMMER_M, .encounterMusic_gender = TRAINER_ENCOUNTER_MUSIC_SWIMMER, .trainerPic = TRAINER_PIC_SWIMMER_M, .trainerName = _("WILSON"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY, .party = TRAINER_MON(sParty_FrontierWilson)},
-    [TRAINER_FRONTIER_CLARE] = {.trainerClass = TRAINER_CLASS_SWIMMER_F, .encounterMusic_gender = F_TRAINER_FEMALE | TRAINER_ENCOUNTER_MUSIC_SWIMMER, .trainerPic = TRAINER_PIC_SWIMMER_F, .trainerName = _("CLARE"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY, .party = TRAINER_MON(sParty_FrontierClare)},
+    // Battle Royale: Kanto/Johto Gym Leaders, Elite Four & Champion (issue #5). Party symbol names kept from the original random slots.
+    [TRAINER_FRONTIER_JAXON] = {.trainerClass = TRAINER_CLASS_LEADER, .encounterMusic_gender = F_TRAINER_FEMALE | TRAINER_ENCOUNTER_MUSIC_INTENSE, .trainerPic = TRAINER_PIC_SABRINA, .trainerName = _("SABRINA"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY | AI_SCRIPT_SETUP_FIRST_TURN | AI_SCRIPT_HP_AWARE | AI_SCRIPT_DOUBLE_BATTLE, .party = TRAINER_MON(sParty_FrontierJaxon)},
+    [TRAINER_FRONTIER_EMILEE] = {.trainerClass = TRAINER_CLASS_LEADER, .encounterMusic_gender = TRAINER_ENCOUNTER_MUSIC_INTENSE, .trainerPic = TRAINER_PIC_BRUNO, .trainerName = _("BRUNO"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY | AI_SCRIPT_SETUP_FIRST_TURN | AI_SCRIPT_HP_AWARE | AI_SCRIPT_DOUBLE_BATTLE, .party = TRAINER_MON(sParty_FrontierEmilee)},
+    [TRAINER_FRONTIER_ARMANDO] = {.trainerClass = TRAINER_CLASS_LEADER, .encounterMusic_gender = F_TRAINER_FEMALE | TRAINER_ENCOUNTER_MUSIC_INTENSE, .trainerPic = TRAINER_PIC_AGATHA, .trainerName = _("AGATHA"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY | AI_SCRIPT_SETUP_FIRST_TURN | AI_SCRIPT_HP_AWARE | AI_SCRIPT_DOUBLE_BATTLE, .party = TRAINER_MON(sParty_FrontierArmando)},
+    [TRAINER_FRONTIER_JOSIE] = {.trainerClass = TRAINER_CLASS_LEADER, .encounterMusic_gender = TRAINER_ENCOUNTER_MUSIC_INTENSE, .trainerPic = TRAINER_PIC_BUGSY, .trainerName = _("BUGSY"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY | AI_SCRIPT_SETUP_FIRST_TURN | AI_SCRIPT_HP_AWARE | AI_SCRIPT_DOUBLE_BATTLE, .party = TRAINER_MON(sParty_FrontierJosie)},
+    [TRAINER_FRONTIER_PEDRO] = {.trainerClass = TRAINER_CLASS_LEADER, .encounterMusic_gender = TRAINER_ENCOUNTER_MUSIC_INTENSE, .trainerPic = TRAINER_PIC_FALKNER, .trainerName = _("FALKNER"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY | AI_SCRIPT_SETUP_FIRST_TURN | AI_SCRIPT_HP_AWARE | AI_SCRIPT_DOUBLE_BATTLE, .party = TRAINER_MON(sParty_FrontierPedro)},
+    [TRAINER_FRONTIER_ELAINE] = {.trainerClass = TRAINER_CLASS_LEADER, .encounterMusic_gender = TRAINER_ENCOUNTER_MUSIC_INTENSE, .trainerPic = TRAINER_PIC_LANCE, .trainerName = _("LANCE"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY | AI_SCRIPT_SETUP_FIRST_TURN | AI_SCRIPT_HP_AWARE | AI_SCRIPT_DOUBLE_BATTLE, .party = TRAINER_MON(sParty_FrontierElaine)},
+    [TRAINER_FRONTIER_GAVIN] = {.trainerClass = TRAINER_CLASS_LEADER, .encounterMusic_gender = F_TRAINER_FEMALE | TRAINER_ENCOUNTER_MUSIC_INTENSE, .trainerPic = TRAINER_PIC_MISTY, .trainerName = _("MISTY"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY | AI_SCRIPT_SETUP_FIRST_TURN | AI_SCRIPT_HP_AWARE | AI_SCRIPT_DOUBLE_BATTLE, .party = TRAINER_MON(sParty_FrontierGavin)},
+    [TRAINER_FRONTIER_TODD] = {.trainerClass = TRAINER_CLASS_LEADER, .encounterMusic_gender = TRAINER_ENCOUNTER_MUSIC_INTENSE, .trainerPic = TRAINER_PIC_GIOVANNI, .trainerName = _("GIOVANNI"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY | AI_SCRIPT_SETUP_FIRST_TURN | AI_SCRIPT_HP_AWARE | AI_SCRIPT_DOUBLE_BATTLE, .party = TRAINER_MON(sParty_FrontierTodd)},
+    [TRAINER_FRONTIER_RUTH] = {.trainerClass = TRAINER_CLASS_LEADER, .encounterMusic_gender = TRAINER_ENCOUNTER_MUSIC_INTENSE, .trainerPic = TRAINER_PIC_BROCK, .trainerName = _("BROCK"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY | AI_SCRIPT_SETUP_FIRST_TURN | AI_SCRIPT_HP_AWARE | AI_SCRIPT_DOUBLE_BATTLE, .party = TRAINER_MON(sParty_FrontierRuth)},
+    [TRAINER_FRONTIER_MELODY] = {.trainerClass = TRAINER_CLASS_LEADER, .encounterMusic_gender = TRAINER_ENCOUNTER_MUSIC_INTENSE, .trainerPic = TRAINER_PIC_CHUCK, .trainerName = _("CHUCK"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY | AI_SCRIPT_SETUP_FIRST_TURN | AI_SCRIPT_HP_AWARE | AI_SCRIPT_DOUBLE_BATTLE, .party = TRAINER_MON(sParty_FrontierMelody)},
+    [TRAINER_FRONTIER_SKYLER] = {.trainerClass = TRAINER_CLASS_LEADER, .encounterMusic_gender = F_TRAINER_FEMALE | TRAINER_ENCOUNTER_MUSIC_INTENSE, .trainerPic = TRAINER_PIC_JASMINE, .trainerName = _("JASMINE"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY | AI_SCRIPT_SETUP_FIRST_TURN | AI_SCRIPT_HP_AWARE | AI_SCRIPT_DOUBLE_BATTLE, .party = TRAINER_MON(sParty_FrontierSkyler)},
+    [TRAINER_FRONTIER_ERICK] = {.trainerClass = TRAINER_CLASS_LEADER, .encounterMusic_gender = F_TRAINER_FEMALE | TRAINER_ENCOUNTER_MUSIC_INTENSE, .trainerPic = TRAINER_PIC_WHITNEY, .trainerName = _("WHITNEY"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY | AI_SCRIPT_SETUP_FIRST_TURN | AI_SCRIPT_HP_AWARE | AI_SCRIPT_DOUBLE_BATTLE, .party = TRAINER_MON(sParty_FrontierErick)},
+    [TRAINER_FRONTIER_JOYCE] = {.trainerClass = TRAINER_CLASS_LEADER, .encounterMusic_gender = TRAINER_ENCOUNTER_MUSIC_INTENSE, .trainerPic = TRAINER_PIC_MORTY, .trainerName = _("MORTY"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY | AI_SCRIPT_SETUP_FIRST_TURN | AI_SCRIPT_HP_AWARE | AI_SCRIPT_DOUBLE_BATTLE, .party = TRAINER_MON(sParty_FrontierJoyce)},
+    [TRAINER_FRONTIER_MALORY] = {.trainerClass = TRAINER_CLASS_LEADER, .encounterMusic_gender = F_TRAINER_FEMALE | TRAINER_ENCOUNTER_MUSIC_INTENSE, .trainerPic = TRAINER_PIC_LORELEI, .trainerName = _("LORELEI"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY | AI_SCRIPT_SETUP_FIRST_TURN | AI_SCRIPT_HP_AWARE | AI_SCRIPT_DOUBLE_BATTLE, .party = TRAINER_MON(sParty_FrontierMalory)},
+    [TRAINER_FRONTIER_ESTHER] = {.trainerClass = TRAINER_CLASS_LEADER, .encounterMusic_gender = TRAINER_ENCOUNTER_MUSIC_INTENSE, .trainerPic = TRAINER_PIC_PRYCE, .trainerName = _("PRYCE"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY | AI_SCRIPT_SETUP_FIRST_TURN | AI_SCRIPT_HP_AWARE | AI_SCRIPT_DOUBLE_BATTLE, .party = TRAINER_MON(sParty_FrontierEsther)},
+    [TRAINER_FRONTIER_WILSON] = {.trainerClass = TRAINER_CLASS_LEADER, .encounterMusic_gender = F_TRAINER_FEMALE | TRAINER_ENCOUNTER_MUSIC_INTENSE, .trainerPic = TRAINER_PIC_CLAIR, .trainerName = _("CLAIR"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY | AI_SCRIPT_SETUP_FIRST_TURN | AI_SCRIPT_HP_AWARE | AI_SCRIPT_DOUBLE_BATTLE, .party = TRAINER_MON(sParty_FrontierWilson)},
+    [TRAINER_FRONTIER_CLARE] = {.trainerClass = TRAINER_CLASS_LEADER, .encounterMusic_gender = TRAINER_ENCOUNTER_MUSIC_INTENSE, .trainerPic = TRAINER_PIC_BLUE, .trainerName = _("BLUE"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY | AI_SCRIPT_SETUP_FIRST_TURN | AI_SCRIPT_HP_AWARE | AI_SCRIPT_DOUBLE_BATTLE, .party = TRAINER_MON(sParty_FrontierClare)},
     [TRAINER_FRONTIER_TESS] = {.trainerClass = TRAINER_CLASS_SUPERTRAINER, .encounterMusic_gender = TRAINER_ENCOUNTER_MUSIC_INTENSE, .trainerPic = TRAINER_PIC_SWIMMER_M, .trainerName = _("TANGUT"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY | AI_SCRIPT_SETUP_FIRST_TURN | AI_SCRIPT_HP_AWARE | AI_SCRIPT_DOUBLE_BATTLE, .party = TRAINER_MON(sParty_FrontierTess)},
     [TRAINER_FRONTIER_VINCE] = {.trainerClass = TRAINER_CLASS_SUPERTRAINER, .encounterMusic_gender = F_TRAINER_FEMALE | TRAINER_ENCOUNTER_MUSIC_INTENSE, .trainerPic = TRAINER_PIC_SWIMMER_F, .trainerName = _("HOLOH"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY | AI_SCRIPT_SETUP_FIRST_TURN | AI_SCRIPT_HP_AWARE | AI_SCRIPT_DOUBLE_BATTLE, .party = TRAINER_MON(sParty_FrontierVince)},
     [TRAINER_FRONTIER_BRYON] = {.trainerClass = TRAINER_CLASS_SWIMMER_M, .encounterMusic_gender = TRAINER_ENCOUNTER_MUSIC_SWIMMER, .trainerPic = TRAINER_PIC_SWIMMER_M, .trainerName = _("BRYON"), .items = {}, .doubleBattle = TRUE, .aiFlags = AI_SCRIPT_CHECK_BAD_MOVE | AI_SCRIPT_TRY_TO_FAINT | AI_SCRIPT_CHECK_VIABILITY, .party = TRAINER_MON(sParty_FrontierBryon)},

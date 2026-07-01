@@ -473,7 +473,7 @@
       "flag": "FLAG_HIDE_ROUTE_104_RIVAL"
     },
     {
-      "graphics_id": "OBJ_EVENT_GFX_PICNICKER",
+      "graphics_id": "OBJ_EVENT_GFX_BUGSY",
       "x": 23,
       "y": 75,
       "elevation": 3,
