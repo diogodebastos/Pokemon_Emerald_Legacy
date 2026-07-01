@@ -302,6 +302,6 @@ Route101_Text_RouteSign:
 
 
 Route101_EventScript_FrontierJaxon::
-	trainerbattle_single TRAINER_FRONTIER_JAXON, BattleRoyale_Text_KantoIntro, BattleRoyale_Text_KantoDefeated
-	msgbox BattleRoyale_Text_KantoPostBattle, MSGBOX_AUTOCLOSE
+	trainerbattle_single TRAINER_FRONTIER_JAXON, BattleRoyale_Text_Sabrina_Intro, BattleRoyale_Text_Sabrina_Defeated
+	msgbox BattleRoyale_Text_Sabrina_PostBattle, MSGBOX_AUTOCLOSE
 	end

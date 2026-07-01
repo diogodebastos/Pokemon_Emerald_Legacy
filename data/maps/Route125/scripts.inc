@@ -83,6 +83,6 @@ Route125_EventScript_Auron::
 
 
 Route125_EventScript_FrontierEsther::
-	trainerbattle_single TRAINER_FRONTIER_ESTHER, BattleRoyale_Text_JohtoIntro, BattleRoyale_Text_JohtoDefeated
-	msgbox BattleRoyale_Text_JohtoPostBattle, MSGBOX_AUTOCLOSE
+	trainerbattle_single TRAINER_FRONTIER_ESTHER, BattleRoyale_Text_Pryce_Intro, BattleRoyale_Text_Pryce_Defeated
+	msgbox BattleRoyale_Text_Pryce_PostBattle, MSGBOX_AUTOCLOSE
 	end

@@ -43,7 +43,24 @@ NOTABLE_CLASSES = set(CATEGORY.keys())
 
 # Battle Royale: the remaining TRAINER_FRONTIER_* overworld trainers that aren't
 # Supertrainers / Myth Trainers / Frontier Brains (they wear ordinary disguise classes).
-BATTLE_ROYALE = ('Battle Royale', 9)
+BATTLE_ROYALE = ('Battle Royale', 11)
+
+# Battle Royale gauntlet leaders (issue #5/#7). These reuse ordinary trainer IDs and the
+# canonical LEADER/... classes in-game, so pull them into dedicated Trainerdex groups by ID
+# instead of merging them into Hoenn's Gym Leaders / Elite Four / Champion sections.
+KANTO_GAUNTLET_CAT = ('Kanto Gauntlet', 9)
+JOHTO_GAUNTLET_CAT = ('Johto Gauntlet', 10)
+KANTO_GAUNTLET_IDS = {
+    'TRAINER_FRONTIER_RUTH', 'TRAINER_FRONTIER_GAVIN', 'TRAINER_DUDLEY', 'TRAINER_TERRY',
+    'TRAINER_KAYLEE', 'TRAINER_FRONTIER_JAXON', 'TRAINER_MIKE_1', 'TRAINER_FRONTIER_TODD',
+    'TRAINER_FRONTIER_MALORY', 'TRAINER_FRONTIER_EMILEE', 'TRAINER_FRONTIER_ARMANDO',
+    'TRAINER_FRONTIER_ELAINE', 'TRAINER_FRONTIER_CLARE',
+}
+JOHTO_GAUNTLET_IDS = {
+    'TRAINER_FRONTIER_PEDRO', 'TRAINER_FRONTIER_JOSIE', 'TRAINER_FRONTIER_ERICK',
+    'TRAINER_FRONTIER_JOYCE', 'TRAINER_FRONTIER_MELODY', 'TRAINER_FRONTIER_SKYLER',
+    'TRAINER_FRONTIER_ESTHER', 'TRAINER_FRONTIER_WILSON',
+}
 
 # Explicit sidebar ordering of groups within a category (by display name).
 GROUP_ORDER = {
@@ -381,7 +398,11 @@ def build_data():
     groups = OrderedDict()   # (category, name) -> group dict
     missing_pics = set()
     for t in raw_trainers:
-        if t['classKey'] in CATEGORY:
+        if t['id'] in KANTO_GAUNTLET_IDS:
+            cat, order = KANTO_GAUNTLET_CAT
+        elif t['id'] in JOHTO_GAUNTLET_IDS:
+            cat, order = JOHTO_GAUNTLET_CAT
+        elif t['classKey'] in CATEGORY:
             cat, order = CATEGORY[t['classKey']]
         else:
             cat, order = BATTLE_ROYALE

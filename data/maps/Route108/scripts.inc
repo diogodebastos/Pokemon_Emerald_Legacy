@@ -48,6 +48,6 @@ Route108_EventScript_CoryRematch::
 	end
 
 Route108_EventScript_FrontierElaine::
-	trainerbattle_single TRAINER_FRONTIER_ELAINE, BattleRoyale_Text_KantoIntro, BattleRoyale_Text_KantoDefeated
-	msgbox BattleRoyale_Text_KantoPostBattle, MSGBOX_AUTOCLOSE
+	trainerbattle_single TRAINER_FRONTIER_ELAINE, BattleRoyale_Text_Lance_Intro, BattleRoyale_Text_Lance_Defeated
+	msgbox BattleRoyale_Text_Lance_PostBattle, MSGBOX_AUTOCLOSE
 	end

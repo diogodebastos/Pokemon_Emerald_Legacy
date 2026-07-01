@@ -301,6 +301,6 @@ Route118_Text_RouteSign119:
 
 
 Route118_EventScript_Dudley::
-	trainerbattle_single TRAINER_DUDLEY, BattleRoyale_Text_KantoIntro, BattleRoyale_Text_KantoDefeated
-	msgbox BattleRoyale_Text_KantoPostBattle, MSGBOX_AUTOCLOSE
+	trainerbattle_single TRAINER_DUDLEY, BattleRoyale_Text_LtSurge_Intro, BattleRoyale_Text_LtSurge_Defeated
+	msgbox BattleRoyale_Text_LtSurge_PostBattle, MSGBOX_AUTOCLOSE
 	end

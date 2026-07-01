@@ -404,6 +404,6 @@ Route103_Text_RouteSign:
 
 
 Route103_EventScript_FrontierArmando::
-	trainerbattle_single TRAINER_FRONTIER_ARMANDO, BattleRoyale_Text_KantoIntro, BattleRoyale_Text_KantoDefeated
-	msgbox BattleRoyale_Text_KantoPostBattle, MSGBOX_AUTOCLOSE
+	trainerbattle_single TRAINER_FRONTIER_ARMANDO, BattleRoyale_Text_Agatha_Intro, BattleRoyale_Text_Agatha_Defeated
+	msgbox BattleRoyale_Text_Agatha_PostBattle, MSGBOX_AUTOCLOSE
 	end

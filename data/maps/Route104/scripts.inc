@@ -1194,6 +1194,6 @@ Route104_Text_BrendanPostBattle:
     .string "for a while and look for more POKéMON.$"
 
 Route104_EventScript_FrontierJosie::
-	trainerbattle_single TRAINER_FRONTIER_JOSIE, BattleRoyale_Text_JohtoIntro, BattleRoyale_Text_JohtoDefeated
-	msgbox BattleRoyale_Text_JohtoPostBattle, MSGBOX_AUTOCLOSE
+	trainerbattle_single TRAINER_FRONTIER_JOSIE, BattleRoyale_Text_Bugsy_Intro, BattleRoyale_Text_Bugsy_Defeated
+	msgbox BattleRoyale_Text_Bugsy_PostBattle, MSGBOX_AUTOCLOSE
 	end

@@ -145,7 +145,7 @@ Route112_Text_RouteSignLavaridge:
 
 
 Route112_EventScript_Mike::
-	trainerbattle_single TRAINER_MIKE_1, BattleRoyale_Text_KantoIntro, BattleRoyale_Text_KantoDefeated
-	msgbox BattleRoyale_Text_KantoPostBattle, MSGBOX_AUTOCLOSE
+	trainerbattle_single TRAINER_MIKE_1, BattleRoyale_Text_Blaine_Intro, BattleRoyale_Text_Blaine_Defeated
+	msgbox BattleRoyale_Text_Blaine_PostBattle, MSGBOX_AUTOCLOSE
 	end
 

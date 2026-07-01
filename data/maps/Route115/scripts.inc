@@ -145,6 +145,6 @@ Route115_Text_MeteorFallsSign:
 
 
 Route115_EventScript_FrontierMelody::
-	trainerbattle_single TRAINER_FRONTIER_MELODY, BattleRoyale_Text_JohtoIntro, BattleRoyale_Text_JohtoDefeated
-	msgbox BattleRoyale_Text_JohtoPostBattle, MSGBOX_AUTOCLOSE
+	trainerbattle_single TRAINER_FRONTIER_MELODY, BattleRoyale_Text_Chuck_Intro, BattleRoyale_Text_Chuck_Defeated
+	msgbox BattleRoyale_Text_Chuck_PostBattle, MSGBOX_AUTOCLOSE
 	end

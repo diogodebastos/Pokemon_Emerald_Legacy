@@ -202,6 +202,6 @@ Route114_Text_LanettesHouse:
 
 
 Route114_EventScript_FrontierRuth::
-	trainerbattle_single TRAINER_FRONTIER_RUTH, BattleRoyale_Text_KantoIntro, BattleRoyale_Text_KantoDefeated
-	msgbox BattleRoyale_Text_KantoPostBattle, MSGBOX_AUTOCLOSE
+	trainerbattle_single TRAINER_FRONTIER_RUTH, BattleRoyale_Text_Brock_Intro, BattleRoyale_Text_Brock_Defeated
+	msgbox BattleRoyale_Text_Brock_PostBattle, MSGBOX_AUTOCLOSE
 	end

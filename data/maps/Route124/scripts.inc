@@ -115,6 +115,6 @@ Route124_Text_HuntersHouse:
 
 
 Route124_EventScript_FrontierMalory::
-	trainerbattle_single TRAINER_FRONTIER_MALORY, BattleRoyale_Text_KantoIntro, BattleRoyale_Text_KantoDefeated
-	msgbox BattleRoyale_Text_KantoPostBattle, MSGBOX_AUTOCLOSE
+	trainerbattle_single TRAINER_FRONTIER_MALORY, BattleRoyale_Text_Lorelei_Intro, BattleRoyale_Text_Lorelei_Defeated
+	msgbox BattleRoyale_Text_Lorelei_PostBattle, MSGBOX_AUTOCLOSE
 	end

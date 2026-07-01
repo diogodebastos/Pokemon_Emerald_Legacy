@@ -54,6 +54,6 @@ Route106_Text_TrainerTips:
 	.string "You'll only need to press it once to\n"
 	.string "know if it got away.$"
 Route106_EventScript_FrontierPedro::
-	trainerbattle_single TRAINER_FRONTIER_PEDRO, BattleRoyale_Text_JohtoIntro, BattleRoyale_Text_JohtoDefeated
-	msgbox BattleRoyale_Text_JohtoPostBattle, MSGBOX_AUTOCLOSE
+	trainerbattle_single TRAINER_FRONTIER_PEDRO, BattleRoyale_Text_Falkner_Intro, BattleRoyale_Text_Falkner_Defeated
+	msgbox BattleRoyale_Text_Falkner_PostBattle, MSGBOX_AUTOCLOSE
 	end

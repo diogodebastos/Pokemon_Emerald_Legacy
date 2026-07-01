@@ -174,6 +174,6 @@ Route113_Text_GlassWorkshopSign:
 
 
 Route113_EventScript_FrontierTodd::
-	trainerbattle_single TRAINER_FRONTIER_TODD, BattleRoyale_Text_KantoIntro, BattleRoyale_Text_KantoDefeated
-	msgbox BattleRoyale_Text_KantoPostBattle, MSGBOX_AUTOCLOSE
+	trainerbattle_single TRAINER_FRONTIER_TODD, BattleRoyale_Text_Giovanni_Intro, BattleRoyale_Text_Giovanni_Defeated
+	msgbox BattleRoyale_Text_Giovanni_PostBattle, MSGBOX_AUTOCLOSE
 	end
