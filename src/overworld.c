@@ -370,6 +370,12 @@ void DoWhiteOut(void)
     if (IsBattleRoyaleModeActive())
     {
         VarSet(VAR_BATTLE_ROYALE_DEATHS, VarGet(VAR_BATTLE_ROYALE_DEATHS) + 1);
+        // Battle Royale whiteouts warp the player back to Littleroot (the start),
+        // but EventScript_WhiteOut above may have left Mr. Briney stranded in
+        // Dewford. Force him back to his Route 104 cottage so the player can
+        // always sail to Dewford and continue the story (issue #4).
+        VarSet(VAR_BRINEY_LOCATION, 1);
+        RunScriptImmediately(EventScript_MoveMrBrineyToHouse);
         if (gSaveBlock2Ptr->playerGender == MALE)
             SetWarpDestinationToHealLocation(HEAL_LOCATION_LITTLEROOT_TOWN_BRENDANS_HOUSE_2F);
         else
