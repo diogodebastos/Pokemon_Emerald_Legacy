@@ -305,6 +305,6 @@ Route128_Text_StevenImGoingToSootopolis:
 	.string "but don't do anything reckless.$"
 
 Route128_EventScript_FrontierTess::
-	trainerbattle_single TRAINER_FRONTIER_TESS, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
-	msgbox BattleRoyale_Text_SupertrainerPostBattle, MSGBOX_AUTOCLOSE
+	trainerbattle_single TRAINER_FRONTIER_WILSON, BattleRoyale_Text_Clair_Intro, BattleRoyale_Text_Clair_Defeated
+	msgbox BattleRoyale_Text_Clair_PostBattle, MSGBOX_AUTOCLOSE
 	end
