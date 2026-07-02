@@ -43,16 +43,21 @@ NOTABLE_CLASSES = set(CATEGORY.keys())
 
 # Battle Royale: the remaining TRAINER_FRONTIER_* overworld trainers that aren't
 # Supertrainers / Myth Trainers / Frontier Brains (they wear ordinary disguise classes).
-BATTLE_ROYALE = ('Battle Royale', 11)
+BATTLE_ROYALE = ('Battle Royale', 13)
 
 # Battle Royale gauntlet leaders (issue #5/#7). These reuse ordinary trainer IDs and the
 # canonical LEADER/... classes in-game, so pull them into dedicated Trainerdex groups by ID
 # instead of merging them into Hoenn's Gym Leaders / Elite Four / Champion sections.
+# Kanto gym leaders and the Kanto Elite Four (+ Champion) are separate groups; the Elite
+# Four group sits after both the Kanto and Johto gym-leader gauntlets.
 KANTO_GAUNTLET_CAT = ('Kanto Gauntlet', 9)
 JOHTO_GAUNTLET_CAT = ('Johto Gauntlet', 10)
+KANTO_ELITE_CAT = ('Kanto Elite Four', 11)
 KANTO_GAUNTLET_IDS = {
     'TRAINER_FRONTIER_RUTH', 'TRAINER_FRONTIER_GAVIN', 'TRAINER_DUDLEY', 'TRAINER_TERRY',
     'TRAINER_KAYLEE', 'TRAINER_FRONTIER_JAXON', 'TRAINER_MIKE_1', 'TRAINER_FRONTIER_TODD',
+}
+KANTO_ELITE_IDS = {  # Lorelei, Bruno, Agatha, Lance + Champion Blue
     'TRAINER_FRONTIER_MALORY', 'TRAINER_FRONTIER_EMILEE', 'TRAINER_FRONTIER_ARMANDO',
     'TRAINER_FRONTIER_ELAINE', 'TRAINER_FRONTIER_CLARE',
 }
@@ -64,16 +69,17 @@ JOHTO_GAUNTLET_IDS = {
 
 # Special rebattleable utility trainers (shown as their own group, force-included even
 # though their in-game class isn't "notable"). BRYON is the Mr. Mimic mirror-match slot.
-SPECIAL_CAT = ('Special Trainers', 12)
+SPECIAL_CAT = ('Special Trainers', 14)
 SPECIAL_TRAINER_IDS = {'TRAINER_FRONTIER_BRYON', 'TRAINER_GRINDING_NURSE'}
 
 # Explicit sidebar ordering of groups within a category (by display name).
 GROUP_ORDER = {
     'Team Aqua':  ['Shelly', 'Matt', 'Archie'],
     'Team Magma': ['Courtney', 'Tabitha', 'Maxie'],
-    # Kanto gauntlet in canonical gym-badge order, then Elite Four, then Champion.
-    'Kanto Gauntlet': ['Brock', 'Misty', 'Lt.Surge', 'Erika', 'Koga', 'Sabrina',
-                       'Blaine', 'Giovanni', 'Lorelei', 'Bruno', 'Agatha', 'Lance', 'Blue'],
+    # Kanto gym leaders in canonical gym-badge order.
+    'Kanto Gauntlet': ['Brock', 'Misty', 'Lt.Surge', 'Erika', 'Koga', 'Sabrina', 'Blaine', 'Giovanni'],
+    # Kanto Elite Four in challenge order, Champion Blue last.
+    'Kanto Elite Four': ['Lorelei', 'Bruno', 'Agatha', 'Lance', 'Blue'],
 }
 
 # Rival starter / location ordering (Brendan & May). This mod pairs each Hoenn
@@ -415,6 +421,8 @@ def build_data():
             cat, order = SPECIAL_CAT
         elif t['id'] in KANTO_GAUNTLET_IDS:
             cat, order = KANTO_GAUNTLET_CAT
+        elif t['id'] in KANTO_ELITE_IDS:
+            cat, order = KANTO_ELITE_CAT
         elif t['id'] in JOHTO_GAUNTLET_IDS:
             cat, order = JOHTO_GAUNTLET_CAT
         elif t['classKey'] in CATEGORY:
