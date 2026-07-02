@@ -71,6 +71,9 @@ SPECIAL_TRAINER_IDS = {'TRAINER_FRONTIER_BRYON', 'TRAINER_GRINDING_NURSE'}
 GROUP_ORDER = {
     'Team Aqua':  ['Shelly', 'Matt', 'Archie'],
     'Team Magma': ['Courtney', 'Tabitha', 'Maxie'],
+    # Kanto gauntlet in canonical gym-badge order, then Elite Four, then Champion.
+    'Kanto Gauntlet': ['Brock', 'Misty', 'Lt.Surge', 'Erika', 'Koga', 'Sabrina',
+                       'Blaine', 'Giovanni', 'Lorelei', 'Bruno', 'Agatha', 'Lance', 'Blue'],
 }
 
 # Rival starter / location ordering (Brendan & May). This mod pairs each Hoenn
