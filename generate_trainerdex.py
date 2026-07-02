@@ -427,10 +427,10 @@ def build_data():
 
         mons = parties.get(t['partySym'], []) if t['partySym'] else []
         # Mr. Mimic mirrors the player's current team, so his stored party is meaningless.
-        # Show the Gen-3 "??" glitch (MissingNo-style) sprite instead of the placeholder roster.
+        # Show the single circled "?" (the Gen-3 "unseen Pokemon" sprite) instead.
         if t['id'] == 'TRAINER_FRONTIER_BRYON':
             if 'MR_MIMIC' not in species_sprites:
-                _qm = pdx.load_sprite_b64('question_mark/double')
+                _qm = pdx.load_sprite_b64('question_mark/circled')
                 species_sprites['MR_MIMIC'] = {'normal': _qm, 'shiny': _qm}
             mons = [{'speciesKey': 'MR_MIMIC', 'shiny': False, 'nickname': None, 'level': '',
                      'heldItem': 'ITEM_NONE', 'abilitySlot': None, 'nature': None,
