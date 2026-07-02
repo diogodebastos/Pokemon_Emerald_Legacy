@@ -427,9 +427,12 @@ def build_data():
 
         mons = parties.get(t['partySym'], []) if t['partySym'] else []
         # Mr. Mimic mirrors the player's current team, so his stored party is meaningless.
-        # Show a single Egg instead of the placeholder roster.
+        # Show the Gen-3 "??" glitch (MissingNo-style) sprite instead of the placeholder roster.
         if t['id'] == 'TRAINER_FRONTIER_BRYON':
-            mons = [{'speciesKey': 'EGG', 'shiny': False, 'nickname': None, 'level': '',
+            if 'MR_MIMIC' not in species_sprites:
+                _qm = pdx.load_sprite_b64('question_mark/double')
+                species_sprites['MR_MIMIC'] = {'normal': _qm, 'shiny': _qm}
+            mons = [{'speciesKey': 'MR_MIMIC', 'shiny': False, 'nickname': None, 'level': '',
                      'heldItem': 'ITEM_NONE', 'abilitySlot': None, 'nature': None,
                      'iv': None, 'evs': [], 'moves': []}]
         party = []
@@ -438,7 +441,7 @@ def build_data():
             get_species_sprite(skey, mon['shiny'])
             party.append({
                 'speciesKey': skey,
-                'name': species_display(skey),
+                'name': '?' if skey == 'MR_MIMIC' else species_display(skey),
                 'nickname': mon['nickname'],
                 'shiny': mon['shiny'],
                 'level': mon['level'],
