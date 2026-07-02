@@ -426,6 +426,12 @@ def build_data():
             missing_pics.add(t['picKey'])
 
         mons = parties.get(t['partySym'], []) if t['partySym'] else []
+        # Mr. Mimic mirrors the player's current team, so his stored party is meaningless.
+        # Show a single Egg instead of the placeholder roster.
+        if t['id'] == 'TRAINER_FRONTIER_BRYON':
+            mons = [{'speciesKey': 'EGG', 'shiny': False, 'nickname': None, 'level': '',
+                     'heldItem': 'ITEM_NONE', 'abilitySlot': None, 'nature': None,
+                     'iv': None, 'evs': [], 'moves': []}]
         party = []
         for mon in mons:
             skey = mon['speciesKey']
