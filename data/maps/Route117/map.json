@@ -338,8 +338,8 @@
       "flag": "0"
     },
     {
-      "graphics_id": "OBJ_EVENT_GFX_MAN_4",
-      "x": 15,
+      "graphics_id": "OBJ_EVENT_GFX_WHITNEY",
+      "x": 10,
       "y": 5,
       "elevation": 3,
       "movement_type": "MOVEMENT_TYPE_FACE_DOWN",

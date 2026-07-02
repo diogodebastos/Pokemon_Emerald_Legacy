@@ -1961,6 +1961,41 @@ static void SpriteCB_UnusedBattleInit_Main(struct Sprite *sprite)
     }
 }
 
+// Mr. Mimic (Battle Royale): the enemy fields a healed copy of the player's current team.
+static u8 CreateMirrorMatchParty(struct Pokemon *party)
+{
+    s32 i, j;
+    u8 count = 0;
+
+    ZeroEnemyPartyMons();
+    for (i = 0; i < PARTY_SIZE; i++)
+    {
+        u16 species = GetMonData(&gPlayerParty[i], MON_DATA_SPECIES_OR_EGG);
+
+        if (species == SPECIES_NONE || species == SPECIES_EGG)
+            continue;
+
+        party[count] = gPlayerParty[i];
+        // Restore the copy to full so the mirror is always a fresh fight.
+        {
+            u32 hp = GetMonData(&party[count], MON_DATA_MAX_HP);
+            u32 status = 0;
+            u8 ppBonuses = GetMonData(&party[count], MON_DATA_PP_BONUSES);
+
+            SetMonData(&party[count], MON_DATA_HP, &hp);
+            SetMonData(&party[count], MON_DATA_STATUS, &status);
+            for (j = 0; j < MAX_MON_MOVES; j++)
+            {
+                u16 move = GetMonData(&party[count], MON_DATA_MOVE1 + j);
+                u8 pp = CalculatePPWithBonus(move, ppBonuses, j);
+                SetMonData(&party[count], MON_DATA_PP1 + j, &pp);
+            }
+        }
+        count++;
+    }
+    return count;
+}
+
 static u8 CreateNPCTrainerParty(struct Pokemon *party, u16 trainerNum, bool8 firstTrainer)
 {
     u32 nameHash = 0;
@@ -1978,6 +2013,9 @@ static u8 CreateNPCTrainerParty(struct Pokemon *party, u16 trainerNum, bool8 fir
 
     if (trainerNum == TRAINER_SECRET_BASE)
         return 0;
+
+    if (trainerNum == TRAINER_FRONTIER_BRYON) // Mr. Mimic mirrors the player's current team
+        return CreateMirrorMatchParty(party);
 
     isFirstBattle = (trainerNum == TRAINER_BRENDAN_ROUTE_103_MUDKIP || trainerNum == TRAINER_BRENDAN_ROUTE_103_TREECKO || trainerNum == TRAINER_BRENDAN_ROUTE_103_TORCHIC || trainerNum == TRAINER_MAY_ROUTE_103_MUDKIP || trainerNum == TRAINER_MAY_ROUTE_103_TREECKO || trainerNum == TRAINER_MAY_ROUTE_103_TORCHIC);
 

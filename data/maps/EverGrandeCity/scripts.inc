@@ -60,6 +60,33 @@ EverGrandeCity_Text_NurseReady:
 	.string "Your POKéMON are looking good!\n"
 	.string "I'm ready whenever you are!$"
 
+EverGrandeCity_EventScript_MrMimic::
+	lock
+	faceplayer
+	cleartrainerflag TRAINER_FRONTIER_BRYON
+	trainerbattle_single TRAINER_FRONTIER_BRYON, EverGrandeCity_Text_MimicIntro, EverGrandeCity_Text_MimicDefeat, EverGrandeCity_EventScript_MimicPostBattle
+	release
+	end
+
+EverGrandeCity_EventScript_MimicPostBattle::
+	msgbox EverGrandeCity_Text_MimicReady, MSGBOX_DEFAULT
+	release
+	end
+
+EverGrandeCity_Text_MimicIntro:
+	.string "Heh heh… I am MR. MIMIC.\n"
+	.string "I shall fight you… as YOU!\p"
+	.string "Behold a perfect copy of your\n"
+	.string "own team!$"
+
+EverGrandeCity_Text_MimicDefeat:
+	.string "To lose to yourself…\n"
+	.string "how delicious!$"
+
+EverGrandeCity_Text_MimicReady:
+	.string "Come again whenever you wish to\n"
+	.string "face your mirror.$"
+
 EverGrandeCity_EventScript_FrontierRaul::
 	trainerbattle_single TRAINER_FRONTIER_RAUL, BattleRoyale_Text_InityIntro, BattleRoyale_Text_InityDefeated
 	msgbox BattleRoyale_Text_InityPostBattle, MSGBOX_AUTOCLOSE

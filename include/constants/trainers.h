@@ -112,6 +112,29 @@
 #define TRAINER_PIC_MAGMA_ADMIN_F         93
 #define TRAINER_PIC_ARCHIE_AND_MATT       94
 #define TRAINER_PIC_ZINNIA                95
+// Kanto Gym Leaders / Elite Four / Champion (Battle Royale, sprites from pokefirered)
+#define TRAINER_PIC_BROCK                 96
+#define TRAINER_PIC_MISTY                 97
+#define TRAINER_PIC_LT_SURGE              98
+#define TRAINER_PIC_ERIKA                 99
+#define TRAINER_PIC_KOGA                  100
+#define TRAINER_PIC_SABRINA               101
+#define TRAINER_PIC_BLAINE                102
+#define TRAINER_PIC_GIOVANNI              103
+#define TRAINER_PIC_LORELEI               104
+#define TRAINER_PIC_BRUNO                 105
+#define TRAINER_PIC_AGATHA                106
+#define TRAINER_PIC_LANCE                 107
+#define TRAINER_PIC_BLUE                  108
+// Johto Gym Leaders (Battle Royale, sprites from pokeheartgold / HGSS)
+#define TRAINER_PIC_FALKNER               109
+#define TRAINER_PIC_BUGSY                 110
+#define TRAINER_PIC_WHITNEY               111
+#define TRAINER_PIC_MORTY                 112
+#define TRAINER_PIC_CHUCK                 113
+#define TRAINER_PIC_JASMINE               114
+#define TRAINER_PIC_PRYCE                 115
+#define TRAINER_PIC_CLAIR                 116
 
 // The player back pics are assumed to alternate according to the gender values (MALE/FEMALE)
 #define TRAINER_BACK_PIC_BRENDAN                0

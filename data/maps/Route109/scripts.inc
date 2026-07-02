@@ -565,6 +565,6 @@ Route109_Text_TrainerTipsSign:
 	.string "SUMMARY screen.$"
 
 Route109_EventScript_FrontierGavin::
-	trainerbattle_single TRAINER_FRONTIER_GAVIN, BattleRoyale_Text_GenericIntro, BattleRoyale_Text_GenericDefeated
-	msgbox BattleRoyale_Text_GenericPostBattle, MSGBOX_AUTOCLOSE
+	trainerbattle_single TRAINER_FRONTIER_GAVIN, BattleRoyale_Text_Misty_Intro, BattleRoyale_Text_Misty_Defeated
+	msgbox BattleRoyale_Text_Misty_PostBattle, MSGBOX_AUTOCLOSE
 	end

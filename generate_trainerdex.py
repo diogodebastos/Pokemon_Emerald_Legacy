@@ -43,7 +43,29 @@ NOTABLE_CLASSES = set(CATEGORY.keys())
 
 # Battle Royale: the remaining TRAINER_FRONTIER_* overworld trainers that aren't
 # Supertrainers / Myth Trainers / Frontier Brains (they wear ordinary disguise classes).
-BATTLE_ROYALE = ('Battle Royale', 9)
+BATTLE_ROYALE = ('Battle Royale', 11)
+
+# Battle Royale gauntlet leaders (issue #5/#7). These reuse ordinary trainer IDs and the
+# canonical LEADER/... classes in-game, so pull them into dedicated Trainerdex groups by ID
+# instead of merging them into Hoenn's Gym Leaders / Elite Four / Champion sections.
+KANTO_GAUNTLET_CAT = ('Kanto Gauntlet', 9)
+JOHTO_GAUNTLET_CAT = ('Johto Gauntlet', 10)
+KANTO_GAUNTLET_IDS = {
+    'TRAINER_FRONTIER_RUTH', 'TRAINER_FRONTIER_GAVIN', 'TRAINER_DUDLEY', 'TRAINER_TERRY',
+    'TRAINER_KAYLEE', 'TRAINER_FRONTIER_JAXON', 'TRAINER_MIKE_1', 'TRAINER_FRONTIER_TODD',
+    'TRAINER_FRONTIER_MALORY', 'TRAINER_FRONTIER_EMILEE', 'TRAINER_FRONTIER_ARMANDO',
+    'TRAINER_FRONTIER_ELAINE', 'TRAINER_FRONTIER_CLARE',
+}
+JOHTO_GAUNTLET_IDS = {
+    'TRAINER_FRONTIER_PEDRO', 'TRAINER_FRONTIER_JOSIE', 'TRAINER_FRONTIER_ERICK',
+    'TRAINER_FRONTIER_JOYCE', 'TRAINER_FRONTIER_MELODY', 'TRAINER_FRONTIER_SKYLER',
+    'TRAINER_FRONTIER_ESTHER', 'TRAINER_FRONTIER_WILSON',
+}
+
+# Special rebattleable utility trainers (shown as their own group, force-included even
+# though their in-game class isn't "notable"). BRYON is the Mr. Mimic mirror-match slot.
+SPECIAL_CAT = ('Special Trainers', 12)
+SPECIAL_TRAINER_IDS = {'TRAINER_FRONTIER_BRYON', 'TRAINER_GRINDING_NURSE'}
 
 # Explicit sidebar ordering of groups within a category (by display name).
 GROUP_ORDER = {
@@ -179,7 +201,12 @@ def load_trainer_pic_b64(basename):
     path = os.path.join(BASE, 'graphics', 'trainers', 'front_pics', basename + '.png')
     if not os.path.exists(path):
         return ''
-    img = Image.open(path).convert('RGBA')
+    src = Image.open(path)
+    # GBA trainer front pics are OBJ sprites: palette index 0 is the transparent
+    # backdrop (the FRLG green box etc.). Honor that so the web dex matches in-game.
+    if src.mode == 'P':
+        src.info['transparency'] = 0
+    img = src.convert('RGBA')
     return pdx._img_to_b64(img)
 
 # --- Parse trainer parties ---
@@ -263,7 +290,7 @@ def parse_trainers(path):
         if not cls:
             continue
         is_br = tid.startswith('TRAINER_FRONTIER_')
-        if cls.group(1) not in NOTABLE_CLASSES and not is_br:
+        if cls.group(1) not in NOTABLE_CLASSES and not is_br and tid not in SPECIAL_TRAINER_IDS:
             continue
         name = re.search(r'\.trainerName\s*=\s*_\("([^"]*)"\)', body)
         pic = re.search(r'\.trainerPic\s*=\s*TRAINER_PIC_(\w+)', body)
@@ -381,7 +408,13 @@ def build_data():
     groups = OrderedDict()   # (category, name) -> group dict
     missing_pics = set()
     for t in raw_trainers:
-        if t['classKey'] in CATEGORY:
+        if t['id'] in SPECIAL_TRAINER_IDS:
+            cat, order = SPECIAL_CAT
+        elif t['id'] in KANTO_GAUNTLET_IDS:
+            cat, order = KANTO_GAUNTLET_CAT
+        elif t['id'] in JOHTO_GAUNTLET_IDS:
+            cat, order = JOHTO_GAUNTLET_CAT
+        elif t['classKey'] in CATEGORY:
             cat, order = CATEGORY[t['classKey']]
         else:
             cat, order = BATTLE_ROYALE
@@ -393,6 +426,12 @@ def build_data():
             missing_pics.add(t['picKey'])
 
         mons = parties.get(t['partySym'], []) if t['partySym'] else []
+        # Mr. Mimic mirrors the player's current team, so his stored party is meaningless.
+        # Show a single Egg instead of the placeholder roster.
+        if t['id'] == 'TRAINER_FRONTIER_BRYON':
+            mons = [{'speciesKey': 'EGG', 'shiny': False, 'nickname': None, 'level': '',
+                     'heldItem': 'ITEM_NONE', 'abilitySlot': None, 'nature': None,
+                     'iv': None, 'evs': [], 'moves': []}]
         party = []
         for mon in mons:
             skey = mon['speciesKey']

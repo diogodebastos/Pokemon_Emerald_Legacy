@@ -32,7 +32,16 @@
 #include "constants/moves.h"
 #include "constants/songs.h"
 #include "constants/trainers.h"
+#include "constants/opponents.h"
 #include "trainer_hill.h"
+
+// Mr. Mimic (Battle Royale) shows the player's own character in the intro (mirror match).
+static u16 GetOpponentTrainerPicId(u16 trainerId)
+{
+    if (trainerId == TRAINER_FRONTIER_BRYON)
+        return (gSaveBlock2Ptr->playerGender == MALE) ? TRAINER_PIC_BRENDAN : TRAINER_PIC_MAY;
+    return gTrainers[trainerId].trainerPic;
+}
 
 static void OpponentHandleGetMonData(void);
 static void OpponentHandleGetRawMonData(void);
@@ -1277,13 +1286,13 @@ static void OpponentHandleDrawTrainerPic(void)
     else if (gBattleTypeFlags & BATTLE_TYPE_TWO_OPPONENTS)
     {
         if (gActiveBattler != 1)
-            trainerPicId = gTrainers[gTrainerBattleOpponent_B].trainerPic;
+            trainerPicId = GetOpponentTrainerPicId(gTrainerBattleOpponent_B);
         else
-            trainerPicId = gTrainers[gTrainerBattleOpponent_A].trainerPic;
+            trainerPicId = GetOpponentTrainerPicId(gTrainerBattleOpponent_A);
     }
     else
     {
-        trainerPicId = gTrainers[gTrainerBattleOpponent_A].trainerPic;
+        trainerPicId = GetOpponentTrainerPicId(gTrainerBattleOpponent_A);
     }
 
     if (gBattleTypeFlags & (BATTLE_TYPE_MULTI | BATTLE_TYPE_TWO_OPPONENTS))
@@ -1361,13 +1370,13 @@ static void OpponentHandleTrainerSlide(void)
     else if (gBattleTypeFlags & BATTLE_TYPE_TWO_OPPONENTS)
     {
         if (gActiveBattler != 1)
-            trainerPicId = gTrainers[gTrainerBattleOpponent_B].trainerPic;
+            trainerPicId = GetOpponentTrainerPicId(gTrainerBattleOpponent_B);
         else
-            trainerPicId = gTrainers[gTrainerBattleOpponent_A].trainerPic;
+            trainerPicId = GetOpponentTrainerPicId(gTrainerBattleOpponent_A);
     }
     else
     {
-        trainerPicId = gTrainers[gTrainerBattleOpponent_A].trainerPic;
+        trainerPicId = GetOpponentTrainerPicId(gTrainerBattleOpponent_A);
     }
 
     DecompressTrainerFrontPic(trainerPicId, gActiveBattler);

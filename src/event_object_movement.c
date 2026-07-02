@@ -515,6 +515,20 @@ const u8 gInitialMovementTypeFacingDirections[NUM_MOVEMENT_TYPES] = {
 #define OBJ_EVENT_PAL_TAG_DEOXYS_ATTACK           0x1133
 #define OBJ_EVENT_PAL_TAG_DEOXYS_DEFENSE          0x1134
 #define OBJ_EVENT_PAL_TAG_DEOXYS_SPEED            0x1135
+// FireRed NPC palettes for the Kanto Gym Leader overworld sprites (Battle Royale)
+#define OBJ_EVENT_PAL_TAG_NPC_GREEN               0x1136
+#define OBJ_EVENT_PAL_TAG_NPC_BLUE                0x1137
+#define OBJ_EVENT_PAL_TAG_NPC_WHITE               0x1138
+#define OBJ_EVENT_PAL_TAG_NPC_PINK                0x1139
+// Per-leader palettes for the Johto Gym Leader overworld sprites (Battle Royale)
+#define OBJ_EVENT_PAL_TAG_JOHTO_FALKNER           0x113A
+#define OBJ_EVENT_PAL_TAG_JOHTO_BUGSY             0x113B
+#define OBJ_EVENT_PAL_TAG_JOHTO_WHITNEY           0x113C
+#define OBJ_EVENT_PAL_TAG_JOHTO_MORTY             0x113D
+#define OBJ_EVENT_PAL_TAG_JOHTO_CHUCK             0x113E
+#define OBJ_EVENT_PAL_TAG_JOHTO_JASMINE           0x113F
+#define OBJ_EVENT_PAL_TAG_JOHTO_PRYCE             0x1140
+#define OBJ_EVENT_PAL_TAG_JOHTO_CLAIR             0x1141
 
 #if OW_MON_POKEBALLS
 // Vanilla
@@ -583,6 +597,18 @@ static const struct SpritePalette sObjectEventSpritePalettes[] = {
     {gObjectEventPal_Npc2Reflection,        OBJ_EVENT_PAL_TAG_NPC_2_REFLECTION},
     {gObjectEventPal_Npc3Reflection,        OBJ_EVENT_PAL_TAG_NPC_3_REFLECTION},
     {gObjectEventPal_Npc4Reflection,        OBJ_EVENT_PAL_TAG_NPC_4_REFLECTION},
+    {gObjectEventPal_FrNpcGreen,            OBJ_EVENT_PAL_TAG_NPC_GREEN},
+    {gObjectEventPal_FrNpcBlue,             OBJ_EVENT_PAL_TAG_NPC_BLUE},
+    {gObjectEventPal_FrNpcWhite,            OBJ_EVENT_PAL_TAG_NPC_WHITE},
+    {gObjectEventPal_FrNpcPink,             OBJ_EVENT_PAL_TAG_NPC_PINK},
+    {gObjectEventPal_JohtoFalkner,          OBJ_EVENT_PAL_TAG_JOHTO_FALKNER},
+    {gObjectEventPal_JohtoBugsy,            OBJ_EVENT_PAL_TAG_JOHTO_BUGSY},
+    {gObjectEventPal_JohtoWhitney,          OBJ_EVENT_PAL_TAG_JOHTO_WHITNEY},
+    {gObjectEventPal_JohtoMorty,            OBJ_EVENT_PAL_TAG_JOHTO_MORTY},
+    {gObjectEventPal_JohtoChuck,            OBJ_EVENT_PAL_TAG_JOHTO_CHUCK},
+    {gObjectEventPal_JohtoJasmine,          OBJ_EVENT_PAL_TAG_JOHTO_JASMINE},
+    {gObjectEventPal_JohtoPryce,            OBJ_EVENT_PAL_TAG_JOHTO_PRYCE},
+    {gObjectEventPal_JohtoClair,            OBJ_EVENT_PAL_TAG_JOHTO_CLAIR},
     {gObjectEventPal_Brendan,               OBJ_EVENT_PAL_TAG_BRENDAN},
     {gObjectEventPal_BrendanReflection,     OBJ_EVENT_PAL_TAG_BRENDAN_REFLECTION},
     {gObjectEventPal_BridgeReflection,      OBJ_EVENT_PAL_TAG_BRIDGE_REFLECTION},

@@ -109,6 +109,6 @@ Route102_Text_RouteSignPetalburg:
 	.string "{LEFT_ARROW} PETALBURG CITY$"
 
 Route102_EventScript_FrontierEmilee::
-	trainerbattle_single TRAINER_FRONTIER_EMILEE, BattleRoyale_Text_GenericIntro, BattleRoyale_Text_GenericDefeated
-	msgbox BattleRoyale_Text_GenericPostBattle, MSGBOX_AUTOCLOSE
+	trainerbattle_single TRAINER_FRONTIER_EMILEE, BattleRoyale_Text_Bruno_Intro, BattleRoyale_Text_Bruno_Defeated
+	msgbox BattleRoyale_Text_Bruno_PostBattle, MSGBOX_AUTOCLOSE
 	end
