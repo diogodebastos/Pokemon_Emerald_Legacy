@@ -37,7 +37,7 @@ Route133_EventScript_Conor::
 	end
 
 
-Route133_EventScript_FrontierTrevon::
-	trainerbattle_single TRAINER_FRONTIER_TREVON, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
+Route133_EventScript_BattleRoyaleCharl::
+	trainerbattle_single TRAINER_BATTLE_ROYALE_CHARL, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
 	msgbox BattleRoyale_Text_SupertrainerPostBattle, MSGBOX_AUTOCLOSE
 	end

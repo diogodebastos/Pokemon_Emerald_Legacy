@@ -470,7 +470,7 @@ Route116_Text_TrainerTipsBagHasPockets:
 	.string "the raised stat is shown in RED, while\l"
 	.string "the lowered stat will be BLUE.$"
 
-Route116_EventScript_FrontierSkyler::
-	trainerbattle_single TRAINER_FRONTIER_SKYLER, BattleRoyale_Text_Jasmine_Intro, BattleRoyale_Text_Jasmine_Defeated
+Route116_EventScript_BattleRoyaleJasmine::
+	trainerbattle_single TRAINER_BATTLE_ROYALE_JASMINE, BattleRoyale_Text_Jasmine_Intro, BattleRoyale_Text_Jasmine_Defeated
 	msgbox BattleRoyale_Text_Jasmine_PostBattle, MSGBOX_AUTOCLOSE
 	end

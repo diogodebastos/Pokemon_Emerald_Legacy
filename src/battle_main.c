@@ -2014,7 +2014,7 @@ static u8 CreateNPCTrainerParty(struct Pokemon *party, u16 trainerNum, bool8 fir
     if (trainerNum == TRAINER_SECRET_BASE)
         return 0;
 
-    if (trainerNum == TRAINER_FRONTIER_BRYON) // Mr. Mimic mirrors the player's current team
+    if (trainerNum == TRAINER_BATTLE_ROYALE_MR_MIMIC) // Mr. Mimic mirrors the player's current team
         return CreateMirrorMatchParty(party);
 
     isFirstBattle = (trainerNum == TRAINER_BRENDAN_ROUTE_103_MUDKIP || trainerNum == TRAINER_BRENDAN_ROUTE_103_TREECKO || trainerNum == TRAINER_BRENDAN_ROUTE_103_TORCHIC || trainerNum == TRAINER_MAY_ROUTE_103_MUDKIP || trainerNum == TRAINER_MAY_ROUTE_103_TREECKO || trainerNum == TRAINER_MAY_ROUTE_103_TORCHIC);

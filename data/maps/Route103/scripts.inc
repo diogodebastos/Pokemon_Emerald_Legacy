@@ -403,7 +403,7 @@ Route103_Text_RouteSign:
 	.string "{DOWN_ARROW} OLDALE TOWN$"
 
 
-Route103_EventScript_FrontierArmando::
-	trainerbattle_single TRAINER_FRONTIER_ARMANDO, BattleRoyale_Text_Agatha_Intro, BattleRoyale_Text_Agatha_Defeated
+Route103_EventScript_BattleRoyaleAgatha::
+	trainerbattle_single TRAINER_BATTLE_ROYALE_AGATHA, BattleRoyale_Text_Agatha_Intro, BattleRoyale_Text_Agatha_Defeated
 	msgbox BattleRoyale_Text_Agatha_PostBattle, MSGBOX_AUTOCLOSE
 	end

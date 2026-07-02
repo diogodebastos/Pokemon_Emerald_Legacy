@@ -38,7 +38,7 @@
 // Mr. Mimic (Battle Royale) shows the player's own character in the intro (mirror match).
 static u16 GetOpponentTrainerPicId(u16 trainerId)
 {
-    if (trainerId == TRAINER_FRONTIER_BRYON)
+    if (trainerId == TRAINER_BATTLE_ROYALE_MR_MIMIC)
         return (gSaveBlock2Ptr->playerGender == MALE) ? TRAINER_PIC_BRENDAN : TRAINER_PIC_MAY;
     return gTrainers[trainerId].trainerPic;
 }

@@ -207,7 +207,7 @@ Route117_Text_DayCareSign:
 	.string "“Let us raise your POKéMON.”$"
 
 
-Route117_EventScript_FrontierErick::
-	trainerbattle_single TRAINER_FRONTIER_ERICK, BattleRoyale_Text_Whitney_Intro, BattleRoyale_Text_Whitney_Defeated
+Route117_EventScript_BattleRoyaleWhitney::
+	trainerbattle_single TRAINER_BATTLE_ROYALE_WHITNEY, BattleRoyale_Text_Whitney_Intro, BattleRoyale_Text_Whitney_Defeated
 	msgbox BattleRoyale_Text_Whitney_PostBattle, MSGBOX_AUTOCLOSE
 	end

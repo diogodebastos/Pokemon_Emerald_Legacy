@@ -126,7 +126,7 @@ VerdanturfTown_Text_RusturfTunnelSign:
 	.string "canceled.”$"
 
 
-VerdanturfTown_EventScript_FrontierMiriam::
-	trainerbattle_single TRAINER_FRONTIER_MIRIAM, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
+VerdanturfTown_EventScript_BattleRoyaleBuril::
+	trainerbattle_single TRAINER_BATTLE_ROYALE_BURIL, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
 	msgbox BattleRoyale_Text_SupertrainerPostBattle, MSGBOX_AUTOCLOSE
 	end

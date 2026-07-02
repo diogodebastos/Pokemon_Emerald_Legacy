@@ -56,7 +56,7 @@ Route131_EventScript_Kevin::
 	end
 
 
-Route131_EventScript_FrontierGillian::
-	trainerbattle_single TRAINER_FRONTIER_GILLIAN, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
+Route131_EventScript_BattleRoyaleKauson::
+	trainerbattle_single TRAINER_BATTLE_ROYALE_KAUSON, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
 	msgbox BattleRoyale_Text_SupertrainerPostBattle, MSGBOX_AUTOCLOSE
 	end

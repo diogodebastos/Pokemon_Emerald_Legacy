@@ -82,7 +82,7 @@ Route125_EventScript_Auron::
 	end
 
 
-Route125_EventScript_FrontierEsther::
-	trainerbattle_single TRAINER_FRONTIER_ESTHER, BattleRoyale_Text_Pryce_Intro, BattleRoyale_Text_Pryce_Defeated
+Route125_EventScript_BattleRoyalePryce::
+	trainerbattle_single TRAINER_BATTLE_ROYALE_PRYCE, BattleRoyale_Text_Pryce_Intro, BattleRoyale_Text_Pryce_Defeated
 	msgbox BattleRoyale_Text_Pryce_PostBattle, MSGBOX_AUTOCLOSE
 	end

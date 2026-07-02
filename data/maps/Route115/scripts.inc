@@ -144,7 +144,7 @@ Route115_Text_MeteorFallsSign:
 	.string "FALLARBOR TOWN THROUGH HERE$"
 
 
-Route115_EventScript_FrontierMelody::
-	trainerbattle_single TRAINER_FRONTIER_MELODY, BattleRoyale_Text_Chuck_Intro, BattleRoyale_Text_Chuck_Defeated
+Route115_EventScript_BattleRoyaleChuck::
+	trainerbattle_single TRAINER_BATTLE_ROYALE_CHUCK, BattleRoyale_Text_Chuck_Intro, BattleRoyale_Text_Chuck_Defeated
 	msgbox BattleRoyale_Text_Chuck_PostBattle, MSGBOX_AUTOCLOSE
 	end

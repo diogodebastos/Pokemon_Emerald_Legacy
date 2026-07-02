@@ -304,7 +304,7 @@ Route128_Text_StevenImGoingToSootopolis:
 	.string "I don't know what you intend to do,\l"
 	.string "but don't do anything reckless.$"
 
-Route128_EventScript_FrontierTess::
-	trainerbattle_single TRAINER_FRONTIER_WILSON, BattleRoyale_Text_Clair_Intro, BattleRoyale_Text_Clair_Defeated
+Route128_EventScript_BattleRoyaleClair::
+	trainerbattle_single TRAINER_BATTLE_ROYALE_CLAIR, BattleRoyale_Text_Clair_Intro, BattleRoyale_Text_Clair_Defeated
 	msgbox BattleRoyale_Text_Clair_PostBattle, MSGBOX_AUTOCLOSE
 	end

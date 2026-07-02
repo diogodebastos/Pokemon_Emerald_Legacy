@@ -50,7 +50,7 @@ Route129_EventScript_Clarence::
 	end
 
 
-Route129_EventScript_FrontierVince::
-	trainerbattle_single TRAINER_FRONTIER_VINCE, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
+Route129_EventScript_BattleRoyaleHoloh::
+	trainerbattle_single TRAINER_BATTLE_ROYALE_HOLOH, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
 	msgbox BattleRoyale_Text_SupertrainerPostBattle, MSGBOX_AUTOCLOSE
 	end

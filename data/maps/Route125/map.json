@@ -183,7 +183,7 @@
       "movement_range_y": 0,
       "trainer_type": "TRAINER_TYPE_NORMAL",
       "trainer_sight_or_berry_tree_id": "0",
-      "script": "Route125_EventScript_FrontierEsther",
+      "script": "Route125_EventScript_BattleRoyalePryce",
       "flag": "FLAG_HIDE_BATTLE_ROYALE_TRAINERS"
     }
   ],

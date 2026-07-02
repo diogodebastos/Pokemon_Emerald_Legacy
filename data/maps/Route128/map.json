@@ -188,7 +188,7 @@
       "movement_range_y": 10,
       "trainer_type": "TRAINER_TYPE_NORMAL",
       "trainer_sight_or_berry_tree_id": "0",
-      "script": "Route128_EventScript_FrontierTess",
+      "script": "Route128_EventScript_BattleRoyaleClair",
       "flag": "FLAG_HIDE_BATTLE_ROYALE_TRAINERS"
     }
   ],

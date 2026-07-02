@@ -564,7 +564,7 @@ Route109_Text_TrainerTipsSign:
 	.string "this difference by pressing A from the\l"
 	.string "SUMMARY screen.$"
 
-Route109_EventScript_FrontierGavin::
-	trainerbattle_single TRAINER_FRONTIER_GAVIN, BattleRoyale_Text_Misty_Intro, BattleRoyale_Text_Misty_Defeated
+Route109_EventScript_BattleRoyaleMisty::
+	trainerbattle_single TRAINER_BATTLE_ROYALE_MISTY, BattleRoyale_Text_Misty_Intro, BattleRoyale_Text_Misty_Defeated
 	msgbox BattleRoyale_Text_Misty_PostBattle, MSGBOX_AUTOCLOSE
 	end

@@ -712,7 +712,7 @@ MauvilleCity_Text_WallyLeaves:
 	.string "battle.\p"
 	.string "Take care, {PLAYER}{KUN}!$"
 
-MauvilleCity_EventScript_FrontierOscar::
-	trainerbattle_single TRAINER_FRONTIER_OSCAR, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
+MauvilleCity_EventScript_BattleRoyaleShoo::
+	trainerbattle_single TRAINER_BATTLE_ROYALE_SHOO, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
 	msgbox BattleRoyale_Text_SupertrainerPostBattle, MSGBOX_AUTOCLOSE
 	end

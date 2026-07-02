@@ -2008,7 +2008,7 @@ SootopolisCity_Text_NatureChangerCantEgg:
 SootopolisCity_Text_NatureChangerBye:
 	.string "Come back if you change your mind.$"
 
-SootopolisCity_EventScript_FrontierChaz::
-	trainerbattle_single TRAINER_FRONTIER_CHAZ, BattleRoyale_Text_InfinIntro, BattleRoyale_Text_InfinDefeated
+SootopolisCity_EventScript_BattleRoyaleInfin::
+	trainerbattle_single TRAINER_BATTLE_ROYALE_INFIN, BattleRoyale_Text_InfinIntro, BattleRoyale_Text_InfinDefeated
 	msgbox BattleRoyale_Text_InfinPostBattle, MSGBOX_AUTOCLOSE
 	end

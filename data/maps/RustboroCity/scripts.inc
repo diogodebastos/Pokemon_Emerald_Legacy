@@ -1320,7 +1320,7 @@ RustboroCity_Text_YouCanHave2On2Battle:
 	.string "Don't you think it'd be cool if you\n"
 	.string "could beat two TRAINERS by yourself?$"
 
-RustboroCity_EventScript_FrontierNelson::
-	trainerbattle_single TRAINER_FRONTIER_NELSON, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
+RustboroCity_EventScript_BattleRoyaleGravet::
+	trainerbattle_single TRAINER_BATTLE_ROYALE_GRAVET, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
 	msgbox BattleRoyale_Text_SupertrainerPostBattle, MSGBOX_AUTOCLOSE
 	end

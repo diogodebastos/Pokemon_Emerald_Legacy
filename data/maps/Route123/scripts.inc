@@ -217,7 +217,7 @@ Route123_Text_BerryMastersHouse:
 	.string "BERRY MASTER'S HOUSE$"
 
 
-Route123_EventScript_Terry::
-	trainerbattle_single TRAINER_TERRY, BattleRoyale_Text_Erika_Intro, BattleRoyale_Text_Erika_Defeated
+Route123_EventScript_BattleRoyaleErika::
+	trainerbattle_single TRAINER_BATTLE_ROYALE_ERIKA, BattleRoyale_Text_Erika_Intro, BattleRoyale_Text_Erika_Defeated
 	msgbox BattleRoyale_Text_Erika_PostBattle, MSGBOX_AUTOCLOSE
 	end

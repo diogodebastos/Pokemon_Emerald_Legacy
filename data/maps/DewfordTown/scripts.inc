@@ -810,7 +810,7 @@ DewfordTown_Text_YeahDefinitionOfInRightNow:
 	.string "“{STR_VAR_1}” is the\n"
 	.string "definition of “in” right now.$"
 
-DewfordTown_EventScript_FrontierHugo::
-	trainerbattle_single TRAINER_FRONTIER_HUGO, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
+DewfordTown_EventScript_BattleRoyaleLagin::
+	trainerbattle_single TRAINER_BATTLE_ROYALE_LAGIN, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
 	msgbox BattleRoyale_Text_SupertrainerPostBattle, MSGBOX_AUTOCLOSE
 	end

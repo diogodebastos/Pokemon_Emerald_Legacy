@@ -114,7 +114,7 @@ Route124_Text_HuntersHouse:
 	.string "HUNTER'S HOUSE$"
 
 
-Route124_EventScript_FrontierMalory::
-	trainerbattle_single TRAINER_FRONTIER_MALORY, BattleRoyale_Text_Lorelei_Intro, BattleRoyale_Text_Lorelei_Defeated
+Route124_EventScript_BattleRoyaleLorelei::
+	trainerbattle_single TRAINER_BATTLE_ROYALE_LORELEI, BattleRoyale_Text_Lorelei_Intro, BattleRoyale_Text_Lorelei_Defeated
 	msgbox BattleRoyale_Text_Lorelei_PostBattle, MSGBOX_AUTOCLOSE
 	end

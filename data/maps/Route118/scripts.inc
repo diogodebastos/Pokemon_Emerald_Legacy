@@ -300,7 +300,7 @@ Route118_Text_RouteSign119:
 	.string "{UP_ARROW} ROUTE 119$"
 
 
-Route118_EventScript_Dudley::
-	trainerbattle_single TRAINER_DUDLEY, BattleRoyale_Text_LtSurge_Intro, BattleRoyale_Text_LtSurge_Defeated
+Route118_EventScript_BattleRoyaleLtSurge::
+	trainerbattle_single TRAINER_BATTLE_ROYALE_LT_SURGE, BattleRoyale_Text_LtSurge_Intro, BattleRoyale_Text_LtSurge_Defeated
 	msgbox BattleRoyale_Text_LtSurge_PostBattle, MSGBOX_AUTOCLOSE
 	end

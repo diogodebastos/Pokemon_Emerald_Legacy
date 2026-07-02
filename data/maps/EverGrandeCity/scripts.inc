@@ -63,8 +63,8 @@ EverGrandeCity_Text_NurseReady:
 EverGrandeCity_EventScript_MrMimic::
 	lock
 	faceplayer
-	cleartrainerflag TRAINER_FRONTIER_BRYON
-	trainerbattle_single TRAINER_FRONTIER_BRYON, EverGrandeCity_Text_MimicIntro, EverGrandeCity_Text_MimicDefeat, EverGrandeCity_EventScript_MimicPostBattle
+	cleartrainerflag TRAINER_BATTLE_ROYALE_MR_MIMIC
+	trainerbattle_single TRAINER_BATTLE_ROYALE_MR_MIMIC, EverGrandeCity_Text_MimicIntro, EverGrandeCity_Text_MimicDefeat, EverGrandeCity_EventScript_MimicPostBattle
 	release
 	end
 
@@ -87,8 +87,8 @@ EverGrandeCity_Text_MimicReady:
 	.string "Come again whenever you wish to\n"
 	.string "face your mirror.$"
 
-EverGrandeCity_EventScript_FrontierRaul::
-	trainerbattle_single TRAINER_FRONTIER_RAUL, BattleRoyale_Text_InityIntro, BattleRoyale_Text_InityDefeated
+EverGrandeCity_EventScript_BattleRoyaleInity::
+	trainerbattle_single TRAINER_BATTLE_ROYALE_INITY, BattleRoyale_Text_InityIntro, BattleRoyale_Text_InityDefeated
 	msgbox BattleRoyale_Text_InityPostBattle, MSGBOX_AUTOCLOSE
 	end
 

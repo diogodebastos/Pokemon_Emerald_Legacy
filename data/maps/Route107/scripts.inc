@@ -53,7 +53,7 @@ Route107_EventScript_Camron::
 	end
 
 
-Route107_EventScript_Kaylee::
-	trainerbattle_single TRAINER_KAYLEE, BattleRoyale_Text_Koga_Intro, BattleRoyale_Text_Koga_Defeated
+Route107_EventScript_BattleRoyaleKoga::
+	trainerbattle_single TRAINER_BATTLE_ROYALE_KOGA, BattleRoyale_Text_Koga_Intro, BattleRoyale_Text_Koga_Defeated
 	msgbox BattleRoyale_Text_Koga_PostBattle, MSGBOX_AUTOCLOSE
 	end

@@ -465,7 +465,7 @@ LavaridgeTown_Text_HerbShopSign:
 	.string "“Bitter taste--better cure!”$"
 
 
-LavaridgeTown_EventScript_FrontierMaddox::
-	trainerbattle_single TRAINER_FRONTIER_MADDOX, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
+LavaridgeTown_EventScript_BattleRoyaleHufnak::
+	trainerbattle_single TRAINER_BATTLE_ROYALE_HUFNAK, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
 	msgbox BattleRoyale_Text_SupertrainerPostBattle, MSGBOX_AUTOCLOSE
 	end

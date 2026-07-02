@@ -923,7 +923,7 @@ MossdeepCity_Text_SootopolisNewGymLeader:
 	.string "by a trainer named JUAN.$"
 
 
-MossdeepCity_EventScript_FrontierCarrie::
-	trainerbattle_single TRAINER_FRONTIER_CARRIE, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
+MossdeepCity_EventScript_BattleRoyaleHuron::
+	trainerbattle_single TRAINER_BATTLE_ROYALE_HURON, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
 	msgbox BattleRoyale_Text_SupertrainerPostBattle, MSGBOX_AUTOCLOSE
 	end

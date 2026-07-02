@@ -53,7 +53,7 @@ Route106_Text_TrainerTips:
 	.string "you get a bite!\p"
 	.string "You'll only need to press it once to\n"
 	.string "know if it got away.$"
-Route106_EventScript_FrontierPedro::
-	trainerbattle_single TRAINER_FRONTIER_PEDRO, BattleRoyale_Text_Falkner_Intro, BattleRoyale_Text_Falkner_Defeated
+Route106_EventScript_BattleRoyaleFalkner::
+	trainerbattle_single TRAINER_BATTLE_ROYALE_FALKNER, BattleRoyale_Text_Falkner_Intro, BattleRoyale_Text_Falkner_Defeated
 	msgbox BattleRoyale_Text_Falkner_PostBattle, MSGBOX_AUTOCLOSE
 	end

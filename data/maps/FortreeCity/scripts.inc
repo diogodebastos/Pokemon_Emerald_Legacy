@@ -155,7 +155,7 @@ FortreeCity_Text_GymSign:
 	.string "the world.”$"
 
 
-FortreeCity_EventScript_FrontierShania::
-	trainerbattle_single TRAINER_FRONTIER_SHANIA, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
+FortreeCity_EventScript_BattleRoyaleShun::
+	trainerbattle_single TRAINER_BATTLE_ROYALE_SHUN, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
 	msgbox BattleRoyale_Text_SupertrainerPostBattle, MSGBOX_AUTOCLOSE
 	end

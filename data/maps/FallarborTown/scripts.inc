@@ -94,7 +94,7 @@ FallarborTown_Text_MoveTutorSign:
 	.string "“New moves taught to POKéMON.”$"
 
 
-FallarborTown_EventScript_FrontierStella::
-	trainerbattle_single TRAINER_FRONTIER_STELLA, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
+FallarborTown_EventScript_BattleRoyaleGrang::
+	trainerbattle_single TRAINER_BATTLE_ROYALE_GRANG, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
 	msgbox BattleRoyale_Text_SupertrainerPostBattle, MSGBOX_AUTOCLOSE
 	end

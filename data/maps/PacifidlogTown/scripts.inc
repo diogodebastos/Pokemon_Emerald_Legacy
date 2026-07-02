@@ -108,7 +108,7 @@ PacifidlogTown_Text_TownSign:
 	.string "“Where the morning sun smiles upon\n"
 	.string "the waters.”$"
 
-PacifidlogTown_EventScript_FrontierDorine::
-	trainerbattle_single TRAINER_FRONTIER_DORINE, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
+PacifidlogTown_EventScript_BattleRoyaleGarvon::
+	trainerbattle_single TRAINER_BATTLE_ROYALE_GARVON, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
 	msgbox BattleRoyale_Text_SupertrainerPostBattle, MSGBOX_AUTOCLOSE
 	end

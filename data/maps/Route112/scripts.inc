@@ -144,8 +144,8 @@ Route112_Text_RouteSignLavaridge:
 	.string "{LEFT_ARROW} LAVARIDGE TOWN$"
 
 
-Route112_EventScript_Mike::
-	trainerbattle_single TRAINER_MIKE_1, BattleRoyale_Text_Blaine_Intro, BattleRoyale_Text_Blaine_Defeated
+Route112_EventScript_BattleRoyaleBlaine::
+	trainerbattle_single TRAINER_BATTLE_ROYALE_BLAINE, BattleRoyale_Text_Blaine_Intro, BattleRoyale_Text_Blaine_Defeated
 	msgbox BattleRoyale_Text_Blaine_PostBattle, MSGBOX_AUTOCLOSE
 	end
 

@@ -1410,7 +1410,7 @@ SlateportCity_Text_TakingBattleTentChallenge:
 	.string "the perfect fit for the BATTLE TENT!\p"
 	.string "Give it your best effort!$"
 
-SlateportCity_EventScript_FrontierBryce::
-	trainerbattle_single TRAINER_FRONTIER_BRYCE, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
+SlateportCity_EventScript_BattleRoyaleSaya::
+	trainerbattle_single TRAINER_BATTLE_ROYALE_SAYA, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
 	msgbox BattleRoyale_Text_SupertrainerPostBattle, MSGBOX_AUTOCLOSE
 	end

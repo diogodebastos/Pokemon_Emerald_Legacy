@@ -770,7 +770,7 @@ LilycoveCity_Text_HoneymoonVowToSeeRarePokemon:
 	.string "I mean, we are totally happy!$"
 
 
-LilycoveCity_EventScript_FrontierTyler::
-	trainerbattle_single TRAINER_FRONTIER_TYLER, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
+LilycoveCity_EventScript_BattleRoyaleOkamoo::
+	trainerbattle_single TRAINER_BATTLE_ROYALE_OKAMOO, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
 	msgbox BattleRoyale_Text_SupertrainerPostBattle, MSGBOX_AUTOCLOSE
 	end

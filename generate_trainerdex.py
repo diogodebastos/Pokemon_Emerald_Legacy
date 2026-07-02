@@ -54,23 +54,23 @@ KANTO_GAUNTLET_CAT = ('Kanto Gauntlet', 9)
 JOHTO_GAUNTLET_CAT = ('Johto Gauntlet', 10)
 KANTO_ELITE_CAT = ('Kanto Elite Four', 11)
 KANTO_GAUNTLET_IDS = {
-    'TRAINER_FRONTIER_RUTH', 'TRAINER_FRONTIER_GAVIN', 'TRAINER_DUDLEY', 'TRAINER_TERRY',
-    'TRAINER_KAYLEE', 'TRAINER_FRONTIER_JAXON', 'TRAINER_MIKE_1', 'TRAINER_FRONTIER_TODD',
+    'TRAINER_BATTLE_ROYALE_BROCK', 'TRAINER_BATTLE_ROYALE_MISTY', 'TRAINER_BATTLE_ROYALE_LT_SURGE', 'TRAINER_BATTLE_ROYALE_ERIKA',
+    'TRAINER_BATTLE_ROYALE_KOGA', 'TRAINER_BATTLE_ROYALE_SABRINA', 'TRAINER_BATTLE_ROYALE_BLAINE', 'TRAINER_BATTLE_ROYALE_GIOVANNI',
 }
 KANTO_ELITE_IDS = {  # Lorelei, Bruno, Agatha, Lance + Champion Blue
-    'TRAINER_FRONTIER_MALORY', 'TRAINER_FRONTIER_EMILEE', 'TRAINER_FRONTIER_ARMANDO',
-    'TRAINER_FRONTIER_ELAINE', 'TRAINER_FRONTIER_CLARE',
+    'TRAINER_BATTLE_ROYALE_LORELEI', 'TRAINER_BATTLE_ROYALE_BRUNO', 'TRAINER_BATTLE_ROYALE_AGATHA',
+    'TRAINER_BATTLE_ROYALE_LANCE', 'TRAINER_BATTLE_ROYALE_BLUE',
 }
 JOHTO_GAUNTLET_IDS = {
-    'TRAINER_FRONTIER_PEDRO', 'TRAINER_FRONTIER_JOSIE', 'TRAINER_FRONTIER_ERICK',
-    'TRAINER_FRONTIER_JOYCE', 'TRAINER_FRONTIER_MELODY', 'TRAINER_FRONTIER_SKYLER',
-    'TRAINER_FRONTIER_ESTHER', 'TRAINER_FRONTIER_WILSON',
+    'TRAINER_BATTLE_ROYALE_FALKNER', 'TRAINER_BATTLE_ROYALE_BUGSY', 'TRAINER_BATTLE_ROYALE_WHITNEY',
+    'TRAINER_BATTLE_ROYALE_MORTY', 'TRAINER_BATTLE_ROYALE_CHUCK', 'TRAINER_BATTLE_ROYALE_JASMINE',
+    'TRAINER_BATTLE_ROYALE_PRYCE', 'TRAINER_BATTLE_ROYALE_CLAIR',
 }
 
 # Special rebattleable utility trainers (shown as their own group, force-included even
 # though their in-game class isn't "notable"). BRYON is the Mr. Mimic mirror-match slot.
 SPECIAL_CAT = ('Special Trainers', 14)
-SPECIAL_TRAINER_IDS = {'TRAINER_FRONTIER_BRYON', 'TRAINER_GRINDING_NURSE'}
+SPECIAL_TRAINER_IDS = {'TRAINER_BATTLE_ROYALE_MR_MIMIC', 'TRAINER_GRINDING_NURSE'}
 
 # Explicit sidebar ordering of groups within a category (by display name).
 GROUP_ORDER = {
@@ -439,7 +439,7 @@ def build_data():
         mons = parties.get(t['partySym'], []) if t['partySym'] else []
         # Mr. Mimic mirrors the player's current team, so his stored party is meaningless.
         # Show the single circled "?" (the Gen-3 "unseen Pokemon" sprite) instead.
-        if t['id'] == 'TRAINER_FRONTIER_BRYON':
+        if t['id'] == 'TRAINER_BATTLE_ROYALE_MR_MIMIC':
             if 'MR_MIMIC' not in species_sprites:
                 _qm = pdx.load_sprite_b64('question_mark/circled')
                 species_sprites['MR_MIMIC'] = {'normal': _qm, 'shiny': _qm}

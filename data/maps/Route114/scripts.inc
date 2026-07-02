@@ -201,7 +201,7 @@ Route114_Text_LanettesHouse:
 	.string "LANETTE'S HOUSE$"
 
 
-Route114_EventScript_FrontierRuth::
-	trainerbattle_single TRAINER_FRONTIER_RUTH, BattleRoyale_Text_Brock_Intro, BattleRoyale_Text_Brock_Defeated
+Route114_EventScript_BattleRoyaleBrock::
+	trainerbattle_single TRAINER_BATTLE_ROYALE_BROCK, BattleRoyale_Text_Brock_Intro, BattleRoyale_Text_Brock_Defeated
 	msgbox BattleRoyale_Text_Brock_PostBattle, MSGBOX_AUTOCLOSE
 	end

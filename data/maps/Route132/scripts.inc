@@ -42,7 +42,7 @@ Route132_EventScript_Makayla::
 	end
 
 
-Route132_EventScript_FrontierDavin::
-	trainerbattle_single TRAINER_FRONTIER_DAVIN, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
+Route132_EventScript_BattleRoyaleGally::
+	trainerbattle_single TRAINER_BATTLE_ROYALE_GALLY, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
 	msgbox BattleRoyale_Text_SupertrainerPostBattle, MSGBOX_AUTOCLOSE
 	end

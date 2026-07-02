@@ -63,7 +63,7 @@ Route126_EventScript_RematchPablo::
 	end
 
 
-Route126_EventScript_FrontierWilson::
-	trainerbattle_single TRAINER_FRONTIER_TESS, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
+Route126_EventScript_BattleRoyaleTangut::
+	trainerbattle_single TRAINER_BATTLE_ROYALE_TANGUT, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
 	msgbox BattleRoyale_Text_SupertrainerPostBattle, MSGBOX_AUTOCLOSE
 	end

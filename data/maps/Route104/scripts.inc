@@ -1193,7 +1193,7 @@ Route104_Text_BrendanPostBattle:
 	.string "I'm going to stick around RUSTBORO\n"
     .string "for a while and look for more POKéMON.$"
 
-Route104_EventScript_FrontierJosie::
-	trainerbattle_single TRAINER_FRONTIER_JOSIE, BattleRoyale_Text_Bugsy_Intro, BattleRoyale_Text_Bugsy_Defeated
+Route104_EventScript_BattleRoyaleBugsy::
+	trainerbattle_single TRAINER_BATTLE_ROYALE_BUGSY, BattleRoyale_Text_Bugsy_Intro, BattleRoyale_Text_Bugsy_Defeated
 	msgbox BattleRoyale_Text_Bugsy_PostBattle, MSGBOX_AUTOCLOSE
 	end

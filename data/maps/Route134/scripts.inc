@@ -52,7 +52,7 @@ Route134_EventScript_Kelvin::
 	end
 
 
-Route134_EventScript_FrontierMateo::
-	trainerbattle_single TRAINER_FRONTIER_MATEO, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
+Route134_EventScript_BattleRoyaleTardel::
+	trainerbattle_single TRAINER_BATTLE_ROYALE_TARDEL, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
 	msgbox BattleRoyale_Text_SupertrainerPostBattle, MSGBOX_AUTOCLOSE
 	end

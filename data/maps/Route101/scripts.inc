@@ -301,7 +301,7 @@ Route101_Text_RouteSign:
 	.string "{UP_ARROW} OLDALE TOWN$"
 
 
-Route101_EventScript_FrontierJaxon::
-	trainerbattle_single TRAINER_FRONTIER_JAXON, BattleRoyale_Text_Sabrina_Intro, BattleRoyale_Text_Sabrina_Defeated
+Route101_EventScript_BattleRoyaleSabrina::
+	trainerbattle_single TRAINER_BATTLE_ROYALE_SABRINA, BattleRoyale_Text_Sabrina_Intro, BattleRoyale_Text_Sabrina_Defeated
 	msgbox BattleRoyale_Text_Sabrina_PostBattle, MSGBOX_AUTOCLOSE
 	end

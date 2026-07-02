@@ -87,7 +87,7 @@ DesertUnderpass_EventScript_DomeFossil::
 	release
 	end
 
-Route127_EventScript_FrontierClare::
-	trainerbattle_single TRAINER_FRONTIER_CLARE, BattleRoyale_Text_Blue_Intro, BattleRoyale_Text_Blue_Defeated
+Route127_EventScript_BattleRoyaleBlue::
+	trainerbattle_single TRAINER_BATTLE_ROYALE_BLUE, BattleRoyale_Text_Blue_Intro, BattleRoyale_Text_Blue_Defeated
 	msgbox BattleRoyale_Text_Blue_PostBattle, MSGBOX_AUTOCLOSE
 	end

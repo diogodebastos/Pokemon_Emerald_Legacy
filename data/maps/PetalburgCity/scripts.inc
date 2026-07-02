@@ -996,7 +996,7 @@ PetalburgCity_Text_ImLookingForTalentedTrainers:
 	.string "talented TRAINERS.\p"
 	.string "I'm sorry to have taken your time.$"
 
-PetalburgCity_EventScript_FrontierAva::
-	trainerbattle_single TRAINER_FRONTIER_AVA, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
+PetalburgCity_EventScript_BattleRoyaleCodel::
+	trainerbattle_single TRAINER_BATTLE_ROYALE_CODEL, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
 	msgbox BattleRoyale_Text_SupertrainerPostBattle, MSGBOX_AUTOCLOSE
 	end

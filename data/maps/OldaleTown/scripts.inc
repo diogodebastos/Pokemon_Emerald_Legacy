@@ -400,7 +400,7 @@ OldaleTown_Text_TownSign:
 	.string "“Where things start off scarce.”$"
 
 
-OldaleTown_EventScript_FrontierLeon::
-	trainerbattle_single TRAINER_FRONTIER_LEON, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
+OldaleTown_EventScript_BattleRoyaleAvos::
+	trainerbattle_single TRAINER_BATTLE_ROYALE_AVOS, BattleRoyale_Text_SupertrainerIntro, BattleRoyale_Text_SupertrainerDefeated
 	msgbox BattleRoyale_Text_SupertrainerPostBattle, MSGBOX_AUTOCLOSE
 	end
