@@ -378,8 +378,8 @@
     },
     {
       "graphics_id": "OBJ_EVENT_GFX_BROCK",
-      "x": 21,
-      "y": 30,
+      "x": 6,
+      "y": 51,
       "elevation": 3,
       "movement_type": "MOVEMENT_TYPE_WANDER_UP_AND_DOWN",
       "movement_range_x": 0,
