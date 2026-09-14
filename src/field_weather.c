@@ -812,6 +812,12 @@ void UpdateSpritePaletteWithWeather(u8 spritePaletteIndex)
     u16 paletteIndex = 16 + spritePaletteIndex;
     u16 i;
 
+    // LoadSpritePalette returns 0xFF when all 16 sprite palette slots are in
+    // use. Blending that "index" would write far past the end of the palette
+    // buffers and corrupt unrelated EWRAM (garbling the map and sprites).
+    if (spritePaletteIndex >= 16)
+        return;
+
     switch (gWeatherPtr->palProcessingState)
     {
     case WEATHER_PAL_STATE_SCREEN_FADING_IN:

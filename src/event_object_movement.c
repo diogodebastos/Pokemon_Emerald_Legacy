@@ -9461,9 +9461,10 @@ static void DoTracksGroundEffect_Footprints(struct ObjectEvent *objEvent, struct
 static void DoTracksGroundEffect_FootprintsB(struct ObjectEvent *objEvent, struct Sprite *sprite, u8 a)
 {
 	// First half-word is a Field Effect script id. (gFieldEffectScriptPointers)
+	// Spot/bug track graphics were never ported; reuse the regular sand footprints.
 	u16 otherFootprintsA_FieldEffectData[2] = {
-		FLDEFF_TRACKS_SPOT,
-		FLDEFF_TRACKS_SPOT
+		FLDEFF_SAND_FOOTPRINTS,
+		FLDEFF_DEEP_SAND_FOOTPRINTS
 	};
 
 	gFieldEffectArguments[0] = objEvent->previousCoords.x;
@@ -9478,9 +9479,10 @@ static void DoTracksGroundEffect_FootprintsB(struct ObjectEvent *objEvent, struc
 static void DoTracksGroundEffect_FootprintsC(struct ObjectEvent *objEvent, struct Sprite *sprite, u8 a)
 {
 	// First half-word is a Field Effect script id. (gFieldEffectScriptPointers)
+	// Spot/bug track graphics were never ported; reuse the regular sand footprints.
 	u16 otherFootprintsB_FieldEffectData[2] = {
-		FLDEFF_TRACKS_BUG,
-		FLDEFF_TRACKS_BUG
+		FLDEFF_SAND_FOOTPRINTS,
+		FLDEFF_DEEP_SAND_FOOTPRINTS
 	};
 
 	gFieldEffectArguments[0] = objEvent->previousCoords.x;
@@ -9543,7 +9545,9 @@ static void DoTracksGroundEffect_SlitherTracks(struct ObjectEvent *objEvent, str
 		gFieldEffectArguments[4] =
 			slitherTracks_Transitions[objEvent->previousMovementDirection][objEvent->facingDirection - 5];
         gFieldEffectArguments[5] = objEvent->previousMetatileBehavior;
-		FieldEffectStart(FLDEFF_TRACKS_SLITHER);
+		// Slither track graphics were never ported; reuse the bike tire tracks,
+		// which use the same turn-transition frames.
+		FieldEffectStart(FLDEFF_BIKE_TIRE_TRACKS);
 	}
 }
 
