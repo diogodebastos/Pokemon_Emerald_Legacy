@@ -836,6 +836,18 @@ def build_doubles_pages():
         dict(type='p', html='See also <a onclick="selectPage(\'coverage-duos\')">Coverage Duos</a>, which pairs movesets so Earthquake never hits the partner.'),
     ])]
 
+    # Region-locked teams: prove every member really is from that region's dex range.
+    dex_order = pdx.parse_national_dex_order(os.path.join(BASE, 'include/constants/pokedex.h'))
+    for t in dt.TEAMS:
+        if not t.get('region'):
+            continue
+        label, lo, hi, *exempt = t['region']
+        exempt = set(exempt[0]) if exempt else set()
+        for x in t['members']:
+            n = dex_order.get(x['sp'])
+            if x['sp'] not in exempt and not (n and lo <= n <= hi):
+                raise ValueError(f"{t['id']}: {x['sp']} (#{n}) is not a {label} Pokémon ({lo}-{hi})")
+
     STAT_LABEL = dict(hp='HP', atk='Attack', def_='Defense', spa='Sp. Atk', spd='Sp. Def', spe='Speed')
     team_pages = []
     for t in dt.TEAMS:

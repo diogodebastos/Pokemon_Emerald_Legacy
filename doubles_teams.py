@@ -219,6 +219,43 @@ TEAMS = [
             m('JOLTEON', 'VOLT_ABSORB', 'MAGNET', 'Timid', ['THUNDERBOLT', 'THUNDER_WAVE', 'HELPING_HAND', 'PROTECT'],
               'A third Eeveelution. Thunder Wave slows the fast sweepers Espeon and Umbreon can’t outspeed, and Thunderbolt handles the Water and Flying types that trouble Arcanine and Metagross.'),
          ]),
+    dict(id='eon-johto', name='Espeon & Umbreon · Johto', tag='Core · Johto only', region=('Johto', 152, 251),
+         blurb='The same Espeon and Umbreon core, with four partners from <b>Johto</b> only (National Dex 152–251). The Eeveelutions are Johto Pokémon themselves, '
+               'so the whole team is one region. Typhlosion and Skarmory answer the <b>Bug</b> moves both Eeveelutions fear, and nobody carries Earthquake, '
+               'because Espeon and Umbreon are grounded.',
+         leads=[('ESPEON', 'UMBREON'), ('TYPHLOSION', 'SKARMORY')],
+         members=[
+            m('ESPEON', 'SYNCHRONIZE', 'LEFTOVERS', 'Timid', ['PSYCHIC', 'CRUNCH', 'REFLECT', 'LIGHT_SCREEN'],
+              'Screens plus Psychic. Crunch uses Sp. Atk in Gen 3 and hits the Ghost and Psychic types Umbreon walls.'),
+            m('UMBREON', 'SYNCHRONIZE', 'LEFTOVERS', 'Bold', ['WISH', 'HELPING_HAND', 'TAUNT', 'PROTECT'],
+              'Immune to Psychic, resists Ghost and Dark. Wish heals whoever stands in its slot next turn.'),
+            m('TYPHLOSION', 'BLAZE', 'CHARCOAL', 'Modest', ['HEAT_WAVE', 'THUNDER_PUNCH', 'SUNNY_DAY', 'PROTECT'],
+              'The Bug answer. Heat Wave hits both foes and it learns it by level-up here, no breeding needed. Sunny Day boosts it by another 50%, and Thunder Punch (special in Gen 3) covers Water and Flying types.'),
+            m('SKARMORY', 'STURDY', 'LEFTOVERS', 'Impish', ['DRILL_PECK', 'STEEL_WING', 'TAUNT', 'PROTECT'],
+              'Steel resists Bug, Ghost, Dark, Psychic and Normal, which covers both Eeveelutions. Taunt stops enemy screens, weather and Follow Me.'),
+            m('KINGDRA', 'SWIFT_SWIM', 'MYSTIC_WATER', 'Modest', ['SURF', 'HYDRO_PUMP', 'ICE_BEAM', 'PROTECT'],
+              'Water/Dragon is only weak to Dragon. Surf hits both foes and never your partner. With no rain here, Swift Swim is idle; it is Kingdra’s only ability in this hack.'),
+            m('AMPHAROS', 'STATIC', 'LEFTOVERS', 'Modest', ['THUNDERBOLT', 'THUNDER_WAVE', 'LIGHT_SCREEN', 'PROTECT'],
+              'Electric coverage for the Water and Flying types. A second Light Screen user backs up Espeon, and Thunder Wave slows faster threats.'),
+         ]),
+    dict(id='eon-hoenn', name='Espeon & Umbreon · Hoenn', tag='Core · Hoenn partners', region=('Hoenn', 252, 386, ('ESPEON', 'UMBREON')),
+         blurb='The same core, with four partners from <b>Hoenn</b> only (National Dex 252–386). Espeon and Umbreon are Johto Pokémon, so they are the exception. '
+               'Metagross and Salamence cover the <b>Bug</b> weakness, and again nobody uses Earthquake, since both Eeveelutions are grounded.',
+         leads=[('ESPEON', 'UMBREON'), ('METAGROSS', 'SALAMENCE')],
+         members=[
+            m('ESPEON', 'SYNCHRONIZE', 'LEFTOVERS', 'Timid', ['PSYCHIC', 'CRUNCH', 'REFLECT', 'LIGHT_SCREEN'],
+              'Screens first: in doubles they cut damage to ⅔ while both allies stand, spread moves included.'),
+            m('UMBREON', 'SYNCHRONIZE', 'LEFTOVERS', 'Bold', ['WISH', 'HELPING_HAND', 'TAUNT', 'PROTECT'],
+              'The wall. Helping Hand turns Espeon’s Psychic or Salamence’s Fire Blast into a ×1.5 hit.'),
+            m('METAGROSS', 'CLEAR_BODY', 'LEFTOVERS', 'Adamant', ['METEOR_MASH', 'ROCK_SLIDE', 'BRICK_BREAK', 'PROTECT'],
+              'Steel resists Bug and Psychic. No Earthquake, since it would hit both Eeveelutions; Rock Slide hits both foes instead.'),
+            m('BLAZIKEN', 'BLAZE', 'CHARCOAL', 'Naive', ['SKY_UPPERCUT', 'ROCK_SLIDE', 'FIRE_BLAST', 'PROTECT'],
+              'Fire for the Bug types, and Fighting for the Dark and Steel types that trouble Espeon. Sky Uppercut is physical and Fire Blast special, so a Naive nature keeps both.'),
+            m('SWAMPERT', 'TORRENT', 'LEFTOVERS', 'Relaxed', ['SURF', 'ICE_BEAM', 'ROCK_SLIDE', 'PROTECT'],
+              'Bulky Water: resists Fire and Steel, immune to Electric. Surf and Rock Slide hit both foes but never your own side.'),
+            m('SALAMENCE', 'INTIMIDATE', 'LEFTOVERS', 'Naive', ['DRAGON_CLAW', 'ROCK_SLIDE', 'FIRE_BLAST', 'PROTECT'],
+              'Intimidate weakens both foes on entry, and its Rock Slide and Fire Blast both answer Bug types.'),
+         ]),
     dict(id='colosseum', name='Colosseum Core', tag='Pokémon Colosseum roster · Smogon ADV Doubles picks',
          blurb='The strongest doubles team you could build in <b>Pokémon Colosseum</b> (GameCube), where every battle is a double battle. '
                'It uses only Pokémon that game gives you: Shadow Pokémon you snag and purify, plus their evolutions. '
