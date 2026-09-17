@@ -13,6 +13,8 @@ import contextlib
 
 import generate_pokedex as pdx
 import generate_trainerdex as tdx
+import coverage_data as cov
+import doubles_teams as dt
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 
@@ -528,11 +530,357 @@ def build_frontier_pages(item_names):
     return pages
 
 
+# ---------------------------------------------------------------------------
+# Team Building — type coverage (coverage_data.py does the maths from the decomp).
+# ---------------------------------------------------------------------------
+# Hand-picked duos; the movesets themselves are computed, so they follow the learnsets.
+# (a, a's attacking types, b, b's attacking types, doubles-safe?)
+COVERAGE_DUOS = [
+    ('BLAZIKEN', ['FIGHTING', 'FLYING', 'ROCK', 'FIRE'], 'FLYGON', ['GROUND', 'GRASS', 'DRAGON', 'DARK'], False),
+    ('SCEPTILE', ['GRASS', 'DRAGON', 'DARK', 'FLYING'], 'BLAZIKEN', ['FIGHTING', 'GROUND', 'ROCK', 'FIRE'], False),
+    ('TYRANITAR', ['FIGHTING', 'FLYING', 'ROCK', 'DARK'], 'FLYGON', ['GROUND', 'FIRE', 'GRASS', 'DRAGON'], False),
+    ('SALAMENCE', ['FLYING', 'GROUND', 'ROCK', 'FIRE'], 'SCEPTILE', ['FIGHTING', 'GRASS', 'DRAGON', 'DARK'], False),
+]
+COVERAGE_SAFE_DUOS = [
+    ('TYRANITAR', ['FIGHTING', 'FLYING', 'GROUND', 'ROCK'], 'FLYGON', ['FIRE', 'GRASS', 'DRAGON', 'DARK'], True),
+    ('SCEPTILE', ['FIGHTING', 'GROUND', 'GRASS', 'DARK'], 'SALAMENCE', ['FLYING', 'ROCK', 'FIRE', 'DRAGON'], True),
+]
+TYPE_LABEL = {t: t.title() for t in cov.TYPES}
+
+
+def build_coverage_pages():
+    D = cov.load()
+    name = pdx.species_display_name
+    hittable = cov.hittable()
+    total_species = len(D['species'])
+    k, min_sets = cov.minimum_covers()
+    best8 = cov.best_sets(8, 1)[0]
+    best8_hit = len(cov.covered_by(best8) & hittable)
+    untouchable = cov.uncoverable()
+
+    def mon(sp):
+        return dict(sprite='mon:' + sp, sp=sp, name=name(sp))
+
+    # Per attacking type: how many species it hits super effectively.
+    bars = sorted(({'type': t, 'label': TYPE_LABEL[t], 'n': len(cov.coverage()[t])} for t in cov.TYPES),
+                  key=lambda r: (-r['n'], r['label']))
+
+    # Species with exactly one super-effective answer force that type into any full cover.
+    only = {}
+    for sp in sorted(hittable, key=lambda s: pdx.species_display_name(s)):
+        ts = [t for t in cov.TYPES if sp in cov.coverage()[t]]
+        if len(ts) == 1:
+            only.setdefault(ts[0], []).append(sp)
+    bottlenecks = [dict(types=[t], mons=[mon(s) for s in only[t]])
+                   for t in sorted(only, key=lambda t: -len(only[t]))]
+    # Pairs of answers that still pin the choice down (e.g. Koffing: Psychic only, because of Levitate).
+    two = {}
+    for sp in hittable:
+        ts = tuple(t for t in cov.TYPES if sp in cov.coverage()[t])
+        if len(ts) == 2 and not any(t in only for t in ts):
+            two.setdefault(ts, []).append(sp)
+
+    def ability_note(sp):
+        ab = D['species'][sp]['abilities']
+        return next((f'{a.replace("_", " ").title()}' for a in ab if a in cov.ABILITY_BLOCKS or a == 'THICK_FAT'), '')
+
+    def duo_block(spec):
+        a, at, b, bt, safe = spec
+        return duo_view(cov.duo(a, at, b, bt, partner_safe=safe))
+
+    def duo_view(d, matchups=None):
+        a, b = d['a'], d['b']
+        def moves(ms):
+            return [dict(type=m['type'], name=pdx.fmt_move('MOVE_' + m['move']), power=m['power'], stab=m['stab'],
+                         how=m['how'], spread=m['spread']) for m in ms]
+        def side(sp, ms):
+            return dict(mon=mon(sp), types=list(D['species'][sp]['types']), ability=' / '.join(
+                x.replace('_', ' ').title() for x in sorted(D['species'][sp]['abilities'])), moves=moves(ms))
+        if d['ally_hits']:
+            user, mv, ally = d['ally_hits'][0]
+            doubles = dict(ok=False, html=f'<b>Doubles:</b> {name(user)}’s {pdx.fmt_move("MOVE_" + mv)} also hits {name(ally)}.')
+        else:
+            spread = [(x, m) for x, ms in ((a, d['a_moves']), (b, d['b_moves'])) for m in ms if m['spread']]
+            if spread:
+                user, m = spread[0]
+                ally = b if user == a else a
+                why = 'Flying type' if 'FLYING' in D['species'][ally]['types'] else 'Levitate'
+                doubles = dict(ok=True, html=f'<b>Doubles-safe:</b> {name(user)} carries {pdx.fmt_move("MOVE_" + m["move"])}, '
+                                             f'and {name(ally)} is immune ({why}).')
+            else:
+                doubles = dict(ok=True, html='<b>Doubles-safe:</b> no move here hits the partner.')
+        out = dict(a=side(a, d['a_moves']), b=side(b, d['b_moves']), hit=d['hit'], total=d['total'],
+                   missed=[mon(s) for s in d['missed']], doubles=doubles)
+        if matchups:
+            out['matchups'] = dict(types=cov.TYPES, rows=[matchups[a], matchups[b]], names=[name(a), name(b)])
+        return out
+
+    def move_cell(ms):
+        return ' '.join(f'<span class="mvchip" data-move="{pdx.fmt_move("MOVE_" + m["move"])}">'
+                        f'<img class="tyicon" src="TYPEICON:{m["type"]}" alt="{TYPE_LABEL[m["type"]]}">'
+                        f'{pdx.fmt_move("MOVE_" + m["move"])}</span>' for m in ms)
+
+    with contextlib.redirect_stdout(io.StringIO()):
+        legend_duos = cov.rank_duos(True, 8, legendary=True)
+        def_plain = cov.rank_defensive_duos(10, legendary=False)
+        def_legend = cov.rank_defensive_duos(8, legendary=True)
+    legend_rows = [[dict(sprite='mon:' + d['a'], text=name(d['a'])), dict(html=move_cell(d['a_moves'])),
+                    dict(sprite='mon:' + d['b'], text=name(d['b'])), dict(html=move_cell(d['b_moves']))] for d in legend_duos[2:]]
+
+    def def_cards(lst):
+        return [duo_view(cov.best_split(x['a'], x['b']), x['matchups']) for x in lst]
+
+    def split_featured(lst, n):
+        # Featured cards shouldn't repeat a Pokémon; everything else goes to the table.
+        cards, used = [], set()
+        for x in lst:
+            if len(cards) < n and not ({x['a'], x['b']} & used):
+                cards.append(x)
+                used |= {x['a'], x['b']}
+        return cards, [x for x in lst if x not in cards]
+    def_plain_cards, def_plain_rest = split_featured(def_plain, 4)
+    def_legend_cards, def_legend_rest = split_featured(def_legend, 2)
+
+    def def_rows(lst):
+        rows = []
+        for x in lst:
+            imm = [TYPE_LABEL[t] for i, t in enumerate(cov.TYPES) if min(x['matchups'][x['a']][i], x['matchups'][x['b']][i]) == 0]
+            rows.append([dict(sprite='mon:' + x['a'], text=name(x['a'])), dict(sprite='mon:' + x['b'], text=name(x['b'])),
+                         dict(html=f'<b>{x["resist"]}</b>/17'), dict(text=', '.join(imm) or '—'), dict(text=str(x['bulk']))])
+        return rows
+
+    with contextlib.redirect_stdout(io.StringIO()):
+        more_safe = cov.rank_duos(True, 12)
+    featured = {(x[0], x[2]) for x in COVERAGE_DUOS + COVERAGE_SAFE_DUOS}
+    more_rows = []
+    for d in more_safe:
+        if (d['a'], d['b']) in featured or len(more_rows) >= 8:
+            continue
+        more_rows.append([dict(sprite='mon:' + d['a'], text=name(d['a'])), dict(html=move_cell(d['a_moves'])),
+                          dict(sprite='mon:' + d['b'], text=name(d['b'])), dict(html=move_cell(d['b_moves']))])
+
+    missed8 = sorted(hittable - cov.covered_by(best8))
+    pages = []
+    pages.append(dict(id='coverage-types', section='Team Building', title='Type Coverage',
+        kicker='Can you hit everything?', blocks=[
+        dict(type='p', html='Which attacking types hit every Pokémon in the game for <b>super-effective</b> damage? '
+                            'This page is computed from the game’s own type chart, species data and abilities. '
+                            'An ability that cancels the hit counts as a miss: <b>Levitate</b> (Ground), <b>Flash Fire</b> (Fire), '
+                            '<b>Volt Absorb</b> (Electric), <b>Water Absorb</b> (Water), and <b>Thick Fat</b>, which turns a 2× Fire or Ice hit neutral. '
+                            'This is Gen 3, so there is no Fairy type.'),
+        dict(type='stats', items=[
+            dict(value=str(total_species), label='Species, counting Deoxys forms'),
+            dict(value=str(len(untouchable)), label='Nothing hits super effectively', mons=[mon(s) for s in untouchable]),
+            dict(value=str(k), label='Fewest attacking types to hit the rest'),
+            dict(value=f'{best8_hit}/{len(hittable)}', label='Best you can do with 8 moves'),
+        ]),
+        dict(type='callout', html=f'<b>Two Pokémon are not enough for full coverage.</b> Two Pokémon have 8 move slots, but hitting all {len(hittable)} '
+                                  f'hittable species needs {k} attacking types. The best 8 types reach {best8_hit}. '
+                                  '<b>Sableye</b> (Dark/Ghost) has no weaknesses at all in Gen 3.'),
+        dict(type='h', text='Species hit super effectively, per attacking type'),
+        dict(type='bars', total=total_species, rows=bars),
+        dict(type='p', html='Covering the most species isn’t what matters. What matters is the Pokémon that <b>only one type</b> can hit. '
+                            'Each group below forces its type into any complete set.'),
+        dict(type='h', text='Pokémon with a single weakness'),
+        dict(type='bottlenecks', items=bottlenecks),
+        dict(type='h', text='Pokémon with exactly two weaknesses'),
+        dict(type='p', html='These don’t force a single type, but each one needs one of its two answers in the set.'),
+        dict(type='bottlenecks', items=[dict(types=list(ts), mons=[mon(x) for x in sorted(sps, key=name)])
+                                        for ts, sps in sorted(two.items(), key=lambda kv: (-len(kv[1]), kv[0]))]),
+        dict(type='h', text=f'Every {k}-type set that hits all {len(hittable)}'),
+        dict(type='typesets', sets=[list(s) for s in min_sets]),
+        dict(type='h', text='The best 8-type set'),
+        dict(type='typesets', sets=[list(best8)], note=f'{best8_hit}/{len(hittable)} species. Misses:', mons=[mon(s) for s in missed8]),
+        dict(type='p', html='For duos that carry this set, see <a onclick="selectPage(\'coverage-duos\')">Coverage Duos</a>.'),
+    ]))
+
+    pages.append(dict(id='coverage-duos', section='Team Building', title='Coverage Duos',
+        kicker='Two Pokémon · eight moves', blocks=[
+        dict(type='p', html=f'Each pair below splits the best 8 attacking types, four each, so together they hit '
+                            f'<b>{best8_hit} of {len(hittable)}</b> Pokémon super effectively. Moves are the strongest reliable ones each Pokémon '
+                            'can learn by level-up, TM/HM, tutor or egg move. That rules out moves with a charge turn or recharge, '
+                            'self-KO moves, fixed-damage moves and Hidden Power. Every move shown has at least '
+                            f'{cov.MIN_POWER} power, and <span class="stab">STAB</span> marks a same-type bonus.'),
+        dict(type='h', text='Singles picks'),
+        dict(type='duos', items=[duo_block(s) for s in COVERAGE_DUOS]),
+        dict(type='h', text='Doubles-safe picks'),
+        dict(type='p', html='<b>Earthquake hits your partner too.</b> In a double battle it hits both foes <i>and</i> your ally, and '
+                            'Hoenn rematches are doubles. Give Earthquake to the Pokémon whose partner is immune to Ground, '
+                            'either a <b>Flying</b> type or one with <b>Levitate</b>. The two duos below are the same idea as above, '
+                            'with the Ground slot moved to the other Pokémon: Tyranitar fires Earthquake over a levitating Flygon, '
+                            'and Sceptile fires it under a flying Salamence.'),
+        dict(type='duos', items=[duo_block(s) for s in COVERAGE_SAFE_DUOS]),
+        dict(type='h', text='More doubles-safe duos'),
+        dict(type='p', html=f'Also {best8_hit}/{len(hittable)}, ranked by damage (move power × STAB × the attacking stat). '
+                            'Legendaries are left out.'),
+        dict(type='table', head=['Pokémon', 'Moves', 'Partner', 'Moves'], rows=more_rows),
+        dict(type='h', text='Legendary duos'),
+        dict(type='p', html=f'The same search with post-game legendaries allowed (every pair includes at least one; each legendary appears at most twice). '
+                            f'It still tops out at {best8_hit}/{len(hittable)}, because no Pokémon beats the type chart, but the moves hit much harder. Every pair is still doubles-safe.'),
+        dict(type='duos', items=[duo_view(d) for d in legend_duos[:2]]),
+        dict(type='table', head=['Pokémon', 'Moves', 'Partner', 'Moves'], rows=legend_rows),
+        dict(type='h', text='Defensive duos'),
+        dict(type='p', html='Pairs that are hard to hit together. In doubles, spread moves such as Rock Slide, Surf, Heat Wave and Earthquake strike both Pokémon at once, so a defensive pair should have '
+                            '<b>no shared weakness</b>, and <b>every weakness of one should be resisted or blocked by the other</b>. That way, whatever threatens one has a safe switch-in. '
+                            f'Pairs are ranked by how many of the 17 attacking types at least one of them resists (worth {cov.RESIST_WEIGHT} points each), plus their combined base HP, Defense and Sp. Def. '
+                            'Abilities count: Levitate, Flash Fire, Volt Absorb and Water Absorb are immunities, and Thick Fat halves Fire and Ice. '
+                            'Each card also gives the pair its best doubles-safe attacking split.'),
+        dict(type='duos', items=def_cards(def_plain_cards)),
+        dict(type='table', head=['Pokémon', 'Partner', 'Resisted', 'Immune to', 'Base bulk'], rows=def_rows(def_plain_rest)),
+        dict(type='h', text='Legendary defensive duos'),
+        dict(type='duos', items=def_cards(def_legend_cards)),
+        dict(type='table', head=['Pokémon', 'Partner', 'Resisted', 'Immune to', 'Base bulk'], rows=def_rows(def_legend_rest)),
+        dict(type='h', text='Full coverage'),
+        dict(type='callout', html='Add a <b>third</b> Pokémon with <b>Psychic + Ice</b> (Gardevoir, Alakazam or Starmie, for example). '
+                                  'Psychic handles Koffing and Weezing, and Ice handles Gligar and Kingdra. That covers everything except Sableye.'),
+    ]))
+    return pages
+
+
+# ---------------------------------------------------------------------------
+# Double Battles — archetype teams (doubles_teams.py validates every set).
+# ---------------------------------------------------------------------------
+SMOGON_SOURCES = ('<a href="https://www.smogon.com/articles/adv-doubles-intro" target="_blank" rel="noopener">Introduction to ADV Doubles</a> and the '
+                  '<a href="https://www.smogon.com/forums/threads/adv-doubles-ou.3666831/" target="_blank" rel="noopener">ADV Doubles OU</a> thread on Smogon')
+
+
+def build_doubles_pages():
+    import generate_items as gi
+    with contextlib.redirect_stdout(io.StringIO()):
+        items = {o['key']: o for o in gi.build_data()[0]}
+    D = cov.load()
+    name = pdx.species_display_name
+    title = lambda c: c.replace('_', ' ').title()
+
+    def target_label(mv):
+        t = D['moves'][mv]['target']
+        if t == 'MOVE_TARGET_BOTH':
+            return 'both foes · ½'
+        if t == 'MOVE_TARGET_FOES_AND_ALLY':
+            return 'all · hits ally'
+        return ''
+
+    def member(mem):
+        moves = []
+        for d in dt.validate(mem, set(items)):
+            mv = d['move']
+            how_parts = [h for h in d['how'] if h != 'Egg move']
+            if 'Egg move' in d['how'] and not how_parts:
+                how_parts = ['Egg move · Move Relearner']
+                if d.get('chain'):
+                    chain = d['chain']
+                    how_parts.append('or breed ' + ' → '.join(
+                        [xl('pokedex', chain[0], name(chain[0])) + ' ♂'] + [xl('pokedex', c, name(c)) for c in chain[1:]]))
+            tip = ''
+            if d.get('warn'):
+                alt = d['alt']
+                tip = (f'<b>{pdx.fmt_move("MOVE_" + mv)}</b> is an egg move. Teach it with the {dt.RELEARNER}. '
+                       f'{d["warn"]}<br><br>If you’d rather not use the relearner, use <b>{pdx.fmt_move("MOVE_" + alt["move"])}</b> '
+                       f'({" · ".join(alt["how"])}).')
+            moves.append(dict(type=d['type'], name=pdx.fmt_move('MOVE_' + mv),
+                              power=d['power'] if d['power'] > 1 else ('—' if d['power'] == 0 else 'varies'),
+                              target=target_label(mv) if d['power'] else '', how=' · '.join(how_parts), tip=tip,
+                              alt=pdx.fmt_move('MOVE_' + d['alt']['move']) if d.get('alt') else ''))
+        it = items['ITEM_' + mem['item']]
+        return dict(sprite='mon:' + mem['sp'], sp=mem['sp'], name=name(mem['sp']), types=list(D['species'][mem['sp']]['types']),
+                    ability=title(mem['ability']), item=dict(icon='item:' + it['key'], key=it['key'], name=it['name']),
+                    nature=mem['nature'], moves=moves, note=mem['note'])
+
+    # --- Basics: verified mechanics + learner tables straight from the data ---
+    evolves = set(D['prevo'].values())
+    final = lambda s: s not in evolves and s not in cov.LEGENDARY
+    def learners(mv):
+        return [dict(sprite='mon:' + s, sp=s, name=name(s)) for s in sorted(D['species'], key=name)
+                if final(s) and mv in D['learn'][s]]
+    spread_both = sorted((mv for mv, x in D['moves'].items() if x['target'] == 'MOVE_TARGET_BOTH' and x['power'] > 0), key=pdx.fmt_move)
+    spread_all = sorted((mv for mv, x in D['moves'].items() if x['target'] == 'MOVE_TARGET_FOES_AND_ALLY' and x['power'] > 0), key=pdx.fmt_move)
+    move_chips = lambda mvs: ' '.join(f'<span class="mvchip" data-move="{pdx.fmt_move("MOVE_" + mv)}"><img class="tyicon" src="TYPEICON:{D["moves"][mv]["type"]}" alt="">'
+                                      f'{pdx.fmt_move("MOVE_" + mv)}</span>' for mv in mvs)
+    immune = sorted((s for s in D['species'] if final(s) and cov.immune_to('GROUND', s)), key=name)
+
+    pages = [dict(id='doubles-basics', section='Double Battles', title='Doubles Basics',
+        kicker='Gen 3 rules, checked in the code', blocks=[
+        dict(type='p', html='On this version <b>every battle is a double battle</b>, trainers and wild encounters alike. '
+                            'These are the Gen 3 rules that decide them. Each one was checked against the battle code, because several work '
+                            'differently from newer games. The team ideas are adapted from ' + SMOGON_SOURCES + ', then checked move by move against this hack’s learnsets, '
+                            'abilities, items and breeding.'),
+        dict(type='table', head=['Mechanic', 'How it works in this game'], rows=[
+            [dict(html='<b>Spread moves</b>'), dict(html='Moves that hit <b>both foes</b> (Surf, Rock Slide, Heat Wave, Blizzard…) deal <b>half damage</b> to each while both foes are standing. They never hit your partner.')],
+            [dict(html='<b>Earthquake &amp; Explosion</b>'), dict(html='Hit <b>everyone else</b> at <b>full power</b>, including your partner. Pair Earthquake with a Flying type or Levitate. Explosion also halves the target’s Defense, and Ghost types are immune.')],
+            [dict(html='<b>Physical / special</b>'), dict(html='Decided by type, not by move. Fire, Water, Grass, Electric, Ice, Psychic, Dragon and Dark are special, so Crunch and Dragon Claw use Sp. Atk. The other types are physical.')],
+            [dict(html='<b>Fake Out</b>'), dict(html='Priority, and the target flinches, but only on the user’s first turn out. Inner Focus blocks the flinch.')],
+            [dict(html='<b>Follow Me</b>'), dict(html='Redirects every <b>single-target</b> move from the other side to the user for that turn. It doesn’t redirect spread moves.')],
+            [dict(html='<b>Helping Hand</b>'), dict(html='Priority. The partner’s move this turn does ×1.5 damage.')],
+            [dict(html='<b>Intimidate</b>'), dict(html='Lowers the Attack of both foes when the user enters. Clear Body, Hyper Cutter and White Smoke block it.')],
+            [dict(html='<b>Weather</b>'), dict(html='Rain Dance, Sunny Day, Sandstorm and Hail last <b>5 turns</b>. Weather from Sand Stream, Drought or Drizzle never wears off; only another weather replaces it. '
+                                                      'Rain: Water ×1.5, Fire ×0.5, Thunder never misses. Sun: Fire ×1.5, Water ×0.5, one-turn Solar Beam, Thunder 50% accuracy. Hail: Blizzard never misses.')],
+            [dict(html='<b>Swift Swim / Chlorophyll</b>'), dict(html='Double Speed in rain / sun.')],
+            [dict(html='<b>Lightning Rod</b>'), dict(html='Pulls the <b>opponents’</b> single-target Electric moves onto the holder. It gives <b>no immunity</b> in Gen 3, so pair it with a Ground type (Marowak, Rhydon).')],
+            [dict(html='<b>Plus / Minus</b>'), dict(html='×1.5 Sp. Atk while a Pokémon with the other ability is on the field.')],
+            [dict(html='<b>Wonder Guard</b>'), dict(html='Blocks every hit that isn’t super effective, <b>including your partner’s</b> Earthquake.')],
+            [dict(html='<b>Reflect / Light Screen</b>'), dict(html='Reduce damage to <b>⅔</b> (not ½) while both Pokémon on the protected side are standing. They also reduce spread moves. Critical hits ignore them, and Brick Break removes them.')],
+            [dict(html='<b>Protect</b>'), dict(html='Blocks everything, spread moves included. Each consecutive use is half as likely to work (100% → 50% → 25% → 12.5%).')],
+        ]),
+        dict(type='h', text='Hits both foes · ½ damage'),
+        dict(type='p', html=move_chips(spread_both)),
+        dict(type='h', text='Hits everyone, partner included · full damage'),
+        dict(type='p', html=move_chips(spread_all)),
+        dict(type='h', text='Earthquake-safe partners'),
+        dict(type='p', html='Fully evolved Pokémon that take no damage from a partner’s Earthquake (Flying types and Levitate):'),
+        dict(type='monlist', mons=[dict(sprite='mon:' + s, sp=s, name=name(s)) for s in immune]),
+        dict(type='h', text='Who learns the support moves'),
+        dict(type='p', html='Fully evolved, non-legendary Pokémon that can learn each move by any method (level-up, TM, tutor or egg move).'),
+        dict(type='table', head=['Move', 'Learned by'], rows=[
+            [dict(html=move_chips([mv])), dict(mons=[dict(sprite=x['sprite'], sp=x['sp'], name=x['name'], nature='', moves=[], item='') for x in learners(mv)])]
+            for mv in ['FAKE_OUT', 'FOLLOW_ME', 'HELPING_HAND', 'ENCORE']]),
+        dict(type='p', html='See also <a onclick="selectPage(\'coverage-duos\')">Coverage Duos</a>, which pairs movesets so Earthquake never hits the partner.'),
+    ])]
+
+    STAT_LABEL = dict(hp='HP', atk='Attack', def_='Defense', spa='Sp. Atk', spd='Sp. Def', spe='Speed')
+    team_pages = []
+    for t in dt.TEAMS:
+        members = [member(x) for x in t['members']]
+        for x, src in zip(members, t['members']):
+            stat = src.get('stat') or t.get('stat')
+            if stat:
+                key = 'def_' if stat == 'def' else stat
+                x['stat'] = f'Base {STAT_LABEL[key]} {D["species"][x["sp"]]["base"][key]}'
+        team_pages.append(dict(id='team-' + t['id'], section=t.get('group', 'Double Battles'), title=t['name'], kicker=t['tag'], blocks=[
+            dict(type='p', html=t['blurb']),
+            dict(type='leads', leads=[[dict(sprite='mon:' + s, sp=s, name=name(s)) for s in pair] for pair in t['leads']]),
+            dict(type='team', members=members),
+            dict(type='p', html='<span class="dim">Every move, ability and item here was checked against this hack’s data. '
+                                'Egg moves can be taught by the ' + dt.RELEARNER + ', and a working breeding father is listed when one exists. A ⚑ marks an egg move that breeding can’t deliver: hover it for the fallback. Tutors in this hack teach any number of times, and the Battle Frontier tutors are free.</span>'),
+        ]))
+
+    pages += [p for p in team_pages if p['section'] == 'Double Battles']
+    specialist_pages = [p for p in team_pages if p['section'] != 'Double Battles']
+    combo_blocks = [dict(type='p', html='Two-Pokémon combos that only work in doubles. Each relies on a mechanic confirmed in this game’s battle code.')]
+    for c in dt.COMBOS:
+        combo_blocks.append(dict(type='h', text=c['name']))
+        combo_blocks.append(dict(type='p', html=c['html']))
+        combo_blocks.append(dict(type='team', members=[member(x) for x in c['pair']]))
+    pages.append(dict(id='doubles-combos', section='Double Battles', title='Partner Combos', kicker='Pairs that only work in doubles', blocks=combo_blocks))
+    return pages + specialist_pages
+
+
+def load_type_icon_b64(t):
+    from PIL import Image
+    im = Image.open(os.path.join(BASE, 'graphics/types', cov.TYPE_ICON_FILE[t] + '.png'))
+    rgba = im.convert('RGBA')
+    px, idx = rgba.load(), im.load()
+    for y in range(im.height):
+        for x in range(im.width):
+            if idx[x, y] == 0:
+                px[x, y] = (0, 0, 0, 0)
+    return pdx._img_to_b64(rgba)
+
+
 def build_data():
     with contextlib.redirect_stdout(io.StringIO()):
         trainers, _, trainer_pics, _, _ = tdx.build_data()
     item_names = tdx.parse_item_names(os.path.join(BASE, 'src/data/items.h'))
-    pages = build_pages(trainers) + build_thief_pages(trainers) + build_frontier_pages(item_names)
+    pages = build_pages(trainers) + build_thief_pages(trainers) + build_frontier_pages(item_names) + build_coverage_pages() + build_doubles_pages()
 
     # Collect every sprite reference used by the pages and bake it once.
     refs = set()
@@ -564,6 +912,8 @@ def build_data():
             sprites[ref] = trainer_pics.get(key, '')
         elif kind == 'item':
             sprites[ref] = load_item_icon_b64(key)
+    for t in cov.TYPES:
+        sprites['type:' + t] = load_type_icon_b64(t)
     # Shiny variants for cards flagged shiny
     for p in pages:
         for b in p['blocks']:
@@ -735,6 +1085,88 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
   .pg.br { color: var(--jade-bright); border-color: var(--jade-bright); }
   .pg { font-family: var(--f-mono); font-size: 8px; letter-spacing: 0.14em; color: var(--dusk); border: 1px solid var(--dusk); padding: 0 4px; margin-left: 4px; vertical-align: middle; }
 
+  /* Team Building — coverage */
+  .tyicon { width: 48px; height: 24px; image-rendering: pixelated; vertical-align: middle; flex: none; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 8px 0 16px; }
+  .stat { border: 1px solid var(--rule); background: var(--paper-2); padding: 14px 16px; }
+  .stat-v { font-family: var(--f-serif); font-size: 40px; line-height: 1; color: var(--ink); font-variation-settings: "opsz" 144; }
+  .stat-l { font-family: var(--f-mono); font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-mut); margin-top: 8px; line-height: 1.5; }
+  .stat-mons { margin-top: 6px; }
+  .bars { display: flex; flex-direction: column; gap: 2px; margin: 8px 0 20px; max-width: 720px; }
+  .bar-row { display: grid; grid-template-columns: 56px 1fr 44px; align-items: center; gap: 10px; padding: 3px 6px; cursor: default; }
+  .bar-row:hover { background: var(--paper-2); }
+  .bar-track { display: block; height: 12px; background: var(--paper-0); border-radius: 0 4px 4px 0; overflow: hidden; }
+  .bar-fill { display: block; height: 100%; background: var(--jade-bright); border-radius: 0 4px 4px 0; }
+  .bar-row:hover .bar-fill { background: var(--ink); }
+  .bar-n { font-family: var(--f-mono); font-size: 12px; color: var(--ink-dim); text-align: right; }
+  .bneck { border: 1px solid var(--rule); margin: 8px 0 16px; }
+  .bneck-row { display: grid; grid-template-columns: 150px 1fr; gap: 12px; padding: 10px 12px; border-bottom: 1px solid var(--rule-2); align-items: center; }
+  .bneck-row:last-child { border-bottom: 0; }
+  .bneck-type { display: flex; align-items: center; gap: 8px; font-family: var(--f-mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-mut); }
+  .bneck-mons, .stat-mons, .typeset-note { display: flex; flex-wrap: wrap; gap: 0 2px; align-items: center; }
+  .monchip { display: inline-flex; align-items: center; font-size: 12px; margin-right: 8px; white-space: nowrap; }
+  .monchip img { width: 36px; height: 36px; image-rendering: pixelated; }
+  .typesets { display: flex; flex-direction: column; gap: 6px; margin: 8px 0 16px; }
+  .typeset { display: flex; flex-wrap: wrap; gap: 4px; padding: 8px 10px; border: 1px solid var(--rule); background: var(--paper-2); }
+  .typeset-note { font-size: 13px; color: var(--ink-dim); gap: 4px 6px; }
+  .duos { display: flex; flex-direction: column; gap: 16px; margin: 8px 0 20px; }
+  .duo { border: 1px solid var(--rule); background: var(--paper-2); padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+  .duo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .duo-side + .duo-side { border-left: 1px solid var(--rule); padding-left: 16px; }
+  .duo-mon { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; }
+  .duo-mon > img { width: 64px; height: 64px; image-rendering: pixelated; }
+  .duo-types { display: flex; gap: 2px; margin: 4px 0 2px; }
+  .duo-types .tyicon { width: 40px; height: 20px; }
+  .duo-mon .dim { font-family: var(--f-mono); font-size: 10px; color: var(--ink-mut); }
+  .duo-moves { display: flex; flex-direction: column; gap: 4px; }
+  .duo-move { display: grid; grid-template-columns: 48px 1fr auto; column-gap: 8px; align-items: center; }
+  .mv-name { color: var(--ink); font-weight: 600; cursor: pointer; text-decoration: underline dotted var(--jade-bright); text-underline-offset: 3px; }
+  .mv-name:hover { color: var(--jade-bright); }
+  .mv-pow { font-family: var(--f-mono); font-size: 12px; color: var(--ink-dim); text-align: right; white-space: nowrap; }
+  .mv-how { grid-column: 2 / 4; font-family: var(--f-mono); font-size: 9px; color: var(--ink-mut); letter-spacing: 0.06em; margin-top: -2px; }
+  .stab { font-family: var(--f-mono); font-size: 8px; letter-spacing: 0.12em; color: var(--dusk); border: 1px solid var(--dusk); padding: 0 3px; margin-left: 5px; vertical-align: middle; }
+  .duo-meter { display: grid; grid-template-columns: 80px 1fr 64px; gap: 10px; align-items: center; }
+  .duo .lbl { font-family: var(--f-mono); font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-mut); margin-right: 10px; }
+  .duo-miss { display: flex; flex-wrap: wrap; align-items: center; }
+  .duo-doubles { display: flex; gap: 10px; align-items: baseline; font-size: 13px; line-height: 1.5; padding: 8px 12px; color: var(--ink-dim); }
+  .duo-doubles.ok { border: 1px solid var(--jade-bright); background: var(--jade-soft); }
+  .duo-doubles.warn { border: 1px solid var(--dusk); background: var(--dusk-soft); }
+  .duo-doubles .glyph { font-weight: 700; }
+  .duo-doubles.ok .glyph { color: var(--jade-bright); }
+  .duo-doubles.warn .glyph { color: var(--dusk); }
+  .mvchip { display: inline-flex; align-items: center; gap: 4px; margin: 0 10px 2px 0; white-space: nowrap; cursor: pointer; }
+  .mvchip .tyicon { width: 32px; height: 16px; }
+  #tip { position: fixed; z-index: 10000; display: none; pointer-events: none; max-width: 280px; padding: 6px 10px;
+         background: var(--paper-0); border: 1px solid var(--rule); color: var(--ink-dim); font-size: 12px; line-height: 1.45; }
+  #tip b { color: var(--ink); }
+
+  .mu-wrap { overflow-x: auto; }
+  table.mu { width: auto; border-collapse: separate; border-spacing: 2px; font-family: var(--f-mono); font-size: 11px; }
+  table.mu th { padding: 0; background: none; border: 0; }
+  table.mu th .tyicon { width: 32px; height: 16px; }
+  table.mu .mu-name { font-family: var(--f-serif); font-style: italic; font-size: 13px; color: var(--ink); text-transform: none; letter-spacing: 0; text-align: right; padding-right: 8px; white-space: nowrap; font-weight: 400; }
+  table.mu td { width: 32px; height: 22px; padding: 0; text-align: center; border: 0; border-radius: 3px; background: var(--paper-1); color: var(--ink-mut); cursor: default; }
+  table.mu td.weak { background: rgba(232,165,48,0.28); color: var(--ink); }
+  table.mu td.res { background: rgba(46,176,112,0.22); color: var(--ink); }
+  table.mu td.imm { background: rgba(46,176,112,0.5); color: var(--ink); font-weight: 700; }
+
+  /* Double Battles */
+  .leads { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; margin: 4px 0 16px; }
+  .leads .lbl { font-family: var(--f-mono); font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-mut); }
+  .lead { display: inline-flex; align-items: center; border: 1px solid var(--rule); background: var(--paper-2); padding: 2px 10px 2px 4px; }
+  .lead .plus { color: var(--ink-mut); margin: 0 6px 0 -2px; }
+  .team { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 14px; margin: 8px 0 20px; }
+  .tm { border: 1px solid var(--rule); background: var(--paper-2); padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .tm-meta { display: flex; flex-wrap: wrap; gap: 2px 12px; font-family: var(--f-mono); font-size: 10px; color: var(--ink-dim); margin-top: 3px; align-items: center; }
+  .tm-meta .it-name { font-family: var(--f-mono); font-weight: 400; color: var(--ink-dim); font-size: 10px; gap: 2px; }
+  .tm-meta .it-name img { width: 20px; height: 20px; }
+  .tgt { font-family: var(--f-mono); font-size: 8px; font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase; color: var(--jade-bright); border: 1px solid var(--rule); padding: 0 4px; margin-left: 6px; vertical-align: middle; text-decoration: none; display: inline-block; }
+  .mv-how a.xl { font-family: var(--f-mono); }
+  .monlist { margin: 4px 0 16px; }
+  .stat-tag { color: var(--jade-bright); border: 1px solid var(--jade-bright); padding: 0 5px; }
+  .alt-flag { font-family: var(--f-mono); font-size: 8px; font-weight: 400; letter-spacing: 0.08em; color: var(--dusk); border: 1px solid var(--dusk); padding: 0 4px; margin-left: 6px; vertical-align: middle; text-decoration: none; display: inline-block; }
+  .mv-name.has-alt { text-decoration-color: var(--dusk); }
+
   #btn-back {
     display: none; align-items: center; gap: 8px; margin-bottom: 20px; padding: 7px 14px;
     border: 1px solid var(--rule); background: transparent; color: var(--jade-bright);
@@ -751,6 +1183,11 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
     #btn-back { display: inline-flex; }
     #page h2 { font-size: 40px; }
     .cards { grid-template-columns: 1fr; }
+    .duo-grid { grid-template-columns: 1fr; }
+    .team { grid-template-columns: 1fr; }
+    .duo-side + .duo-side { border-left: 0; padding-left: 0; border-top: 1px solid var(--rule); padding-top: 14px; }
+    .bneck-row { grid-template-columns: 1fr; }
+    .duo-meter { grid-template-columns: auto 1fr auto; }
   }
 </style>
 </head>
@@ -759,7 +1196,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
 <div id="sidebar">
   <div id="sidebar-header">
     <h1>Field Guide</h1>
-    <span class="volume">Vol. IV · Trades · Gifts · Rematches · Thief</span>
+    <span class="volume">Vol. IV · Trades · Gifts · Rematches · Thief · Coverage · Doubles</span>
   </div>
   <div id="page-list"></div>
 </div>
@@ -851,6 +1288,61 @@ function cell(c) {
   return c.html !== undefined ? c.html : c.text;
 }
 
+function tyIcon(t) { return `<img class="tyicon" src="${SPRITES['type:' + t] || ''}" alt="${t}" title="${t[0] + t.slice(1).toLowerCase()}">`; }
+function monChip(m) { return `<span class="monchip" data-tip="${m.name}">${img(m.sprite, m.name)}${xlink('pokedex', m.sp, m.name)}</span>`; }
+function renderMember(x) {
+  return `<div class="tm">
+    <div class="duo-mon">${img(x.sprite, x.name)}<div><div class="card-title">${xlink('pokedex', x.sp, x.name)}</div>
+      <div class="duo-types">${x.types.map(tyIcon).join('')}</div>
+      <div class="tm-meta"><span>${x.ability}</span><span class="it-name">${img(x.item.icon, x.item.name)}${xlink('bag', x.item.key, x.item.name)}</span><span>${x.nature}</span>${x.stat ? `<span class="stat-tag">${x.stat}</span>` : ''}</div></div></div>
+    <div class="duo-moves">${x.moves.map(m => `<div class="duo-move">
+      ${tyIcon(m.type)}<span class="mv-name${m.tip ? ' has-alt' : ''}" data-move="${m.name}"${m.tip ? ` data-tip="${m.tip.replace(/"/g, '&quot;')}"` : ''}>${m.name}${m.tip ? `<span class="alt-flag">⚑ ${m.alt}</span>` : ''}${m.target ? `<span class="tgt">${m.target}</span>` : ''}</span>
+      <span class="mv-pow">${m.power}</span>
+      <span class="mv-how">${m.how}</span></div>`).join('')}</div>
+    ${x.note ? `<div class="note">${x.note}</div>` : ''}
+  </div>`;
+}
+function renderMatchups(mu) {
+  const lab = x => x === 0 ? '0' : x >= 4 ? '4×' : x >= 2 ? '2×' : x <= 0.25 ? '¼' : x <= 0.5 ? '½' : '';
+  const cls = x => x === 0 ? 'imm' : x > 1 ? 'weak' : x < 1 ? 'res' : '';
+  const word = x => x === 0 ? 'immune' : x > 1 ? `weak (${lab(x)})` : x < 1 ? `resists (${lab(x)})` : 'neutral';
+  return `<div class="mu-wrap"><table class="mu"><thead><tr><th></th>${mu.types.map(t => `<th>${tyIcon(t)}</th>`).join('')}</tr></thead><tbody>
+    ${mu.rows.map((row, i) => `<tr><th class="mu-name">${mu.names[i]}</th>${row.map((x, j) =>
+      `<td class="${cls(x)}" data-tip="<b>${mu.names[i]}</b> vs ${mu.types[j][0] + mu.types[j].slice(1).toLowerCase()}: ${word(x)}">${lab(x)}</td>`).join('')}</tr>`).join('')}
+  </tbody></table></div>`;
+}
+function renderDuo(d) {
+  const side = s => `<div class="duo-side">
+    <div class="duo-mon">${img(s.mon.sprite, s.mon.name)}<div><div class="card-title">${xlink('pokedex', s.mon.sp, s.mon.name)}</div>
+      <div class="duo-types">${s.types.map(tyIcon).join('')}</div><div class="dim">${s.ability}</div></div></div>
+    <div class="duo-moves">${s.moves.map(m => `<div class="duo-move">
+      ${tyIcon(m.type)}<span class="mv-name" data-move="${m.name}">${m.name}</span>
+      <span class="mv-pow">${m.power}${m.stab ? '<span class="stab">STAB</span>' : ''}</span>
+      <span class="mv-how">${m.how}</span></div>`).join('')}</div></div>`;
+  const pct = 100 * d.hit / d.total;
+  return `<div class="duo">
+    <div class="duo-grid">${side(d.a)}${side(d.b)}</div>
+    ${d.matchups ? renderMatchups(d.matchups) : ''}
+    <div class="duo-meter" data-tip="${d.hit} of ${d.total} hittable species">
+      <span class="lbl">Coverage</span><span class="bar-track"><span class="bar-fill" style="width:${pct.toFixed(2)}%"></span></span>
+      <span class="bar-n">${d.hit}/${d.total}</span></div>
+    <div class="duo-miss"><span class="lbl">Misses</span>${d.missed.slice(0, 14).map(monChip).join('')}${d.missed.length > 14 ? `<span class="dim" data-tip="${d.missed.slice(14).map(m => m.name).join(', ')}">+${d.missed.length - 14} more</span>` : ''}</div>
+    <div class="duo-doubles ${d.doubles.ok ? 'ok' : 'warn'}"><span class="glyph">${d.doubles.ok ? '✓' : '⚠'}</span><span>${d.doubles.html}</span></div>
+  </div>`;
+}
+const tip = document.createElement('div');
+tip.id = 'tip';
+document.body.appendChild(tip);
+document.addEventListener('mousemove', e => {
+  const t = e.target.closest('[data-tip]');
+  if (!t) { tip.style.display = 'none'; return; }
+  tip.innerHTML = t.dataset.tip;
+  tip.style.display = 'block';
+  const r = tip.getBoundingClientRect();
+  tip.style.left = Math.min(e.clientX + 14, window.innerWidth - r.width - 8) + 'px';
+  tip.style.top = (e.clientY + 18 + r.height > window.innerHeight ? e.clientY - r.height - 10 : e.clientY + 18) + 'px';
+});
+
 function renderBlock(b) {
   switch (b.type) {
     case 'p': return `<p class="p">${b.html}</p>`;
@@ -861,6 +1353,34 @@ function renderBlock(b) {
       return `<div class="tbl-wrap"><table><thead><tr>${b.head.map(h => `<th>${h}</th>`).join('')}</tr></thead>
         <tbody>${b.rows.map(r => `<tr>${r.map(c => `<td>${cell(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
     case 'itemfinder': return renderFinder(b);
+    case 'stats':
+      return `<div class="stats">${b.items.map(it => `<div class="stat">
+        <div class="stat-v">${it.value}</div><div class="stat-l">${it.label}</div>
+        ${it.mons ? `<div class="stat-mons">${it.mons.map(monChip).join('')}</div>` : ''}</div>`).join('')}</div>`;
+    case 'bars': {
+      const max = Math.max(...b.rows.map(r => r.n));
+      return `<div class="bars" role="table" aria-label="Species hit super effectively per attacking type">${b.rows.map(r => {
+        const pct = (100 * r.n / b.total).toFixed(1);
+        return `<div class="bar-row" role="row" data-tip="<b>${r.label}</b> hits ${r.n} of ${b.total} species super effectively (${pct}%)">
+          <span class="bar-type" role="rowheader">${tyIcon(r.type)}</span>
+          <span class="bar-track"><span class="bar-fill" style="width:${(100 * r.n / max).toFixed(2)}%"></span></span>
+          <span class="bar-n" role="cell">${r.n}</span></div>`;
+      }).join('')}</div>`;
+    }
+    case 'bottlenecks':
+      return `<div class="bneck">${b.items.map(g => `<div class="bneck-row">
+        <div class="bneck-type">${g.types.map(tyIcon).join('<span>or</span>')}</div>
+        <div class="bneck-mons">${g.mons.map(monChip).join('')}</div></div>`).join('')}</div>`;
+    case 'typesets':
+      return `<div class="typesets">${b.sets.map(set => `<div class="typeset">${set.map(tyIcon).join('')}</div>`).join('')}
+        ${b.note ? `<div class="typeset-note">${b.note} ${b.mons.map(monChip).join('')}</div>` : ''}</div>`;
+    case 'monlist': return `<div class="bneck-mons monlist">${b.mons.map(monChip).join('')}</div>`;
+    case 'leads':
+      return `<div class="leads"><span class="lbl">Suggested leads</span>${b.leads.map(pair => `<span class="lead">${pair.map(monChip).join('<span class="plus">+</span>')}</span>`).join('')}</div>`;
+    case 'team':
+      return `<div class="team">${b.members.map(renderMember).join('')}</div>`;
+    case 'duos':
+      return `<div class="duos">${b.items.map(renderDuo).join('')}</div>`;
     case 'cards':
       return `<div class="cards">${b.items.map(it => `<div class="card">
         <div class="card-head">
@@ -882,7 +1402,8 @@ function selectPage(id) {
   currentPage = id;
   renderList();
   document.getElementById('page').innerHTML =
-    `<div class="kicker">${p.section} · ${p.kicker}</div><h2>${p.title}</h2>` + p.blocks.map(renderBlock).join('');
+    (`<div class="kicker">${p.section} · ${p.kicker}</div><h2>${p.title}</h2>` + p.blocks.map(renderBlock).join(''))
+      .replace(/src="TYPEICON:(\w+)"/g, (_, t) => `src="${SPRITES['type:' + t]}"`);
   if (isMobile()) {
     document.getElementById('sidebar').classList.add('hidden');
     document.getElementById('main').classList.remove('hidden');

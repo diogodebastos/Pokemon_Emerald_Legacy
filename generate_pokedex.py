@@ -1049,6 +1049,25 @@ def build_data():
 
     build_auto_obtain_notes(entries_by_key, raw_evos, reverse_evo)
 
+    # Suggested movesets (movesets.py). Deoxys forms get their own; cosmetic Castform forms share.
+    import movesets
+    def moveset_json(key):
+        r = movesets.suggest(key)
+        if not r:
+            return None
+        return {
+            'role': r['role'],
+            'source': r['source'],
+            'moves': [{'name': fmt_move('MOVE_' + m['move']), 'type': m['type'], 'power': m['power'],
+                       'accuracy': m['accuracy'], 'how': m['how'], 'tags': m['tags']} for m in r['moves']],
+        }
+    for entry in pokemon_list:
+        entry['moveset'] = moveset_json(entry['key'])
+        for f in entry.get('forms') or []:
+            form_key = entry['key'] if f['name'] == 'Normal' else f"{entry['key']}_{f['name'].upper()}"
+            if form_key != entry['key'] and form_key in FORM_OF:
+                f['moveset'] = moveset_json(form_key)
+
     pokemon_list.sort(key=lambda p: p['dexNum'])
     print(f"  Total: {len(pokemon_list)} Pokémon")
     return pokemon_list, move_info, ability_info
@@ -1890,6 +1909,12 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
     font-style: normal !important;
   }
 
+  .ms-source { font-size: 13px; line-height: 1.6; color: var(--ink-dim); margin: 0 0 12px; max-width: 80ch; }
+  .ms-how { font-family: var(--f-mono); font-size: 10px; color: var(--ink-mut); margin-right: 8px; }
+  .ms-tag {
+    display: inline-block; font-family: var(--f-mono); font-size: 9px; padding: 1px 6px; margin: 2px 4px 2px 0;
+    letter-spacing: 0.08em; text-transform: uppercase; color: var(--jade-bright); border: 1px solid rgba(46,176,112,0.4);
+  }
   .src-badge {
     display: inline-block;
     font-family: var(--f-mono);
@@ -2523,6 +2548,8 @@ function renderDetail(p, formIdx, shiny) {
         </div>
       </div>
     </div>
+
+    ${buildMoveset(src.moveset || p.moveset)}
   `;
   startSpriteAnim(src.animFrames || p.animFrames || 1);
 }
@@ -2596,6 +2623,29 @@ function buildAllTab(p) {
     <thead><tr><th>Technique</th><th>Type</th><th>Pwr</th><th>Acc</th><th>Source</th></tr></thead>
     <tbody>${rows}</tbody>
   </table>`;
+}
+
+function buildMoveset(ms) {
+  if (!ms || !ms.moves.length) return '';
+  const rows = ms.moves.map(m => {
+    const color = TYPE_COLORS[m.type] || '#888';
+    return `<tr>
+      <td><span data-move="${m.name}" class="all-move-name">${m.name}</span></td>
+      <td><span class="all-type" style="background:${color}">${m.type}</span></td>
+      <td class="all-stat">${m.power > 1 ? m.power : (m.power === 1 ? 'varies' : '—')}</td>
+      <td class="all-stat">${m.accuracy > 0 ? m.accuracy + '%' : '—'}</td>
+      <td><span class="ms-how">${m.how}</span>${m.tags.map(t => `<span class="ms-tag">${t}</span>`).join('')}</td>
+    </tr>`;
+  }).join('');
+  const source = ms.source
+    ? `Hand-picked set from the <a class="xl" data-app="guide" data-key="${ms.source.id}">${ms.source.team}</a> team in the Guide (${ms.role}).`
+    : `${ms.role}. Picked automatically for double battles from moves this Pokémon can really learn: its strongest same-type attack, attacks chosen for type coverage, and one support slot (Protect, Fake Out, Spore, Follow Me or a setup move).`;
+  return `<div class="section-title" style="margin-top:28px">Suggested Moveset</div>
+    <p class="ms-source">${source}</p>
+    <table class="level-table all-table ms-table">
+      <thead><tr><th>Technique</th><th>Type</th><th>Pwr</th><th>Acc</th><th>How to learn · Notes</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
 }
 
 function switchTab(btn, tabId) {
