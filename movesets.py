@@ -129,6 +129,10 @@ def _curated():
     for t in dt.TEAMS:
         for x in t['members']:
             out.setdefault(x['sp'], (t, x))
+    for t in dt.TEAMS:                       # variant line-ups only fill species no main team uses
+        for v in t.get('variants') or []:
+            for x in v['members']:
+                out.setdefault(x['sp'], (t, x))
     return out
 
 

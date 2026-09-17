@@ -839,14 +839,15 @@ def build_doubles_pages():
     # Region-locked teams: prove every member really is from that region's dex range.
     dex_order = pdx.parse_national_dex_order(os.path.join(BASE, 'include/constants/pokedex.h'))
     for t in dt.TEAMS:
-        if not t.get('region'):
-            continue
-        label, lo, hi, *exempt = t['region']
-        exempt = set(exempt[0]) if exempt else set()
-        for x in t['members']:
-            n = dex_order.get(x['sp'])
-            if x['sp'] not in exempt and not (n and lo <= n <= hi):
-                raise ValueError(f"{t['id']}: {x['sp']} (#{n}) is not a {label} Pokémon ({lo}-{hi})")
+        for group in [t] + list(t.get('variants') or []):
+            if not group.get('region'):
+                continue
+            label, lo, hi, *exempt = group['region']
+            exempt = set(exempt[0]) if exempt else set()
+            for x in group['members']:
+                n = dex_order.get(x['sp'])
+                if x['sp'] not in exempt and not (n and lo <= n <= hi):
+                    raise ValueError(f"{t['id']}: {x['sp']} (#{n}) is not a {label} Pokémon ({lo}-{hi})")
 
     STAT_LABEL = dict(hp='HP', atk='Attack', def_='Defense', spa='Sp. Atk', spd='Sp. Def', spe='Speed')
     team_pages = []
@@ -861,6 +862,11 @@ def build_doubles_pages():
             dict(type='p', html=t['blurb']),
             dict(type='leads', leads=[[dict(sprite='mon:' + s, sp=s, name=name(s)) for s in pair] for pair in t['leads']]),
             dict(type='team', members=members),
+        ] + [b for v in (t.get('variants') or []) for b in (
+            dict(type='h', text=v['name']),
+            dict(type='p', html=v['blurb']),
+            dict(type='team', members=[member(x) for x in v['members']]),
+        )] + [
             dict(type='p', html='<span class="dim">Every move, ability and item here was checked against this hack’s data. '
                                 'Egg moves can be taught by the ' + dt.RELEARNER + ', and a working breeding father is listed when one exists. A ⚑ marks an egg move that breeding can’t deliver: hover it for the fallback. Tutors in this hack teach any number of times, and the Battle Frontier tutors are free.</span>'),
         ]))
