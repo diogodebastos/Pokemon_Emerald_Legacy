@@ -437,6 +437,10 @@ ITEM_DISPLAY = {
     'ITEM_BRICK_PIECE':     'Brick Piece',
 }
 
+def _item_link(param):
+    from site_shared import xl
+    return xl('bag', param, ITEM_DISPLAY.get(param, param.replace('ITEM_', '').replace('_', ' ').title()))
+
 def fmt_evo_method(method, param):
     if method == 'EVO_LEVEL':
         return f'Lv. {param}'
@@ -449,7 +453,7 @@ def fmt_evo_method(method, param):
     if method == 'EVO_LEVEL_ATK_EQ_DEF':
         return f'Lv. {param} (ATK = DEF)'
     if method == 'EVO_ITEM':
-        return 'Use ' + ITEM_DISPLAY.get(param, param.replace('ITEM_', '').replace('_', ' ').title())
+        return 'Use ' + _item_link(param)
     if method == 'EVO_FRIENDSHIP':
         return 'Friendship'
     if method == 'EVO_FRIENDSHIP_DAY':
@@ -484,7 +488,7 @@ def _evo_phrase(method, param):
                  'EVO_LEVEL_SHEDINJA': ' (with a free party slot and a spare Poké Ball)'}.get(method, '')
         return f'at level {param}{extra}'
     if method == 'EVO_ITEM':
-        return 'with a ' + ITEM_DISPLAY.get(param, param.replace('ITEM_', '').replace('_', ' ').title())
+        return 'with a ' + _item_link(param)
     if method == 'EVO_FRIENDSHIP':
         return 'with high friendship'
     if method == 'EVO_FRIENDSHIP_DAY':
@@ -496,13 +500,18 @@ def _evo_phrase(method, param):
     if method == 'EVO_TRADE':
         return 'by trading it'
     if method == 'EVO_TRADE_ITEM':
-        return 'by trading it while it holds a ' + ITEM_DISPLAY.get(param, param.replace('ITEM_', '').replace('_', ' ').title())
+        return 'by trading it while it holds a ' + _item_link(param)
     return fmt_evo_method(method, param).lower()
 
 
 def build_auto_obtain_notes(entries_by_key, raw_evos, reverse_evo):
+    from site_shared import xl
+
     def name(k):
         return entries_by_key[k]['name']
+
+    def link(k):
+        return xl('pokedex', k, f'<b>{name(k)}</b>')
 
     memo = {}
     def obtainable(k, seen=()):
@@ -532,16 +541,16 @@ def build_auto_obtain_notes(entries_by_key, raw_evos, reverse_evo):
             parts.append(GIFT_OBTAIN[k])
         for r in reverse_evo.get(k, []):
             if r['key'] in entries_by_key:
-                parts.append(f'Evolve <b>{name(r["key"])}</b> {_evo_phrase(r["method"], r["param"])}.')
+                parts.append(f'Evolve {link(r["key"])} {_evo_phrase(r["method"], r["param"])}.')
         if not reverse_evo.get(k):
             parents = [d for d in descendants(k) if obtainable(d)]
             if parents:
-                who = ' or '.join(f'<b>{name(d)}</b>' for d in parents)
+                who = ' or '.join(link(d) for d in parents)
                 line = f'{"You can also breed" if parts else "Breed"} {who} at {DAY_CARE} (with a Ditto or a compatible partner). The Egg hatches into {e["name"]}'
                 if k in INCENSE_BABIES:
                     inc = INCENSE_BABIES[k]
                     line += (f', but only if one parent is holding a <b>{inc}</b>; without it you get '
-                             f'{name(parents[0])} instead. {inc} is {INCENSE_SHOPS}.')
+                             f'{link(parents[0])} instead. {xl("bag", "ITEM_" + inc.upper().replace(" ", "_"), inc)} is {INCENSE_SHOPS}.')
                 else:
                     line += '.'
                 parts.append(line)
@@ -597,6 +606,7 @@ EVENT_ENCOUNTERS = {
     'RAYQUAZA':  [{'map': 'Sky Pillar',         'method': 'Event', 'minLvl': 70, 'maxLvl': 70, 'postgame': False}],
     'DEOXYS':    [{'map': 'Birth Island',       'method': 'Event', 'minLvl': 30, 'maxLvl': 30, 'postgame': True}],
     # Feebas lives on hidden Route 119 fishing tiles (src/wild_encounter.c), not in wild_encounters.json
+    'SUDOWOODO': [{'map': 'Battle Frontier',    'method': 'Event', 'minLvl': 40, 'maxLvl': 40, 'postgame': True}],
     'FEEBAS':    [{'map': 'Route 119',          'method': 'Fishing', 'minLvl': 20, 'maxLvl': 25, 'postgame': False}],
 }
 
@@ -608,6 +618,8 @@ _WEATHER_CAVE = ('After the Hall of Fame (and once you have Castform), talk to t
                  'to track the abnormal weather. The first cave to appear is random; after it, the other one opens. '
                  '<b>One chance only</b>: the event ends whether you catch it or knock it out.')
 SPECIES_NOTES = {
+    'SUDOWOODO': ('The odd tree blocking a path in the east side of the <b>Battle Frontier</b> (Lv.40). Water it with the '
+                  '<b>Wailmer Pail</b> to start the battle. There is only one, so save before you try to catch it.'),
     'FEEBAS': ('Fish on Route 119 with any rod (Lv.20–25). Feebas only bites on 6 secret water tiles out of hundreds, '
                'and those tiles move whenever the Dewford trendy phrase changes. Each cast on a right tile has a 50% chance. '
                'To find them, we recommend <a href="https://mucksw.github.io/Feebas-Tile-Calculator/" target="_blank" '
@@ -2220,7 +2232,9 @@ document.addEventListener('mouseout', e => {
 
 document.addEventListener('touchstart', e => {
   const el = e.target.closest('[data-move]');
+  if (el && tt.dataset.cur === el.dataset.move && tt.style.display === 'block') return;  // 2nd tap → click opens Moves
   if (el) {
+    tt.dataset.cur = el.dataset.move;
     e.preventDefault();
     clearTimeout(ttTimeout);
     const t = e.touches[0];
@@ -2593,6 +2607,11 @@ function switchTab(btn, tabId) {
 
 const indexedData = DATA.map((p, i) => ({...p, _origIdx: i}));
 renderList(indexedData);
+registerApp('pokedex', key => {
+  const k = String(key).toUpperCase();
+  const i = DATA.findIndex(p => p.key === k || p.name.toUpperCase() === k);
+  if (i >= 0) selectPokemon(i);
+});
 </script>
 </body>
 </html>
@@ -2605,7 +2624,8 @@ def generate():
     move_json = json.dumps(move_info, ensure_ascii=False, separators=(',', ':'))
     ability_json = json.dumps(ability_info, ensure_ascii=False, separators=(',', ':'))
 
-    html = HTML_TEMPLATE.replace('POKEMON_DATA_PLACEHOLDER', data_json)
+    import site_shared
+    html = site_shared.inject(HTML_TEMPLATE).replace('POKEMON_DATA_PLACEHOLDER', data_json)
     html = html.replace('MOVE_INFO_PLACEHOLDER', move_json)
     html = html.replace('ABILITY_INFO_PLACEHOLDER', ability_json)
 

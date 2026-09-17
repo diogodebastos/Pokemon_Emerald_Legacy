@@ -250,8 +250,12 @@ def parse_item_names(path):
     result = {}
     for m in re.finditer(r'\[ITEM_(\w+)\]\s*=\s*\{.*?\.name\s*=\s*_\("([^"]*)"\)',
                          content, re.DOTALL):
+        key, raw = m.group(1), _clean_text('"' + m.group(2) + '"')
+        if re.match(r'[TH]M_', key):  # ITEM_TM_FOCUS_PUNCH named "TM01" -> "TM01 Focus Punch"
+            result[key] = raw.upper() + ' ' + pdx.fmt_move('MOVE_' + key[3:])
+            continue
         # str.title() capitalises after apostrophes ("King'S Rock"); undo that
-        result[m.group(1)] = re.sub(r"'S\b", "'s", _clean_text('"' + m.group(2) + '"').title())
+        result[key] = re.sub(r"'S\b", "'s", raw.title())
     return result
 
 def item_display(const, item_names):
@@ -406,7 +410,7 @@ def parse_trainer_locations(maps_dir):
     idx = {}
     for f in glob.glob(os.path.join(maps_dir, '*', 'scripts.inc')):
         pretty = prettify_map(os.path.basename(os.path.dirname(f)))
-        for m in re.finditer(r'trainerbattle\w*\s+(TRAINER_\w+)', open(f).read()):
+        for m in re.finditer(r'trainerbattle\w*\s+(?:TRAINER_BATTLE_\w+\s*,\s*)?(TRAINER_\w+)', open(f).read()):
             idx.setdefault(m.group(1), [])
             if pretty not in idx[m.group(1)]:
                 idx[m.group(1)].append(pretty)
@@ -446,6 +450,13 @@ def build_data():
 
     print('Parsing trainer locations...')
     locations = parse_trainer_locations(os.path.join(BASE, 'data/maps'))
+    # Rematch teams have no trainerbattle of their own: they're fought where the first team is.
+    import site_shared
+    rematch_base, _ = site_shared.parse_rematch_tables()
+    for tid, base in rematch_base.items():
+        if tid not in locations and base in locations:
+            locations[tid] = locations[base]
+    unused = []
     print(f'  {len(locations)} trainers placed in maps')
 
     print('Parsing base stats (for abilities)...')
@@ -530,6 +541,7 @@ def build_data():
                 'shiny': mon['shiny'],
                 'level': mon['level'],
                 'heldItem': item_display(mon['heldItem'], item_names),
+                'heldItemKey': mon['heldItem'],
                 'ability': resolve_ability(skey, mon['abilitySlot']),
                 'nature': mon['nature'],
                 'iv': mon['iv'],
@@ -537,6 +549,10 @@ def build_data():
                 'moves': [pdx.fmt_move(mv) for mv in mon['moves']],
             })
 
+        if t['id'] not in locations and t['id'] not in SPECIAL_TRAINER_IDS:
+            unused.append(t['id'])  # no map ever battles this team (e.g. the Evergrande rival teams)
+            continue
+        bag_keys = [c for c in t['itemConsts'] if item_display(c, item_names)]
         bag = [item_display(c, item_names) for c in t['itemConsts']]
         bag = [x for x in bag if x]
 
@@ -560,6 +576,7 @@ def build_data():
             'picKey': t['picKey'] if (t['picKey'] in trainer_pics) else None,
             'double': t['double'],
             'bag': bag,
+            'bagKeys': bag_keys,
             'location': locations.get(t['id'], []),
             'note': trainer_note(t['id'].replace('TRAINER_', ''), cat),
             'party': party,
@@ -567,6 +584,8 @@ def build_data():
 
     if missing_pics:
         print(f'  WARNING: missing pics for {sorted(missing_pics)}')
+    if unused:
+        print(f'  skipped {len(unused)} unused teams: {sorted(unused)}')
 
     trainers = list(groups.values())
     # order + label variants within each group
@@ -1008,7 +1027,7 @@ function renderDetail(t, vIdx) {
   const badges = [];
   if (v.double) badges.push('<span class="badge double">Double Battle</span>');
   const bagRow = v.bag.length
-    ? `<div class="badges bag-row">${v.bag.map(it => `<span class="badge bag">${it}</span>`).join('')}</div>`
+    ? `<div class="badges bag-row">${v.bag.map((it, i) => `<a class="badge bag xl" data-app="bag" data-key="${v.bagKeys[i]}">${it}</a>`).join('')}</div>`
     : '';
 
   const btn = (vv, i) => `<button class="variant-btn${i === vIdx ? ' active' : ''}" onclick="switchVariant(${i})">${vv.label}</button>`;
@@ -1044,7 +1063,7 @@ function renderDetail(t, vIdx) {
         const meta = [];
         if (m.ability) meta.push(`<div><span class="k">Ability</span> <span class="ability"${m.ability.key ? ` data-ability="${m.ability.key}"` : ''}>${m.ability.name}</span></div>`);
         if (m.nature) meta.push(`<div><span class="k">Nature</span> ${m.nature}</div>`);
-        if (m.heldItem) meta.push(`<div><span class="k">Held</span> ${m.heldItem}</div>`);
+        if (m.heldItem) meta.push(`<div><span class="k">Held</span> <a class="xl" data-app="bag" data-key="${m.heldItemKey}">${m.heldItem}</a></div>`);
         const moves = m.moves.length
           ? `<div class="mon-moves">${m.moves.map(mv => `<span class="pill" data-move="${mv}">${mv}</span>`).join('')}</div>`
           : '<span class="empty-msg">No set moves</span>';
@@ -1053,7 +1072,7 @@ function renderDetail(t, vIdx) {
           <div class="mon-head">
             ${sprite ? `<img src="${sprite}" alt="${m.name}">` : '<div style="width:56px;height:56px"></div>'}
             <div>
-              <div class="mon-name">${m.name}</div>
+              <div class="mon-name">${m.speciesKey === 'MR_MIMIC' ? m.name : `<a class="xl" data-app="pokedex" data-key="${m.speciesKey}">${m.name}</a>`}</div>
               ${m.nickname ? `<div class="mon-nick">"${m.nickname}"</div>` : ''}
               <div class="mon-lvl">Lv ${m.level}${m.shiny ? '<span class="star">★</span>' : ''}</div>
             </div>
@@ -1089,6 +1108,15 @@ function renderDetail(t, vIdx) {
 
 const indexed = DATA.map((t, i) => { t._idx = i; return t; });
 renderList(indexed);
+registerApp('trainers', key => {
+  const k = String(key).toUpperCase().replace(/^TRAINER_/, '');
+  for (let i = 0; i < DATA.length; i++) {
+    const v = DATA[i].variants.findIndex(vv => vv.id === k);
+    if (v >= 0) { selectTrainer(i); if (v) switchVariant(v); return; }
+  }
+  const i = DATA.findIndex(t => t.name.toUpperCase() === k);
+  if (i >= 0) selectTrainer(i);
+});
 </script>
 </body>
 </html>
@@ -1100,7 +1128,8 @@ def generate():
     def dump(o):
         return json.dumps(o, ensure_ascii=False, separators=(',', ':'))
 
-    html = HTML_TEMPLATE
+    import site_shared
+    html = site_shared.inject(HTML_TEMPLATE)
     html = html.replace('TRAINER_DATA_PLACEHOLDER', dump(trainers))
     html = html.replace('SPECIES_SPRITES_PLACEHOLDER', dump(species_sprites))
     html = html.replace('TRAINER_PICS_PLACEHOLDER', dump(trainer_pics))

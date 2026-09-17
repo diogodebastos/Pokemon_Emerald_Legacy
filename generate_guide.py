@@ -95,8 +95,8 @@ POST_GIFTS = [
     dict(sp='SQUIRTLE', lvl='5', where="Birch's Lab — your rival",
          req=f'After Charmander, pick up all <b>16 hidden Heart Scales</b>: {_HEART_SCALES}.'),
     dict(sp='SNORLAX', lvl='25', where='Trainer Hill (Route 111)',
-         req='Clear <b>Expert</b> mode. Snorlax is handed over on the clear <i>after</i> your first Expert clear, '
-             'so a second Expert run always gets it.'),
+         req='Clear <b>Expert</b> mode. The owner hands Snorlax over the <i>next</i> time you claim a prize on the roof '
+             '(any mode), not on the Expert clear itself.'),
     dict(sp='EEVEE', lvl='25', where='Trick House (Route 110)',
          req='Finish the final Trick House puzzle (needs the Hall of Fame). If your party and PC are full, collect it at the entrance later.'),
     dict(sp='PORYGON', lvl='25', where='Mauville Game Corner',
@@ -187,7 +187,7 @@ def build_pages(br_groups):
     leader_rows = []
     for lid, (t2, reward) in tdx._GYM_LEADERS.items():
         leader_rows.append([
-            dict(sprite='tr:' + LEADER_PICS[lid], text=LEADER_NAMES.get(lid, lid.title())),
+            dict(sprite='tr:' + LEADER_PICS[lid], text=LEADER_NAMES.get(lid, lid.title()), link=['trainers', lid + '_2' if t2 else lid + '_3']),
             dict(text=t2 or 'Skipped. Juan only returns after the Hall of Fame, so his next fight is Team 3.'),
             dict(text=reward),
         ])
@@ -220,11 +220,11 @@ def build_pages(br_groups):
                             'and <b>Wallace</b> replaces Steven as the Champion. The League resets each time you enter the '
                             'Hall of Fame, so you can challenge it again and again.'),
         dict(type='table', head=['Trainer', 'Rematch'], rows=[
-            [dict(sprite='tr:elite_four_sidney', text='Sidney'), dict(html='Double battle (a single battle if you have only one usable Pokémon).')],
-            [dict(sprite='tr:elite_four_phoebe', text='Phoebe'), dict(html='Double battle (a single battle if you have only one usable Pokémon).')],
-            [dict(sprite='tr:elite_four_glacia', text='Glacia'), dict(html='Double battle.')],
-            [dict(sprite='tr:elite_four_drake', text='Drake'), dict(html='Double battle.')],
-            [dict(sprite='tr:champion_wallace', text='Wallace'), dict(html='Champion on every run after your first.')],
+            [dict(sprite='tr:elite_four_sidney', text='Sidney', link=['trainers', 'SIDNEY_2']), dict(html='Double battle (a single battle if you have only one usable Pokémon).')],
+            [dict(sprite='tr:elite_four_phoebe', text='Phoebe', link=['trainers', 'PHOEBE_2']), dict(html='Double battle (a single battle if you have only one usable Pokémon).')],
+            [dict(sprite='tr:elite_four_glacia', text='Glacia', link=['trainers', 'GLACIA_2']), dict(html='Double battle.')],
+            [dict(sprite='tr:elite_four_drake', text='Drake', link=['trainers', 'DRAKE_2']), dict(html='Double battle.')],
+            [dict(sprite='tr:champion_wallace', text='Wallace', link=['trainers', 'WALLACE_2']), dict(html='Champion on every run after your first.')],
         ]),
         dict(type='p', html='Every Hall of Fame entry also brings back any legendaries you knocked out instead of catching '
                             '(Mew, Latias/Latios, Deoxys, Lugia, Ho-Oh, Mewtwo, the legendary beasts and birds).'),
@@ -232,11 +232,11 @@ def build_pages(br_groups):
     pages.append(dict(id='rematch-others', section='Rematches', title='Wally, Steven & Zinnia',
         kicker='Post-game rivals', blocks=[
         dict(type='table', head=['Trainer', 'Where', 'How to battle'], rows=[
-            [dict(sprite='tr:wally', text='Wally'), dict(text='Victory Road exit'),
+            [dict(sprite='tr:wally', text='Wally', link=['trainers', 'WALLY_VR_2']), dict(text='Victory Road exit'),
              dict(html=tdx.TRAINER_NOTES['WALLY_VR_2'] + ' ' + tdx.TRAINER_NOTES['WALLY_VR_3'])],
-            [dict(sprite='tr:steven', text='Steven'), dict(text="Meteor Falls — Steven's Cave"),
+            [dict(sprite='tr:steven', text='Steven', link=['trainers', 'STEVEN_2']), dict(text="Meteor Falls — Steven's Cave"),
              dict(html=tdx.TRAINER_NOTES['STEVEN_2'])],
-            [dict(sprite='tr:zinnia', text='Zinnia'), dict(text='Sky Pillar'),
+            [dict(sprite='tr:zinnia', text='Zinnia', link=['trainers', 'ZINNIA']), dict(text='Sky Pillar'),
              dict(html=tdx.TRAINER_NOTES['ZINNIA'])],
             [dict(text='Craig, Weebra & Smith'), dict(text='Cave of Origin B1F'),
              dict(html='A trio of developers. Clearing Trainer Hill on <b>Expert</b> opens the Cave of Origin. '
@@ -276,184 +276,12 @@ def build_pages(br_groups):
 
 
 
-# ---------------------------------------------------------------------------
-# Where to use Thief — every trainer party with held items (src/data/trainer_parties.h).
-# Thief/Covet (EFFECT_THIEF) steals permanently in normal trainer battles; blocked only in
-# Trainer Hill, by Sticky Hold, on Mail / Enigma Berry, or if the user already holds an item
-# (src/battle_script_commands.c MOVE_EFFECT_STEAL_ITEM).
-# ---------------------------------------------------------------------------
-import re
-
-_LEAGUE_REPEAT = {'SIDNEY_2', 'PHOEBE_2', 'GLACIA_2', 'DRAKE_2', 'WALLACE_2'}
-
-
-def _all_trainers():
-    content = open(os.path.join(BASE, 'src/data/trainers.h')).read()
-    chunks = re.split(r'\[(TRAINER_\w+)\]\s*=\s*', content)
-    out = []
-    for i in range(1, len(chunks) - 1, 2):
-        tid, body = chunks[i], chunks[i + 1]
-        if tid.endswith(('_SINGLE', '_PLACEHOLDER')) or tid in ('TRAINER_NONE', 'TRAINER_BATTLE_ROYALE_MR_MIMIC'):
-            continue
-        cls = re.search(r'\.trainerClass\s*=\s*TRAINER_CLASS_(\w+)', body)
-        party = re.search(r'\.party\s*=\s*TRAINER_MON\((\w+)\)', body)
-        if not cls or not party:
-            continue
-        name = re.search(r'\.trainerName\s*=\s*_\("([^"]*)"\)', body)
-        pic = re.search(r'\.trainerPic\s*=\s*TRAINER_PIC_(\w+)', body)
-        out.append(dict(id=tid, cls=cls.group(1), name=name.group(1) if name else '',
-                        pic=pic.group(1) if pic else None, party=party.group(1).replace('sParty_', '')))
-    return out
-
-
-def _rematch_tables():
-    src = open(os.path.join(BASE, 'src/battle_setup.c')).read()
-    base_of, last = {}, set()
-    for m in re.finditer(r'\[REMATCH_\w+\]\s*=\s*REMATCH\(([^)]*)\)', src):
-        ids = [x.strip() for x in m.group(1).split(',')][:-1]
-        for x in ids:
-            base_of.setdefault(x, ids[0])
-        last.add(ids[-1])
-    return base_of, last
-
-
-# Rough story order of trainer maps (prefix match, longest wins) for the chronological sort.
-MAP_PROGRESSION = [
-    'Littleroot Town', 'Route 101', 'Oldale Town', 'Route 103', 'Route 102', 'Petalburg City', 'Route 104',
-    'Petalburg Woods', 'Rustboro City', 'Rustboro City Gym', 'Route 116', 'Rusturf Tunnel', 'Dewford Town',
-    'Dewford Town Gym', 'Granite Cave', 'Route 109', 'Slateport City', 'Slateport City Oceanic Museum',
-    'Route 110', 'Route 110 Trick House', 'Mauville City', 'Mauville City Gym', 'Route 117', 'Verdanturf Town',
-    'Route 111', 'Route 112', 'Route 113', 'Fallarbor Town', 'Route 114', 'Meteor Falls 1F', 'Mt Chimney',
-    'Jagged Pass', 'Lavaridge Town', 'Lavaridge Town Gym', 'Petalburg City Gym', 'Route 105', 'Route 106',
-    'Route 107', 'Route 108', 'Abandoned Ship', 'Route 118', 'Route 119', 'Route 119 Weather Institute',
-    'Route 120', 'Fortree City', 'Fortree City Gym', 'Route 121', 'Route 122', 'Mt Pyre', 'Route 123',
-    'Lilycove City', 'Magma Hideout', 'Aqua Hideout', 'Route 124', 'Mossdeep City', 'Mossdeep City Gym',
-    'Route 125', 'Mossdeep City Space Center', 'Route 126', 'Route 127', 'Route 128', 'Seafloor Cavern',
-    'Sootopolis City', 'Sootopolis City Gym', 'Route 129', 'Route 130', 'Route 131', 'Pacifidlog Town',
-    'Route 132', 'Route 133', 'Route 134', 'Sealed Chamber', 'Victory Road', 'Ever Grande City',
-    # post-game areas
-    'SSTidal', 'Battle Frontier', 'Meteor Falls Stevens Cave', 'Sky Pillar Top', 'Marine Cave', 'Terra Cave',
-    'Cave Of Origin',
-]
-POSTGAME_MAPS = ('SSTidal', 'Battle Frontier', 'Meteor Falls Stevens Cave', 'Sky Pillar Top', 'Marine Cave',
-                 'Terra Cave', 'Cave Of Origin', 'Route 110 Trick House Puzzle 8')
-POSTGAME_IDS = {'SIDNEY_2', 'PHOEBE_2', 'GLACIA_2', 'DRAKE_2', 'WALLACE_2', 'STEVEN_2', 'ZINNIA'}
-
-
-def map_rank(loc):
-    best, rank = -1, len(MAP_PROGRESSION)
-    for i, pre in enumerate(MAP_PROGRESSION):
-        if loc.startswith(pre) and len(pre) > best:
-            best, rank = len(pre), i
-    return rank
-
-
-# Importance tiers for held items (opinionated: competitive value in Gen 3 first).
-ITEM_TIERS = [
-    ('S', ['Leftovers', 'Choice Band', 'Lum Berry']),
-    ('A', ['Salac Berry', 'Liechi Berry', 'Petaya Berry', 'Starf Berry', 'Apicot Berry', 'Ganlon Berry',
-           'Light Ball', 'Thick Club', 'Soul Dew', 'Deepseatooth', 'Deepseascale', 'Shell Bell', "King's Rock",
-           'Scope Lens', 'Focus Band', 'Brightpowder', 'White Herb', 'Quick Claw', 'Sitrus Berry']),
-    ('B', ['Nugget', 'Charcoal', 'Mystic Water', 'Magnet', 'Miracle Seed', 'Nevermeltice', 'Black Belt',
-           'Soft Sand', 'Sharp Beak', 'Twistedspoon', 'Silverpowder', 'Hard Stone', 'Spell Tag', 'Blackglasses',
-           'Silk Scarf', 'Lax Incense', 'Sun Stone']),
-    ('C', ['Chesto Berry', 'Wiki Berry', 'Aguav Berry', 'Figy Berry', 'Persim Berry', 'Leppa Berry', 'Oran Berry']),
-]
-ITEM_IMPORTANCE = {}
-for _tier, _names in ITEM_TIERS:
-    for _n in _names:
-        ITEM_IMPORTANCE[_n] = (_tier, len(ITEM_IMPORTANCE))
-
-
-def load_item_icon_b64(const):
-    """ITEM_LEFTOVERS -> base64 PNG of its bag icon, palette applied, index 0 transparent."""
-    from PIL import Image
-    global _ICON_FILES
-    if '_ICON_FILES' not in globals():
-        gfx = open(os.path.join(BASE, 'src/data/graphics/items.h')).read()
-        sym_file = dict(re.findall(r'(gItemIcon(?:Palette)?_\w+)\[\]\s*=\s*INCBIN_U32\("([^"]+)"\)', gfx))
-        table = open(os.path.join(BASE, 'src/data/item_icon_table.h')).read()
-        _ICON_FILES = {}
-        for item, icon, pal in re.findall(r'\[(ITEM_\w+)\]\s*=\s*\{(\w+),\s*(\w+)\}', table):
-            if icon in sym_file and pal in sym_file:
-                _ICON_FILES[item] = (sym_file[icon].split('.')[0] + '.png', sym_file[pal].split('.')[0] + '.pal')
-    if const not in _ICON_FILES:
-        return ''
-    png, pal = (os.path.join(BASE, f) for f in _ICON_FILES[const])
-    img = Image.open(png)
-    if img.mode == 'P' and os.path.exists(pal):
-        colors = [tuple(int(x) for x in l.split()) for l in open(pal).read().splitlines()[3:] if len(l.split()) == 3]
-        flat = img.getpalette()
-        for i, c in enumerate(colors[:16]):
-            flat[i * 3:i * 3 + 3] = list(c)
-        img.putpalette(flat)
-        img.info['transparency'] = 0
-    return pdx._img_to_b64(img.convert('RGBA'))
+from thief_data import (collect_entries, ITEM_IMPORTANCE, MAP_PROGRESSION, map_rank)
+from site_shared import load_item_icon_b64, xl
 
 
 def build_thief_pages(tdex_groups):
-    parties = tdx.parse_parties(os.path.join(BASE, 'src/data/trainer_parties.h'))
-    class_names = tdx.parse_class_names(os.path.join(BASE, 'src/data/text/trainer_class_names.h'))
-    item_names = tdx.parse_item_names(os.path.join(BASE, 'src/data/items.h'))
-    pics = tdx.parse_trainer_pics(os.path.join(BASE, 'src/data/trainer_graphics/front_pic_tables.h'),
-                                  os.path.join(BASE, 'src/data/graphics/trainers.h'))
-    locations = tdx.parse_trainer_locations(os.path.join(BASE, 'data/maps'))
-    base_of, last_rematch = _rematch_tables()
-    leader_team5 = {f'TRAINER_{l}_5' for l in tdx._GYM_LEADERS}
-
-    br_ids = {'TRAINER_' + v['id'] for g in tdex_groups for v in g['variants']
-              if tdx.trainer_note(v['id'], g['category']) == tdx.BATTLE_ROYALE_NOTE}
-    entries = []
-    item_const = {}
-    for t in _all_trainers():
-        consts = [m['heldItem'] for m in parties.get(t['party'], [])
-                  if tdx.item_display(m['heldItem'], item_names)]
-        items = [tdx.item_display(c, item_names) for c in consts]
-        for c, n in zip(consts, items):
-            item_const[n] = c
-        if not items:
-            continue
-        locs = locations.get(t['id']) or locations.get(base_of.get(t['id'], ''), [])
-        if not locs:
-            continue  # unused / unreachable team
-        short = t['id'].replace('TRAINER_', '')
-        if t['id'] in leader_team5:
-            repeat = 'Gym Team 5: rebattle any time'
-        elif short in _LEAGUE_REPEAT:
-            repeat = 'Every League run after becoming Champion'
-        elif t['id'] == 'TRAINER_GRINDING_NURSE':
-            repeat = 'Rebattle any time'
-        elif t['id'] in last_rematch and t['id'] not in base_of.values() or t['id'] == 'TRAINER_WALLY_VR_5':
-            repeat = 'Match Call rematch: their final team repeats'
-        else:
-            repeat = ''
-        cls = class_names.get(t['cls'], t['cls'].replace('_', ' '))
-        cls = ' '.join(w[:1].upper() + w[1:].lower() for w in cls.split())
-        nm = t['name'].title() if t['name'].isupper() else t['name']
-        plain = ('pkmn trainer', 'pokémon trainer', 'leader', 'elite four', 'champion')
-        label = nm if (not nm or cls.lower() in plain) else f'{cls} {nm}'
-        # Tell apart the several teams of the same trainer
-        team = re.search(r'_(\d+)$', short)
-        if short in _LEAGUE_REPEAT:
-            label += ' (Champion)' if short == 'WALLACE_2' else ' (Rematch)'
-        elif team and (t['id'] in base_of or short.startswith('BRAWLY_1_')):
-            label += ' (Team ' + '.'.join(re.findall(r'_(\d+)', short)) + ')'
-        counts = {}
-        for it in items:
-            counts[it] = counts.get(it, 0) + 1
-        # Chronology: story fights, then in-story Match Call rematches, then post-game fights.
-        team_n = int(team.group(1)) if team else 1
-        if (short in POSTGAME_IDS or short.startswith(('WALLY_VR_', 'JUAN_')) and short != 'WALLY_VR_1'
-                or any(l.startswith(POSTGAME_MAPS) for l in locs)
-                or (t['id'] in base_of and short.split('_')[0] in {k.split('_')[0] for k in tdx._GYM_LEADERS} and team_n >= 3)):
-            phase = 2
-        elif t['id'] in base_of and t['id'] not in base_of.values():
-            phase = 1
-        else:
-            phase = 0
-        chrono = phase * 10000 + min(map_rank(l) for l in locs) * 10 + min(team_n, 9)
-        entries.append(dict(id=short, label=label or cls, cls=cls, locs=locs, repeat=repeat, counts=counts,
-                            pic=pics.get(t['pic']), chrono=chrono, phase=phase, br=t['id'] in br_ids))
+    entries, item_const = collect_entries(tdex_groups)
 
     how = dict(id='thief-how', section='Where to Use Thief', title='How Thief Works',
         kicker='Steal held items from trainers', blocks=[
@@ -489,7 +317,8 @@ def build_thief_pages(tdex_groups):
                             'rematches at random as you walk around; once you have beaten their last team, it repeats on every later rematch. '
                             'Your PokéNav shows who is ready.'),
         dict(type='table', head=['Trainer', 'Where', 'How it repeats', 'Held items'], rows=[
-            [dict(sprite=('tr:' + e['pic']) if e['pic'] else None, text=e['label']),
+            [dict(sprite=('tr:' + e['pic']) if e['pic'] else None, text=e['label'],
+                  link=['trainers', e['tv']] if e['tv'] else None),
              dict(text=', '.join(e['locs'])), dict(text=e['repeat']),
              dict(items=[dict(name=k, n=v, icon='item:' + item_const[k]) for k, v in sorted(e['counts'].items())])]
             for e in farm]),
@@ -504,7 +333,8 @@ def build_thief_pages(tdex_groups):
         tier, imp = ITEM_IMPORTANCE.get(it, ('C', 999))
         items.append(dict(name=it, icon='item:' + item_const[it], tier=tier, imp=imp,
                           count=sum(n for _, n in holders),
-                          holders=[dict(label=e['label'], n=n, locs=', '.join(e['locs']), repeat=bool(e['repeat']),
+                          key=item_const[it],
+                          holders=[dict(label=e['label'], n=n, tv=e['tv'], locs=', '.join(e['locs']), repeat=bool(e['repeat']),
                                         chrono=e['chrono'], post=e['phase'] == 2, br=e['br']) for e, n in holders]))
     finder = dict(id='thief-items', section='Where to Use Thief', title='Item Finder',
         kicker='Who holds what', blocks=[
@@ -517,10 +347,192 @@ def build_thief_pages(tdex_groups):
     return [how, farms, finder]
 
 
+
+# ---------------------------------------------------------------------------
+# Battle Frontier & Trainer Hill — src/frontier_util.c, src/trainer_hill.c,
+# data/maps/BattleFrontier_*/scripts.inc, src/data/battle_frontier/trainer_hill.h
+# ---------------------------------------------------------------------------
+NATURES = ['Hardy', 'Lonely', 'Brave', 'Adamant', 'Naughty', 'Bold', 'Docile', 'Relaxed', 'Impish', 'Lax',
+           'Timid', 'Hasty', 'Serious', 'Jolly', 'Naive', 'Modest', 'Mild', 'Quiet', 'Bashful', 'Rash',
+           'Calm', 'Gentle', 'Sassy', 'Careful', 'Quirky']
+HILL_MODES = ['Normal', 'Variety', 'Unique', 'Expert']
+# Prize per clear time (trainer_hill.c GetPrizeItemId; list chosen per mode from the fixed trainer data)
+HILL_PRIZES = {
+    'Normal':  ['ITEM_RARE_CANDY', 'ITEM_SAFARI_BALL', 'ITEM_PP_UP', 'ITEM_ELIXIR', 'ITEM_ETHER', 'ITEM_RED_SHARD'],
+    'Variety': ['ITEM_PP_MAX', 'ITEM_SAFARI_BALL', 'ITEM_PP_UP', 'ITEM_ELIXIR', 'ITEM_ETHER', 'ITEM_BLUE_SHARD'],
+    'Unique':  ['ITEM_SACRED_ASH', 'ITEM_SAFARI_BALL', 'ITEM_PP_UP', 'ITEM_ELIXIR', 'ITEM_ETHER', 'ITEM_GREEN_SHARD'],
+    'Expert':  ['ITEM_MASTER_BALL', 'ITEM_SAFARI_BALL', 'ITEM_PP_UP', 'ITEM_ELIXIR', 'ITEM_ETHER', 'ITEM_YELLOW_SHARD'],
+}
+HILL_TIMES = ['Under 12:00', '12:00–12:59', '13:00–13:59', '14:00–15:59', '16:00–17:59', '18:00 or more']
+
+
+def parse_trainer_hill():
+    """-> {mode: [floor: [trainer: {name, cls, mons:[{sp, item, moves, nature}]}]]}.
+    Trainer 1 on a floor uses mons[0..2], trainer 2 uses mons[3..5] (trainer_hill.c sTrainerPartySlots)."""
+    import re
+    text = open(os.path.join(BASE, 'src/data/battle_frontier/trainer_hill.h')).read()
+    out = {}
+    for mode in HILL_MODES:
+        start = text.index(f'sFloors_{mode}[]')
+        nxt = [text.find(f'sChallenge_{m}', start) for m in HILL_MODES]
+        end = min([n for n in nxt if n > start] + [len(text)])
+        block = text[start:end]
+        floors = []
+        for fchunk in re.split(r'\n    \[\d+\] =', block)[1:]:
+            trainers = []
+            names = list(re.finditer(r'\.name = _\("([^"]*)"\),\s*\.facilityClass = FACILITY_CLASS_(\w+)', fchunk))
+            for ti, nm in enumerate(names):
+                tend = names[ti + 1].start() if ti + 1 < len(names) else len(fchunk)
+                tchunk = fchunk[nm.end():tend]
+                slots = {}
+                for m in re.finditer(r'\[(\d)\]\s*=\s*\{\s*\.species = SPECIES_(\w+),\s*\.heldItem = (ITEM_\w+),'
+                                     r'\s*\.moves = \{([^}]*)\}(.*?)\.personality = (0x[0-9A-Fa-f]+|\d+)', tchunk, re.S):
+                    slots[int(m.group(1))] = dict(
+                        sp=m.group(2), item=m.group(3),
+                        moves=[pdx.fmt_move(x.strip()) for x in m.group(4).split(',') if x.strip() and x.strip() != 'MOVE_NONE'],
+                        nature=NATURES[int(m.group(6), 0) % 25])
+                wanted = range(0, 3) if ti == 0 else range(3, 6)
+                cls = ' '.join(w.capitalize() for w in nm.group(2).split('_') if w not in ('M', 'F'))
+                trainers.append(dict(name=nm.group(1).title(), cls=cls, mons=[slots[i] for i in wanted if i in slots]))
+            if trainers:
+                floors.append(trainers)
+        out[mode] = floors
+    return out
+
+
+def build_frontier_pages(item_names):
+    def item(c):
+        return dict(name=tdx.item_display(c, item_names), n=1, icon='item:' + c)
+
+    S = 'Battle Frontier & Trainer Hill'
+    pages = []
+    pages.append(dict(id='frontier-start', section=S, title='Getting to the Frontier', kicker='Post-game', blocks=[
+        dict(type='list', items=[
+            'After the Hall of Fame, your Dad gives you the <b>S.S. Ticket</b>. Take the S.S. Tidal from Slateport or Lilycove.',
+            'Meet <b>Scott</b> on the ship. After that, the Battle Frontier is a destination; you get the <b>Frontier Pass</b> at the reception gate.',
+            '<b>Level modes:</b> in Lv.50 mode opponents are level 50; in Open Level they match your highest party level (minimum 60).',
+            'Every facility awards <b>Battle Points (BP)</b> for each completed challenge, plus <b>+10 BP</b> for beating a Frontier Brain (capped at 9,999).',
+        ]),
+        dict(type='h', text='Banned Pokémon'),
+        dict(type='p', html='Mewtwo, Ho-Oh, Lugia, Kyogre, Groudon, Rayquaza, Deoxys (Normal) and Deoxys (Attack) can’t enter. '
+                            'Unlike vanilla Emerald, <b>Mew, Celebi, Jirachi, Deoxys (Defense) and Deoxys (Speed) are allowed</b>, '
+                            'so the mythicals you find have somewhere to battle.'),
+        dict(type='h', text='Symbols'),
+        dict(type='p', html='Beat a facility’s Frontier Brain once for its <b>Silver Symbol</b> and again for the <b>Gold Symbol</b>. '
+                            'Brains can show up in singles and doubles in this version (vanilla: singles only). '
+                            'After you own both symbols, the Brain keeps coming back at the same streak intervals.'),
+        dict(type='callout', html='Collect all seven <b>Silver Symbols</b> and <b>talk to Scott</b>: that unlocks the gym leaders’ '
+                                  '<a onclick="selectPage(\'rematch-gym\')">Team 4 rematches</a> and <b>Mewtwo</b> in Altering Cave.'),
+    ]))
+    pages.append(dict(id='frontier-facilities', section=S, title='Facilities', kicker='7 challenges', blocks=[
+        dict(type='table', head=['Facility', 'Rules', 'Brain', 'Modes', 'Brain appears at', 'BP per challenge'], rows=[
+            [dict(html='<b>Battle Tower</b>'), dict(text='Rounds of 7 battles with 3 Pokémon (4 in doubles).'),
+             dict(text='Anabel'), dict(text='Single, Double, Multi, Link Multi'),
+             dict(text='Battle 35 (Silver), 70 (Gold), then every 35'), dict(text='Singles 1 → 15, Doubles 2 → 15, Multi 3 → 15')],
+            [dict(html='<b>Battle Dome</b>'), dict(text='4-round tournaments; pick 2 of your 3 Pokémon for each match.'),
+             dict(text='Tucker'), dict(text='Single, Double'),
+             dict(text='5th tournament (Silver), 10th (Gold), then every 5'), dict(text='1, 1, 2, 2, 3, 3 … → 15')],
+            [dict(html='<b>Battle Palace</b>'), dict(text='7 battles; your Pokémon pick their own moves based on their nature.'),
+             dict(text='Spenser'), dict(text='Single, Double'),
+             dict(text='Battle 21 (Silver), 42 (Gold), then every 21'), dict(text='Singles 4 → 15, Doubles 5 → 15')],
+            [dict(html='<b>Battle Arena</b>'), dict(text='7 battles, 1-on-1; judged on Mind, Skill and Body after 3 turns.'),
+             dict(text='Greta'), dict(text='Single'),
+             dict(text='Battle 28 (Silver), 56 (Gold), then every 28'), dict(text='1, 1, 1, 2, 2, 2, 3 … → 15')],
+            [dict(html='<b>Battle Factory</b>'), dict(text='7 battles with rental Pokémon; swap one after each win.'),
+             dict(text='Noland'), dict(text='Single, Double'),
+             dict(text='Battle 21 (Silver), 42 (Gold), then every 21'), dict(text='Singles 3 → 15, Doubles 4 → 15')],
+            [dict(html='<b>Battle Pike</b>'), dict(text='14 rooms per challenge; choose 1 of 3 doors each time.'),
+             dict(text='Lucy'), dict(text='Single'),
+             dict(text='Room 28 (Silver), 140 (Gold), then every 56'), dict(text='1, 1, 2, 2, 2, 4, 4, 4, 8 … → 12')],
+            [dict(html='<b>Battle Pyramid</b>'), dict(text='7 floors to explore with a separate bag; no outside items.'),
+             dict(text='Brandon'), dict(text='Single'),
+             dict(text='After floor 21 (Silver), 70 (Gold), then every 35'), dict(text='5, 5, 6, 6, 7 … → 15')],
+        ]),
+        dict(type='p', html='“Brain appears at” counts your current win streak in that facility and mode. '
+                            'The overworld Anabel, Tucker, Spenser, Greta, Noland, Lucy and Brandon on Hoenn’s routes are '
+                            '<a onclick="selectPage(\'rematch-br\')">Battle Royale trainers</a> with different teams.'),
+    ]))
+    bp_rows = [
+        ['Vitamins', [('ITEM_PROTEIN', 1), ('ITEM_CALCIUM', 1), ('ITEM_IRON', 1), ('ITEM_ZINC', 1), ('ITEM_CARBOS', 1), ('ITEM_HP_UP', 1), ('ITEM_RARE_CANDY', 24)]],
+        ['Held items', [('ITEM_LEFTOVERS', 48), ('ITEM_WHITE_HERB', 48), ('ITEM_QUICK_CLAW', 48), ('ITEM_MENTAL_HERB', 48),
+                        ('ITEM_BRIGHT_POWDER', 64), ('ITEM_CHOICE_BAND', 64), ('ITEM_KINGS_ROCK', 64), ('ITEM_FOCUS_BAND', 64),
+                        ('ITEM_SCOPE_LENS', 64), ('ITEM_METAL_COAT', 64)]],
+        ['Berries', [('ITEM_LIECHI_BERRY', 48), ('ITEM_GANLON_BERRY', 48), ('ITEM_SALAC_BERRY', 48), ('ITEM_PETAYA_BERRY', 48),
+                     ('ITEM_APICOT_BERRY', 48), ('ITEM_POMEG_BERRY', 3), ('ITEM_KELPSY_BERRY', 3), ('ITEM_QUALOT_BERRY', 3),
+                     ('ITEM_HONDEW_BERRY', 3), ('ITEM_GREPA_BERRY', 3), ('ITEM_TAMATO_BERRY', 3)]],
+    ]
+    pages.append(dict(id='frontier-rewards', section=S, title='Rewards & Battle Points', kicker='Scott · Exchange · Tutors', blocks=[
+        dict(type='h', text="Scott's House"),
+        dict(type='table', head=['When', 'Reward'], rows=[
+            [dict(text='First visit'), dict(text='1–4 BP, depending on how often you met Scott during the story')],
+            [dict(text='All 7 Silver Symbols'), dict(items=[item('ITEM_LANSAT_BERRY')] + [dict(name=tdx.item_display(c, item_names), n=5, icon='item:' + c) for c in
+                ('ITEM_HP_UP', 'ITEM_PROTEIN', 'ITEM_IRON', 'ITEM_CALCIUM', 'ITEM_ZINC', 'ITEM_CARBOS', 'ITEM_PP_UP')])],
+            [dict(text='All 7 Gold Symbols'), dict(html='<b>Starf Berry</b> and a <b>shiny Beldum</b> (Lv.5)')],
+            [dict(text='Battle Tower singles streak 50 / 100'), dict(text='Silver Shield / Gold Shield decorations')],
+        ]),
+        dict(type='h', text='Exchange Service Corner (BP)'),
+        dict(type='table', head=['Clerk', 'Prizes'], rows=[
+            [dict(text=name), dict(items=[dict(name=f'{tdx.item_display(c, item_names)} · {bp} BP', n=1, icon='item:' + c) for c, bp in lst])]
+            for name, lst in bp_rows] + [[dict(text='Decorations'), dict(text='Dolls, cushions and posters (16–100 BP)')]]),
+        dict(type='callout', html='<b>Move tutors in Lounge 7 are free</b> in this version, even though the menu still shows the old '
+                                  '16 / 24 / 48 BP prices. They teach Softboiled, Seismic Toss, Dream Eater, Mega Punch, Mega Kick, Body Slam, '
+                                  'Rock Slide, Counter, Thunder Wave, Swords Dance, Defense Curl, Snore, Mud-Slap, Swift, Icy Wind, Endure, '
+                                  'Psych Up, Ice Punch, ThunderPunch and Fire Punch.'),
+        dict(type='h', text='Around the Frontier'),
+        dict(type='list', items=[
+            '<b>Frontier Mart</b> (money): Ultra Balls, healing items, all six vitamins and 20 TMs, including Psychic, Flamethrower, Ice Beam, Thunderbolt, Earthquake, Calm Mind, Bulk Up and Dragon Claw.',
+            '<b>Lounge 1</b>: a Breeder rates your Pokémon’s best IV. <b>Lounge 5</b> explains how natures behave in the Battle Palace.',
+            '<b>Lounge 3</b>: bet 5, 10 or 15 BP on another trainer’s challenge.',
+            'In-game trades for Meowth, Seedot and Plusle (see <a onclick="selectPage(\'trades-npc\')">NPC Trades</a>).',
+            'A strange tree on the east side is a <a class="xl" data-app="pokedex" data-key="SUDOWOODO">Sudowoodo</a> (Lv.40). Water it with the Wailmer Pail.',
+        ]),
+    ]))
+    prize_rows = []
+    for ti, t in enumerate(HILL_TIMES):
+        prize_rows.append([dict(text=t)] + [dict(items=[item(HILL_PRIZES[m][ti])]) for m in HILL_MODES])
+    pages.append(dict(id='trainer-hill', section=S, title='Trainer Hill', kicker='Route 111', blocks=[
+        dict(type='list', items=[
+            'Opens after the Hall of Fame. Four modes: <b>Normal, Variety, Unique and Expert</b>. Each has 4 floors with 2 trainers per floor.',
+            'Opponents match your <b>highest party level</b>. You earn no EXP inside, and <b>Thief, Covet and Trick can’t take items</b> here.',
+            'At the roof, the owner gives <b>one prize per run</b>, based on your clear time. Your best time per mode is recorded.',
+        ]),
+        dict(type='h', text='Prize by clear time'),
+        dict(type='table', head=['Time'] + HILL_MODES, rows=prize_rows),
+        dict(type='callout', html='A sub-12-minute <b>Expert</b> clear gives a <b>Master Ball</b> every time.'),
+        dict(type='h', text='Expert rewards'),
+        dict(type='list', items=[
+            '<b><a class="xl" data-app="pokedex" data-key="SNORLAX">Snorlax</a></b> (Lv.25): clearing Expert readies it, and the owner hands it over the <b>next time</b> you claim a prize on the roof (any mode).',
+            'Clearing Expert also opens the <b>Cave of Origin</b> developer trio (below).',
+        ]),
+        dict(type='h', text='Cave of Origin: Craig, Weebra & Smith'),
+        dict(type='table', head=['Order', 'Trainer', 'Team (Lv.70, double battle)', 'Reward'], rows=[
+            [dict(text='1'), dict(text='Craig'), dict(text='Meganium, Aerodactyl, Milotic, Rayquaza, Jolteon, Arcanine'), dict(text='Registeel Doll · reveals Weebra')],
+            [dict(text='2'), dict(text='Weebra'), dict(text='Jirachi, Ludicolo, Gengar, Metagross, Latios, Hitmontop'), dict(text='Regice Doll · reveals Smith')],
+            [dict(text='3'), dict(text='Smith'), dict(text='Kyogre, Zapdos, Starmie, Raikou, Suicune, Gengar'), dict(text='Regirock Doll')],
+        ]),
+    ]))
+    hill = parse_trainer_hill()
+    team_blocks = [dict(type='p', html='The fixed teams for every Trainer Hill mode. Levels scale to your highest party level. '
+                                       'Hover over a Pokémon to see its moves.')]
+    for mode in HILL_MODES:
+        team_blocks.append(dict(type='h', text=mode))
+        rows = []
+        for fi, floor in enumerate(hill[mode]):
+            for t in floor:
+                rows.append([dict(text=f'Floor {fi + 1}'), dict(html=f'<b>{t["name"]}</b><br><span class="dim">{t["cls"]}</span>'),
+                             dict(mons=[dict(sp=m['sp'], sprite='mon:' + m['sp'], name=pdx.species_display_name(m['sp']),
+                                             item=tdx.item_display(m['item'], item_names), icon='item:' + m['item'] if m['item'] != 'ITEM_NONE' else None,
+                                             moves=m['moves'], nature=m['nature']) for m in t['mons']])])
+        team_blocks.append(dict(type='table', head=['Floor', 'Trainer', 'Team'], rows=rows))
+    pages.append(dict(id='trainer-hill-teams', section=S, title='Trainer Hill Teams', kicker='All 4 modes', blocks=team_blocks))
+    return pages
+
+
 def build_data():
     with contextlib.redirect_stdout(io.StringIO()):
         trainers, _, trainer_pics, _, _ = tdx.build_data()
-    pages = build_pages(trainers) + build_thief_pages(trainers)
+    item_names = tdx.parse_item_names(os.path.join(BASE, 'src/data/items.h'))
+    pages = build_pages(trainers) + build_thief_pages(trainers) + build_frontier_pages(item_names)
 
     # Collect every sprite reference used by the pages and bake it once.
     refs = set()
@@ -703,6 +715,10 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
   td .ent { display: flex; align-items: center; gap: 8px; white-space: nowrap; font-family: var(--f-serif); font-style: italic; font-size: 15px; color: var(--ink); }
   td .ent img { width: 40px; height: 40px; image-rendering: pixelated; }
   td .dim { color: var(--ink-mut); font-size: 12px; }
+  .mons { display: flex; flex-wrap: wrap; gap: 4px 14px; }
+  .mon { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; line-height: 1.25; }
+  .mon > img { width: 40px; height: 40px; image-rendering: pixelated; }
+  .mon .dim img { width: 18px; height: 18px; vertical-align: middle; image-rendering: pixelated; }
   .chip { display: inline-flex; align-items: center; gap: 2px; margin: 0 8px 2px 0; white-space: nowrap; }
   .chip img, .it-name img { width: 24px; height: 24px; image-rendering: pixelated; }
   .it-name { display: flex; align-items: center; gap: 6px; font-weight: 600; color: var(--ink); white-space: nowrap; }
@@ -780,8 +796,12 @@ function renderList() {
   list.innerHTML = html;
 }
 
+function xlink(app, key, label) {
+  return key ? `<a class="xl" data-app="${app}" data-key="${key}">${label}</a>` : label;
+}
+function monKey(sprite) { return sprite && /^(mon|shiny):/.test(sprite) && !/:EGG$/.test(sprite) ? sprite.split(':')[1] : null; }
 function chip(it) {
-  return `<span class="chip">${img(it.icon, it.name)}${it.name}${it.n > 1 ? ' ×' + it.n : ''}</span>`;
+  return `<span class="chip">${img(it.icon, it.name)}${xlink('bag', it.icon && it.icon.slice(5), it.name)}${it.n > 1 ? ' ×' + it.n : ''}</span>`;
 }
 
 let finderSort = 'importance';
@@ -812,18 +832,22 @@ function renderFinder(b) {
       <button class="sort-btn${finderBR ? ' active' : ''}" style="margin-left:auto" onclick="setFinderBR(${!finderBR})">${finderBR ? '☑' : '☐'} Battle Royale trainers</button></div>
     <div class="tbl-wrap"><table><thead><tr><th>Item</th><th>Tier</th><th>Copies</th><th>Steal from</th></tr></thead><tbody>
     ${items.map(it => `<tr>
-      <td><span class="it-name">${img(it.icon, it.name)}${it.name}</span></td>
+      <td><span class="it-name">${img(it.icon, it.name)}${xlink('bag', it.key, it.name)}</span></td>
       <td><span class="tier tier-${it.tier}">${it.tier}</span></td>
       <td>${it.count}</td>
       <td>${[...it.holders].sort(holderSort).map(h =>
-        `${h.repeat ? '↻ ' : ''}${h.label}${h.n > 1 ? ' ×' + h.n : ''}${h.post ? '<span class="pg">Post</span>' : ''}${h.br ? '<span class="pg br">BR</span>' : ''} <span class="dim">· ${h.locs}</span>`).join('<br>')}</td>
+        `${h.repeat ? '↻ ' : ''}${xlink('trainers', h.tv, h.label)}${h.n > 1 ? ' ×' + h.n : ''}${h.post ? '<span class="pg">Post</span>' : ''}${h.br ? '<span class="pg br">BR</span>' : ''} <span class="dim">· ${h.locs}</span>`).join('<br>')}</td>
     </tr>`).join('')}
     </tbody></table></div></div>`;
 }
 
 function cell(c) {
-  if ('sprite' in c) return `<span class="ent">${img(c.sprite, c.text)}${c.text}</span>`;
+  if ('sprite' in c) {
+    const link = c.link || (monKey(c.sprite) ? ['pokedex', monKey(c.sprite)] : null);
+    return `<span class="ent">${img(c.sprite, c.text)}${link ? xlink(link[0], link[1], c.text) : c.text}</span>`;
+  }
   if (c.items) return c.items.map(chip).join('');
+  if (c.mons) return `<div class="mons">${c.mons.map(m => `<span class="mon" title="${m.nature}${m.moves.length ? ' · ' + m.moves.join(', ') : ''}">${img(m.sprite, m.name)}<span>${xlink('pokedex', m.sp, m.name)}${m.item ? `<br><span class="dim">${img(m.icon, m.item)}${xlink('bag', m.icon && m.icon.slice(5), m.item)}</span>` : ''}</span></span>`).join('')}</div>`;
   return c.html !== undefined ? c.html : c.text;
 }
 
@@ -841,10 +865,10 @@ function renderBlock(b) {
       return `<div class="cards">${b.items.map(it => `<div class="card">
         <div class="card-head">
           <div class="card-sprites">${img(it.sprite, it.title)}${(it.extra || []).map(e => img(e)).join('')}</div>
-          <div><div class="card-title">${it.title}</div>${it.sub ? `<div class="card-sub">${it.sub}</div>` : ''}</div>
+          <div><div class="card-title">${(it.extra || []).length || !monKey(it.sprite) ? it.title : xlink('pokedex', monKey(it.sprite), it.title)}</div>${it.sub ? `<div class="card-sub">${it.sub}</div>` : ''}</div>
         </div>
         ${it.place ? `<div class="card-place">${it.place}</div>` : ''}
-        ${it.want ? `<div class="card-want">Trade your ${img(it.wantSprite, it.want)}<span>${it.want}</span></div>` : ''}
+        ${it.want ? `<div class="card-want">Trade your ${img(it.wantSprite, it.want)}<span>${xlink('pokedex', monKey(it.wantSprite), it.want)}</span></div>` : ''}
         ${it.rows ? `<div class="card-rows">${it.rows.map(([k, v]) => `<span class="k">${k}</span><span>${v}</span>`).join('')}</div>` : ''}
         ${it.note ? `<div class="note">${it.note}</div>` : ''}
       </div>`).join('')}</div>`;
@@ -868,7 +892,8 @@ function selectPage(id) {
 }
 
 renderList();
-if (isMobile()) { goBack(); } else { selectPage(PAGES[0].id); }
+registerApp('guide', key => selectPage(key));
+if (!currentPage && !isMobile()) selectPage(PAGES[0].id);
 </script>
 </body>
 </html>
@@ -882,7 +907,8 @@ def generate():
     def dump(o):
         return json.dumps(o, ensure_ascii=False, separators=(',', ':'))
 
-    html = HTML_TEMPLATE.replace('GUIDE_PAGES_PLACEHOLDER', dump(pages))
+    import site_shared
+    html = site_shared.inject(HTML_TEMPLATE).replace('GUIDE_PAGES_PLACEHOLDER', dump(pages))
     html = html.replace('GUIDE_SPRITES_PLACEHOLDER', dump(sprites))
 
     out_path = os.path.join(BASE, 'docs', 'guide.html')

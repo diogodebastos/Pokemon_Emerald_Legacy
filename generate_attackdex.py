@@ -481,7 +481,7 @@ function learnerCard(key, meta) {
   const s = SPECIES[key];
   return `<div class="learner">
     ${s.sprite ? `<img src="${s.sprite}" alt="${s.name}" loading="lazy">` : '<div style="width:40px;height:40px"></div>'}
-    <span style="min-width:0"><span class="ln-name">${s.name}</span><span class="ln-meta">#${String(s.dexNum).padStart(3, '0')}${meta ? ' · ' + meta : ''}</span></span>
+    <span style="min-width:0"><a class="ln-name xl" data-app="pokedex" data-key="${key}">${s.name}</a><span class="ln-meta">#${String(s.dexNum).padStart(3, '0')}${meta ? ' · ' + meta : ''}</span></span>
   </div>`;
 }
 
@@ -529,6 +529,16 @@ function renderDetail(m) {
 }
 
 applyFilters();
+registerApp('moves', key => {
+  const k = String(key).toUpperCase().replace(/[^A-Z0-9]/g, '');
+  let i = DATA.findIndex(m => m.name.toUpperCase().replace(/[^A-Z0-9]/g, '') === k);
+  if (i < 0) return;
+  if (!document.querySelector(`.mv-item[data-idx="${i}"]`)) {  // clear filters hiding it
+    document.getElementById('search').value = ''; typeSel.value = ''; document.getElementById('f-cat').value = ''; applyFilters();
+  }
+  selectMove(i);
+  const el = document.querySelector(`.mv-item[data-idx="${i}"]`); if (el) el.scrollIntoView({block: 'nearest'});
+});
 </script>
 </body>
 </html>
@@ -540,7 +550,8 @@ def generate():
     def dump(o):
         return json.dumps(o, ensure_ascii=False, separators=(',', ':'))
 
-    html = HTML_TEMPLATE
+    import site_shared
+    html = site_shared.inject(HTML_TEMPLATE)
     html = html.replace('MOVE_DATA_PLACEHOLDER', dump(moves))
     html = html.replace('SPECIES_PLACEHOLDER', dump(species))
 

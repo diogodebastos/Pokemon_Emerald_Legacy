@@ -2,742 +2,286 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Emerald Legacy — Solo Leveling Colosseum · Specimen Nº 001</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a140e">
+<title>Emerald Legacy — Solo Leveling Colosseum</title>
 <link rel="icon" type="image/png" href="safari_ball.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
 <style>
   :root {
-    /* Ink on paper — warm dark, not cold navy */
-    --paper-0: #0a140e;
-    --paper-1: #0e1b14;
-    --paper-2: #13221a;
-    --paper-3: #1a2c22;
-    --paper-4: #233829;
+    --paper-0: #0a140e; --paper-1: #0e1b14; --paper-2: #13221a; --paper-3: #1a2c22; --paper-4: #233829;
+    --ink: #ece3d0; --ink-dim: #b5a98f; --ink-mut: #7b705c; --ink-fnt: #534a3b;
+    --rule: #2d3d33; --rule-2: #1e2a23;
+    --jade: #1a8d5a; --jade-bright: #2eb070; --jade-deep: #0d6b40; --jade-soft: rgba(46,176,112,0.13);
+    --ruby: #b3272b; --dusk: #e8a530;
+    --f-serif: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+    --f-sans: 'Instrument Sans', system-ui, -apple-system, sans-serif;
+    --f-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
-    --ink:     #ece3d0;
-    --ink-dim: #b5a98f;
-    --ink-mut: #7b705c;
-    --ink-fnt: #534a3b;   /* faintest — for rules */
+    /* liquid glass */
+    --glass-fill: linear-gradient(160deg, rgba(236,227,208,0.13) 0%, rgba(236,227,208,0.05) 45%, rgba(46,176,112,0.07) 100%);
+    --glass-edge: rgba(236,227,208,0.16);
+    --glass-shadow: inset 0 1px 0 rgba(255,255,255,0.22), inset 0 -1px 0 rgba(0,0,0,0.25), 0 24px 48px -16px rgba(0,0,0,0.75);
+    --glass-blur: blur(26px) saturate(185%);
 
-    --rule:    #2d3d33;
-    --rule-2:  #1e2a23;
-
-    --jade:       #1a8d5a;   /* true Emerald jade */
-    --jade-bright:#2eb070;
-    --jade-deep:  #0d6b40;
-    --jade-soft:  rgba(46,176,112,0.13);
-
-    --ruby:    #b3272b;      /* used once — stamp */
-    --dusk:    #e8a530;      /* shiny / postgame only */
-
-    --f-serif: 'Fraunces', 'Iowan Old Style', 'Palatino', Georgia, serif;
-    --f-sans:  'Instrument Sans', 'Söhne', system-ui, -apple-system, sans-serif;
-    --f-mono:  'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-
-    --grain: url("data:image/svg+xml;utf8,<svg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.1  0 0 0 0 0.1  0 0 0 0 0.1  0 0 0 0.55 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/></svg>");
+    --dock-w: 84px;
+    --tab-h: 64px;
+    --split: 56%;
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
   html, body { height: 100%; }
-
   body {
-    font-family: var(--f-sans);
-    font-size: 14px;
-    background: var(--paper-1);
-    color: var(--ink);
-    height: 100dvh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    letter-spacing: 0.005em;
+    font-family: var(--f-sans); color: var(--ink); background: var(--paper-0);
+    overflow: hidden; -webkit-font-smoothing: antialiased; font-size: 14px;
+    display: grid; grid-template-columns: var(--dock-w) 1fr; height: 100dvh;
   }
-
-  /* global grain */
+  /* ambient backdrop so the glass has something to refract */
   body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background-image: var(--grain);
-    background-size: 240px 240px;
-    opacity: 0.35;
-    pointer-events: none;
-    mix-blend-mode: overlay;
-    z-index: 9999;
+    content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background:
+      radial-gradient(900px 600px at 0% 0%, rgba(46,176,112,0.18), transparent 60%),
+      radial-gradient(700px 500px at 100% 100%, rgba(232,165,48,0.08), transparent 60%),
+      radial-gradient(600px 600px at 40% 120%, rgba(26,141,90,0.16), transparent 60%),
+      var(--paper-0);
   }
+  button { font: inherit; color: inherit; }
 
-  /* ── Header ────────────────────────────────────────────── */
-  header {
-    position: relative;
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    align-items: baseline;
-    gap: 20px;
-    padding: 18px 28px 16px;
-    flex-shrink: 0;
-    border-bottom: 1px solid var(--rule);
-    background: var(--paper-0);
-    z-index: 2;
+  /* ── Dock ─────────────────────────────────────────── */
+  #dock {
+    position: relative; z-index: 50; margin: 12px 0 12px 12px;
+    display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 0;
+    border-radius: 24px; background: var(--glass-fill); border: 1px solid var(--glass-edge);
+    box-shadow: var(--glass-shadow); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+    overflow: visible;
   }
+  #dock::before { /* specular sheen */
+    content: ""; position: absolute; inset: 1px 1px 55% 1px; border-radius: 23px 23px 40% 40%; pointer-events: none;
+    background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0));
+  }
+  .dock-sep { width: 36px; height: 1px; background: var(--glass-edge); margin: 6px 0; flex-shrink: 0; }
+  .dock-spacer { flex: 1; }
+  .dock-btn {
+    position: relative; width: 52px; height: 52px; border: 0; background: transparent; cursor: pointer;
+    display: grid; place-items: center; border-radius: 16px; transform-origin: left center;
+    transition: transform 0.18s var(--ease), background 0.2s;
+  }
+  .dock-btn .tile {
+    width: 44px; height: 44px; border-radius: 13px; display: grid; place-items: center;
+    background: linear-gradient(160deg, rgba(236,227,208,0.16), rgba(236,227,208,0.04));
+    border: 1px solid rgba(236,227,208,0.12);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), 0 6px 14px -8px rgba(0,0,0,0.8);
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .dock-btn svg { width: 24px; height: 24px; stroke: var(--ink); fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+  .dock-btn:hover .tile { border-color: rgba(46,176,112,0.5); }
+  .dock-btn.active .tile { background: linear-gradient(160deg, rgba(46,176,112,0.42), rgba(26,141,90,0.18)); border-color: rgba(46,176,112,0.7); }
+  .dock-btn.active svg { stroke: #fff; }
+  .dock-btn::after { /* running / open indicator */
+    content: ""; position: absolute; left: -7px; top: 50%; width: 4px; height: 4px; margin-top: -2px;
+    border-radius: 50%; background: var(--ink-dim); opacity: 0; transition: opacity 0.2s;
+  }
+  .dock-btn.open::after { opacity: 0.8; }
+  .dock-btn.running::after { opacity: 1; background: var(--jade-bright); box-shadow: 0 0 8px var(--jade-bright); }
+  .dock-btn:focus-visible { outline: 2px solid var(--jade-bright); outline-offset: 2px; }
+  .tip {
+    position: absolute; left: calc(100% + 14px); top: 50%; transform: translateY(-50%) translateX(-4px);
+    white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity 0.15s, transform 0.15s;
+    font-family: var(--f-mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+    padding: 6px 10px; border-radius: 8px; color: var(--ink);
+    background: rgba(10,20,14,0.82); border: 1px solid var(--glass-edge); backdrop-filter: blur(12px);
+  }
+  .tip kbd { font-family: inherit; color: var(--ink-mut); margin-left: 6px; }
+  .dock-btn:hover .tip, .dock-btn:focus-visible .tip { opacity: 1; transform: translateY(-50%); }
+  .tab-label { display: none; }
 
-  .hdr-no {
-    font-family: var(--f-mono);
-    font-size: 10px;
-    color: var(--jade-bright);
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    white-space: nowrap;
-    align-self: center;
-  }
-  .hdr-no::before { content: "Nº "; color: var(--ink-mut); }
+  /* ── Stage ────────────────────────────────────────── */
+  #stage { position: relative; min-width: 0; min-height: 0; margin: 12px; display: grid; }
+  .app { position: relative; min-width: 0; min-height: 0; grid-area: 1 / 1; }
+  .app.off { visibility: hidden; pointer-events: none; z-index: -1; }
+  #stage.split { grid-template-columns: var(--split) 12px 1fr; }
+  #stage.split #app-play { grid-area: 1 / 1; }
+  #stage.split #divider { display: block; grid-area: 1 / 2; }
+  #stage.split #app-window { grid-area: 1 / 3; }
+  #divider { display: none; cursor: col-resize; position: relative; }
+  #divider::after { content: ""; position: absolute; left: 5px; top: 50%; height: 48px; margin-top: -24px; width: 2px; border-radius: 2px; background: var(--glass-edge); }
+  #divider:hover::after { background: var(--jade-bright); }
 
-  .hdr-mark {
-    font-family: var(--f-serif);
-    font-variation-settings: "opsz" 144, "SOFT" 40, "WONK" 1;
-    font-weight: 500;
-    font-style: italic;
-    font-size: 26px;
-    color: var(--ink);
-    letter-spacing: -0.01em;
-    line-height: 1;
-    align-self: center;
-    position: relative;
-  }
-  .hdr-mark em {
-    font-style: normal;
-    color: var(--jade-bright);
-  }
-  .hdr-sub {
-    display: block;
-    font-family: var(--f-mono);
-    font-size: 9px;
-    font-weight: 500;
-    color: var(--ink-mut);
-    letter-spacing: 0.28em;
-    text-transform: uppercase;
-    margin-top: 5px;
-    line-height: 1;
-  }
-
-  .hdr-actions { display: flex; align-items: center; gap: 6px; align-self: center; }
-
-  .btn {
-    font-family: var(--f-mono);
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    padding: 8px 14px;
-    border: 1px solid var(--rule);
-    background: transparent;
-    color: var(--ink-dim);
-    cursor: pointer;
-    text-decoration: none;
-    transition: color 0.2s, border-color 0.2s, background 0.2s;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .btn:hover { color: var(--ink); border-color: var(--ink-mut); }
-  .btn:focus-visible { outline: none; border-color: var(--jade-bright); color: var(--jade-bright); }
-
-  .btn .tick { color: var(--ink-fnt); transition: color 0.2s; }
-  .btn-ghost.active { color: var(--jade-bright); border-color: var(--jade-bright); background: var(--jade-soft); }
-  .btn-ghost.active .tick { color: var(--jade-bright); }
-
-  /* ── Stage (main area) ─────────────────────────────────── */
-  #play-section {
-    flex: 1;
-    min-height: 0;
-    position: relative;
-    display: grid;
-    grid-template-columns: 1fr minmax(0, calc((100dvh - 300px) * 1.5 + 24px)) 1fr;
-    align-items: center;
-    column-gap: 24px;
-    padding: 20px 20px 66px;
-    background: var(--paper-1);
-    overflow: hidden;
-  }
-
-  /* contour-line atmosphere */
-  #play-section::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image:
-      radial-gradient(ellipse 80% 60% at 50% 120%, rgba(26,141,90,0.10), transparent 60%),
-      repeating-linear-gradient(
-        42deg,
-        transparent 0 60px,
-        rgba(236,227,208,0.015) 60px 61px,
-        transparent 61px 120px
-      );
-    pointer-events: none;
-  }
-
-  /* LEFT GUTTER — vertical rotated classification label */
-  .rail {
-    position: relative;
-    justify-self: start;
-    align-self: stretch;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 8px;
-  }
-  .rail-text {
-    font-family: var(--f-mono);
-    font-size: 10px;
-    color: var(--ink-mut);
-    letter-spacing: 0.5em;
-    text-transform: uppercase;
-    writing-mode: vertical-rl;
-    transform: rotate(180deg);
-    white-space: nowrap;
-    padding: 10px 0;
-  }
-  .rail-text b {
-    color: var(--jade-bright);
-    font-weight: 500;
-  }
-  .rail::before,
-  .rail::after {
-    content: "";
-    position: absolute;
-    left: 50%;
-    width: 1px;
-    background: var(--rule);
-  }
-  .rail::before { top: 0;    height: 28px; }
-  .rail::after  { bottom: 0; height: 28px; }
-
-  /* CENTER — the specimen */
-  .specimen {
-    position: relative;
-    align-self: stretch;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-width: 0;
-    min-height: 0;
-  }
-
-  /* Classification stamp (rotated red mark) */
-  .stamp {
-    position: absolute;
-    top: -8px;
-    right: 10px;
-    transform: rotate(-7deg);
-    border: 2px solid var(--ruby);
-    color: var(--ruby);
-    padding: 7px 11px;
-    font-family: var(--f-mono);
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    line-height: 1.3;
-    text-align: center;
-    background: transparent;
-    pointer-events: none;
-    z-index: 4;
-    opacity: 0.82;
-    box-shadow: inset 0 0 0 1px rgba(179,39,43,0.25);
-  }
-  .stamp b { display: block; font-weight: 700; letter-spacing: 0.28em; }
-  .stamp span { display: block; color: var(--ruby); opacity: 0.75; font-size: 8px; margin-top: 2px; }
-
-  /* Bezel — the device frame */
+  /* Play */
+  #app-play { display: grid; place-items: center; container-type: size; }
   .bezel {
-    position: relative;
-    /* Width tracks viewport height so the 3:2 screen fills the stage
-       without black bars or clipping. 220px ≈ header + drawer + label
-       strip + outer padding. */
-    width: 100%;
-    max-height: 100%;
-    padding: 12px 12px 0;
-    background: linear-gradient(180deg, var(--paper-3) 0%, var(--paper-2) 100%);
+    position: relative; width: min(100cqw, calc((100cqh - 44px) * 1.5 + 24px));
+    padding: 12px 12px 0; border-radius: 10px;
+    background: linear-gradient(180deg, var(--paper-3), var(--paper-2));
     border: 1px solid var(--rule);
-    border-radius: 6px;
-    box-shadow:
-      inset 0 1px 0 rgba(236,227,208,0.04),
-      0 1px 0 rgba(236,227,208,0.02),
-      0 30px 60px -30px rgba(0,0,0,0.8);
-    display: flex;
-    flex-direction: column;
+    box-shadow: inset 0 1px 0 rgba(236,227,208,0.05), 0 40px 80px -30px rgba(0,0,0,0.85);
   }
-  .bezel::after {
-    /* faint jade ambient leak when running */
-    content: "";
-    position: absolute;
-    inset: -40px;
-    background: radial-gradient(ellipse at center, rgba(46,176,112,0.0), transparent 60%);
-    pointer-events: none;
-    transition: background 0.6s;
-    z-index: -1;
-  }
-  /* Cartridge grip — horizontal ridges along the top edge */
-  .bezel::before {
-    content: "";
-    position: absolute;
-    top: 3px;
-    left: 18%;
-    right: 18%;
-    height: 7px;
-    background: repeating-linear-gradient(
-      0deg,
-      rgba(0,0,0,0.45) 0 1px,
-      rgba(236,227,208,0.05) 1px 2px
-    );
-    border-radius: 1px;
-    box-shadow:
-      inset 0 1px 0 rgba(236,227,208,0.06),
-      inset 0 -1px 0 rgba(0,0,0,0.4);
-    pointer-events: none;
-  }
-  .bezel.running::after {
-    background: radial-gradient(ellipse at center, rgba(46,176,112,0.25), transparent 65%);
-  }
-
-  #game {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 3 / 2;
-    background: #000;
-    border: 1px solid var(--paper-0);
-    border-radius: 2px;
-    overflow: hidden;
-    box-shadow: inset 0 0 0 1px #000, inset 0 0 60px rgba(0,0,0,0.6);
-  }
-
-  /* CRT scanlines inside the screen */
-  #game::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image: repeating-linear-gradient(
-      0deg,
-      rgba(0,0,0,0.22) 0 1px,
-      transparent 1px 3px
-    );
-    pointer-events: none;
-    mix-blend-mode: multiply;
-    z-index: 20;
-    opacity: 0.55;
-  }
-
-  /* Bezel label strip */
-  .bezel-label {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 4px 12px;
-    font-family: var(--f-mono);
-    font-size: 9px;
-    color: var(--ink-mut);
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
-    gap: 12px;
-    flex-shrink: 0;
-  }
-  .bezel-label .hinge {
-    display: inline-flex;
-    gap: 4px;
-    align-items: center;
-  }
-  .bezel-label .hinge i {
-    width: 4px; height: 4px;
-    background: var(--ink-fnt);
-    border-radius: 50%;
-    display: inline-block;
-  }
-  .bezel-label .hinge i + i { margin-left: 2px; }
-  .bezel-label .edition {
-    font-family: var(--f-serif);
-    font-style: italic;
-    font-weight: 400;
-    font-size: 12px;
-    text-transform: none;
-    letter-spacing: 0;
-    color: var(--ink-dim);
-  }
-
-  /* ── Splash ───────────────────────────────────────────── */
-  #splash {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-end;
-    padding-bottom: 32px;
-    background: #000;
-    z-index: 10;
-  }
-  #splash::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, transparent 45%, rgba(0,0,0,0.6) 100%);
-    pointer-events: none;
-  }
-  #splash img { z-index: 1; }
-
-  .splash-cta {
-    position: relative;
-    z-index: 2;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 14px;
-  }
-  .splash-hint {
-    font-family: var(--f-mono);
-    font-size: 9px;
-    color: rgba(236,227,208,0.55);
-    letter-spacing: 0.4em;
-    text-transform: uppercase;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .splash-hint::before,
-  .splash-hint::after {
-    content: "";
-    width: 18px; height: 1px;
-    background: rgba(236,227,208,0.35);
-  }
-
+  .bezel::after { content: ""; position: absolute; inset: -40px; z-index: -1; pointer-events: none; transition: background 0.6s;
+    background: radial-gradient(ellipse at center, rgba(46,176,112,0), transparent 60%); }
+  .bezel.running::after { background: radial-gradient(ellipse at center, rgba(46,176,112,0.22), transparent 65%); }
+  #game { position: relative; width: 100%; aspect-ratio: 3 / 2; background: #000; border-radius: 3px; overflow: hidden; }
+  #game::after { content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 20; opacity: 0.45; mix-blend-mode: multiply;
+    background-image: repeating-linear-gradient(0deg, rgba(0,0,0,0.22) 0 1px, transparent 1px 3px); }
+  .bezel.running #game::after { opacity: 0.25; }
+  .bezel-label { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 9px 4px 11px;
+    font-family: var(--f-mono); font-size: 9px; color: var(--ink-mut); letter-spacing: 0.24em; text-transform: uppercase; }
+  .bezel-label em { font-family: var(--f-serif); font-size: 12px; text-transform: none; letter-spacing: 0; color: var(--ink-dim); }
+  #splash { position: absolute; inset: 0; z-index: 10; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 7%; }
+  #splash img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; }
+  #splash::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 45%, rgba(0,0,0,0.65)); pointer-events: none; }
+  .splash-cta { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 0 12px; text-align: center; }
+  .splash-hint { font-family: var(--f-mono); font-size: 9px; color: rgba(236,227,208,0.6); letter-spacing: 0.34em; text-transform: uppercase; }
   #btn-start {
-    position: relative;
-    padding: 14px 38px;
-    border: 1px solid var(--jade-bright);
-    font-family: var(--f-serif);
-    font-variation-settings: "opsz" 24, "SOFT" 50;
-    font-style: italic;
-    font-weight: 600;
-    font-size: 17px;
-    cursor: pointer;
-    color: #fff;
-    background: var(--jade);
-    letter-spacing: 0.02em;
-    transition: background 0.3s cubic-bezier(0.22, 1, 0.36, 1),
-                border-color 0.3s cubic-bezier(0.22, 1, 0.36, 1),
-                color 0.3s cubic-bezier(0.22, 1, 0.36, 1),
-                box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-    overflow: hidden;
-    box-shadow:
-      inset 0 1px 0 rgba(255,255,255,0.18),
-      0 10px 28px -10px rgba(26,141,90,0.6);
+    padding: 13px 34px; border-radius: 999px; cursor: pointer; color: #fff;
+    font-family: var(--f-serif); font-style: italic; font-weight: 600; font-size: 17px;
+    background: linear-gradient(160deg, rgba(46,176,112,0.95), rgba(13,107,64,0.95));
+    border: 1px solid rgba(255,255,255,0.28);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), 0 12px 30px -10px rgba(26,141,90,0.8);
+    transition: transform 0.2s var(--ease), box-shadow 0.2s;
   }
-  #btn-start:hover {
-    background: var(--ruby);
-    border-color: var(--ruby);
-    color: #fff;
-    box-shadow:
-      inset 0 1px 0 rgba(255,255,255,0.22),
-      0 12px 30px -8px rgba(179,39,43,0.65);
-  }
-  #btn-start:focus-visible {
-    outline: none;
-    box-shadow:
-      inset 0 1px 0 rgba(255,255,255,0.18),
-      0 0 0 1px var(--paper-0),
-      0 0 0 3px var(--jade-bright);
-  }
+  #btn-start:hover { transform: translateY(-1px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), 0 16px 34px -10px rgba(26,141,90,0.95); }
+  #btn-start:disabled { opacity: 0.6; cursor: progress; }
 
-  /* RIGHT GUTTER — specimen data card (subordinate) */
-  .placard {
-    position: relative;
-    justify-self: end;
-    align-self: center;
-    padding: 14px 14px 14px;
-    border: 1px solid var(--rule);
-    background: transparent;
-    width: 180px;
-    opacity: 0.82;
-    transition: opacity 0.2s;
+  /* App window (iframes) */
+  #app-window {
+    display: flex; flex-direction: column; border-radius: 18px; overflow: hidden;
+    background: var(--paper-1); border: 1px solid var(--glass-edge);
+    box-shadow: 0 30px 70px -30px rgba(0,0,0,0.9);
   }
-  .placard:hover { opacity: 1; }
-  .placard::before {
-    content: "DATA";
-    position: absolute;
-    top: -7px;
-    left: 10px;
-    font-family: var(--f-mono);
-    font-size: 8px;
-    color: var(--jade-bright);
-    letter-spacing: 0.3em;
-    background: var(--paper-1);
-    padding: 0 5px;
+  .titlebar {
+    position: relative; display: flex; align-items: center; gap: 12px; height: 44px; padding: 0 10px 0 16px; flex-shrink: 0;
+    background: var(--glass-fill); border-bottom: 1px solid var(--glass-edge);
+    backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); user-select: none;
   }
-  .placard dl {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 8px;
+  .titlebar .t-name { font-family: var(--f-serif); font-style: italic; font-size: 18px; }
+  .titlebar .t-count { font-family: var(--f-mono); font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-mut); }
+  .titlebar .t-hint { font-family: var(--f-mono); font-size: 9px; letter-spacing: 0.14em; color: var(--ink-fnt); margin-left: auto; }
+  .t-btn {
+    width: 32px; height: 28px; border-radius: 9px; border: 1px solid transparent; background: transparent; cursor: pointer;
+    display: grid; place-items: center; color: var(--ink-dim);
   }
-  .placard dt {
-    font-family: var(--f-mono);
-    font-size: 8px;
-    color: var(--ink-mut);
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    margin-bottom: 1px;
-  }
-  .placard dd {
-    font-family: var(--f-serif);
-    font-style: italic;
-    font-size: 12px;
-    color: var(--ink-dim);
-    line-height: 1.15;
-  }
-  .placard dd.mono {
-    font-family: var(--f-mono);
-    font-style: normal;
-    font-size: 10px;
-    color: var(--ink-mut);
-  }
-  .placard hr {
-    border: 0;
-    border-top: 1px solid var(--rule);
-    margin: 10px 0 8px;
-  }
-  .placard .custodian {
-    font-family: var(--f-serif);
-    font-style: italic;
-    font-size: 11px;
-    color: var(--ink-mut);
-    line-height: 1.3;
-  }
-  .placard .custodian b {
-    color: var(--ink-dim);
-    font-weight: 400;
-  }
-  .placard .custodian a {
-    color: inherit;
-    text-decoration: none;
-    border-bottom: 1px solid var(--ruby);
-    transition: color 0.2s, border-color 0.2s;
-  }
-  .placard .custodian a:hover { color: var(--ruby); }
-  .placard .custodian a:hover b { color: var(--ruby); }
+  .t-btn:hover { background: rgba(236,227,208,0.08); border-color: var(--glass-edge); color: var(--ink); }
+  .t-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .t-btn[hidden] { display: none; }
+  .frames { position: relative; flex: 1; min-height: 0; }
+  .frames iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: var(--paper-1); }
+  .frames iframe.off { visibility: hidden; }
+  .loading { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none;
+    font-family: var(--f-mono); font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--ink-mut); }
+  .loading::before { content: ""; position: absolute; inset: 0;
+    background: linear-gradient(100deg, transparent 30%, rgba(236,227,208,0.04) 50%, transparent 70%) 0 0 / 200% 100%;
+    animation: shimmer 1.4s linear infinite; }
+  @keyframes shimmer { to { background-position: -200% 0; } }
 
-  /* ── Drawer — the Field Guide ──────────────────────────── */
-  #dex-drawer {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 50px;
-    overflow: hidden;
-    transition: height 0.55s cubic-bezier(0.22, 1, 0.36, 1);
-    background: var(--paper-0);
-    z-index: 30;
-    display: flex;
-    flex-direction: column;
-    border-top: 1px solid var(--rule);
+  /* ── Popovers: palette + about ────────────────────── */
+  .scrim { position: fixed; inset: 0; z-index: 100; background: rgba(4,8,6,0.45); display: flex; justify-content: center; align-items: flex-start; padding: 12vh 16px 16px; }
+  .scrim[hidden] { display: none; }
+  .glass-panel {
+    width: min(640px, 100%); border-radius: 22px; overflow: hidden;
+    background: linear-gradient(160deg, rgba(26,44,34,0.82), rgba(10,20,14,0.86));
+    border: 1px solid var(--glass-edge); box-shadow: var(--glass-shadow);
+    backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
   }
-  #dex-drawer.open { height: 70%; }
-  #dex-drawer.open.maximized { height: 100%; }
+  #pal-input {
+    width: 100%; border: 0; outline: none; background: transparent; color: var(--ink);
+    padding: 20px 22px 18px 54px; font-family: var(--f-serif); font-style: italic; font-size: 22px;
+    border-bottom: 1px solid var(--glass-edge);
+    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%237b705c' stroke-width='2' stroke-linecap='round'><circle cx='11' cy='11' r='7'/><line x1='21' y1='21' x2='16.65' y2='16.65'/></svg>") no-repeat 22px center;
+  }
+  #pal-input::placeholder { color: var(--ink-mut); }
+  #pal-results { max-height: min(60vh, 520px); overflow-y: auto; padding: 6px; }
+  .pal-group { font-family: var(--f-mono); font-size: 9px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--jade-bright); padding: 12px 14px 4px; }
+  .pal-row { display: grid; grid-template-columns: 26px 1fr auto; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 12px; cursor: pointer; }
+  .pal-row svg { width: 18px; height: 18px; stroke: var(--ink-dim); fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+  .pal-row .pn { font-size: 15px; }
+  .pal-row .pn mark { background: none; color: var(--jade-bright); }
+  .pal-row .ps { font-family: var(--f-mono); font-size: 10px; color: var(--ink-mut); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 260px; }
+  .pal-row.sel { background: rgba(46,176,112,0.2); box-shadow: inset 0 0 0 1px rgba(46,176,112,0.45); }
+  .pal-empty { padding: 26px; text-align: center; color: var(--ink-mut); font-family: var(--f-serif); font-style: italic; }
+  .pal-foot { display: flex; gap: 16px; padding: 10px 16px; border-top: 1px solid var(--glass-edge); font-family: var(--f-mono); font-size: 9px; letter-spacing: 0.14em; color: var(--ink-mut); text-transform: uppercase; }
+  .pal-foot kbd { font-family: inherit; color: var(--ink-dim); border: 1px solid var(--glass-edge); border-radius: 5px; padding: 1px 5px; margin-right: 4px; }
 
-  #pokedex-frame {
-    flex: 1;
-    width: 100%;
-    border: none;
-    display: block;
-    background: var(--paper-1);
-    visibility: hidden;
-    opacity: 0;
-    transition: opacity 0.3s 0.1s;
-  }
-  #dex-drawer.open #pokedex-frame {
-    visibility: visible;
-    opacity: 1;
-  }
+  #about .glass-panel { padding: 28px 28px 24px; width: min(460px, 100%); }
+  #about h2 { font-family: var(--f-serif); font-style: italic; font-weight: 400; font-size: 34px; line-height: 1; }
+  #about h2 em { font-style: normal; color: var(--jade-bright); }
+  #about .sub { font-family: var(--f-mono); font-size: 9px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--jade-bright); margin: 8px 0 18px; }
+  #about dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; font-size: 13px; margin-bottom: 18px; }
+  #about dt { font-family: var(--f-mono); font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-mut); padding-top: 3px; }
+  #about p { color: var(--ink-dim); line-height: 1.6; font-size: 13px; margin-bottom: 10px; }
+  #about a { color: var(--jade-bright); }
+  .about-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .pill-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; text-decoration: none;
+    border: 1px solid var(--glass-edge); background: rgba(236,227,208,0.06); color: var(--ink) !important; font-size: 13px; }
+  .pill-btn:hover { border-color: var(--jade-bright); }
 
-  #dex-toggle {
-    flex-shrink: 0;
-    position: relative;
-    padding: 14px 28px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-    cursor: pointer;
-    user-select: none;
-    background: var(--paper-0);
-    transition: background 0.25s;
-  }
-  #dex-toggle::before {
-    /* hairline that grows on open */
-    content: "";
-    position: absolute;
-    left: 50%; top: 0;
-    height: 1px;
-    width: 0%;
-    background: var(--jade-bright);
-    transform: translateX(-50%);
-    transition: width 0.55s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  #dex-toggle.open::before { width: 100%; }
-  #dex-toggle:hover { background: var(--paper-1); }
-
-  #dex-toggle .lhs {
-    display: inline-flex;
-    align-items: center;
-    gap: 14px;
-  }
-
-  .dex-tabs {
-    display: inline-flex;
-    border: 1px solid var(--rule);
-  }
-  .dex-tab {
-    font-family: var(--f-mono);
-    font-size: 9px;
-    font-weight: 500;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    padding: 6px 12px;
-    border: none;
-    background: transparent;
-    color: var(--ink-mut);
-    cursor: pointer;
-    transition: color 0.2s, background 0.2s;
-  }
-  .dex-tab + .dex-tab { border-left: 1px solid var(--rule); }
-  .dex-tab:hover { color: var(--ink-dim); }
-  .dex-tab.active { color: var(--jade-bright); background: var(--jade-soft); }
-  #dex-toggle .mono-pre {
-    font-family: var(--f-mono);
-    font-size: 9px;
-    color: var(--jade-bright);
-    letter-spacing: 0.28em;
-    text-transform: uppercase;
-  }
-  #dex-toggle .mono-pre::after {
-    content: "";
-    display: inline-block;
-    width: 18px; height: 1px;
-    background: var(--jade-bright);
-    vertical-align: middle;
-    margin-left: 10px;
-    opacity: 0.5;
-  }
-  #dex-toggle .title {
-    font-family: var(--f-serif);
-    font-style: italic;
-    font-weight: 400;
-    font-size: 18px;
-    color: var(--ink);
-    letter-spacing: -0.005em;
-  }
-  #dex-toggle .count {
-    font-family: var(--f-mono);
-    font-size: 9px;
-    color: var(--ink-mut);
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-  }
-  #dex-toggle .count b { color: var(--ink); font-weight: 500; }
-
-  #dex-arrow {
-    font-family: var(--f-mono);
-    font-size: 10px;
-    color: var(--jade-bright);
-    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
-    letter-spacing: 0;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-  }
-  #dex-arrow::before { content: "PULL"; color: var(--ink-mut); font-size: 9px; letter-spacing: 0.28em; }
-  #dex-toggle.open #dex-arrow { transform: rotate(180deg); }
-  #dex-toggle.open #dex-arrow::before { content: ""; }
-
-  #btn-dex-max {
-    display: none;
-    font-family: var(--f-mono);
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--jade-bright);
-    background: transparent;
-    border: 1px solid var(--jade-bright);
-    padding: 5px 9px;
-    cursor: pointer;
-    transition: color 0.2s, background 0.2s;
-    line-height: 1;
-    flex-shrink: 0;
-  }
-  #btn-dex-max:hover { background: var(--jade-soft); }
-  #dex-toggle.open #btn-dex-max { display: inline-flex; align-items: center; }
-
-  /* ── Responsive ────────────────────────────────────────── */
-  @media (max-width: 900px) {
-    #play-section { grid-template-columns: 1fr; padding: 16px 14px 68px; }
-    .rail, .placard { display: none; }
-    .bezel {
-      width: 100%;
-      padding: 14px;
-      border-radius: 10px;
+  /* ── Phones: bottom glass tab bar ─────────────────── */
+  @media (max-width: 700px), (max-width: 900px) and (orientation: portrait) {
+    body { grid-template-columns: 1fr; grid-template-rows: 1fr calc(var(--tab-h) + env(safe-area-inset-bottom)); }
+    #stage { grid-row: 1; margin: 8px 8px 6px; }
+    #dock {
+      grid-row: 2; flex-direction: row; justify-content: space-around; gap: 0;
+      margin: 0 8px calc(8px + env(safe-area-inset-bottom)); padding: 4px 6px; border-radius: 22px;
     }
-    .bezel-label { display: none; }
+    #dock::before { inset: 1px 1px 50% 1px; border-radius: 21px 21px 0 0; }
+    .dock-sep, .dock-spacer, .tip { display: none; }
+    .dock-btn { width: auto; flex: 1; height: 56px; transform: none !important; display: flex; flex-direction: column; gap: 2px; }
+    .dock-btn .tile { width: 34px; height: 34px; border-radius: 11px; }
+    .dock-btn svg { width: 19px; height: 19px; }
+    .tab-label { display: block; font-family: var(--f-mono); font-size: 8px; letter-spacing: 0.06em; color: var(--ink-mut); }
+    .dock-btn.active .tab-label { color: var(--jade-bright); }
+    .dock-btn::after { left: 50%; top: 2px; margin: 0 0 0 -2px; }
+    #app-window { border-radius: 14px; }
+    .titlebar .t-hint, #btn-split { display: none; }
+    .scrim { padding-top: 4vh; }
   }
-  /* Portrait phones: give the bezel a taller, original Game Boy
-     silhouette — screen stays 3:2 but sits inside a taller frame. */
-  @media (max-width: 900px) and (orientation: portrait) {
-    .bezel {
-      height: 100%;
-      padding: 18px 14px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-    #game { width: 100%; aspect-ratio: 3 / 2; }
+  @media (prefers-reduced-motion: reduce) {
+    .dock-btn, .tip, #btn-start { transition: none; }
+    .loading::before { animation: none; }
   }
-  @media (max-width: 640px) {
-    header { grid-template-columns: 1fr auto; row-gap: 8px; padding: 14px 18px; }
-    .hdr-no { grid-column: 1 / -1; }
-    .hdr-mark { font-size: 22px; }
-    #dex-toggle { padding: 12px 16px; gap: 12px; }
-    #dex-toggle .mono-pre { display: none; }
-    #dex-toggle .title { display: none; }
-    .dex-tab { padding: 6px 9px; letter-spacing: 0.12em; }
-    #dex-toggle .count { display: none; }
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    #dock, .titlebar, .glass-panel { background: var(--paper-2); }
   }
 </style>
 </head>
 <body>
 
-<header>
-  <span class="hdr-no">001 / Hoenn Region</span>
-  <div class="hdr-mark">
-    <em>Emerald</em> Legacy
-    <span class="hdr-sub">Solo Leveling Colosseum · Unofficial ROM Hack</span>
-  </div>
-  <div class="hdr-actions">
-    <button class="btn btn-ghost" id="btn-dex-header" onclick="toggleDex()">
-      <span class="tick">—</span> Pokédex
-    </button>
-    <a class="btn" href="https://github.com/diogodebastos/Pokemon_Emerald_Legacy" target="_blank">Source ↗</a>
-  </div>
-</header>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-play" viewBox="0 0 24 24"><rect x="2.5" y="6.5" width="19" height="11" rx="5.5"/><path d="M7 10v4M5 12h4"/><circle cx="15.5" cy="11" r="0.6"/><circle cx="18" cy="13" r="0.6"/></symbol>
+  <symbol id="i-pokedex" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h6M15 12h6"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-trainers" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-3.9 3.1-7 7-7s7 3.1 7 7"/><path d="M8.5 6.5h7"/></symbol>
+  <symbol id="i-moves" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></symbol>
+  <symbol id="i-bag" viewBox="0 0 24 24"><path d="M6 8h12l-1 12H7z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/><path d="M9 13h6"/></symbol>
+  <symbol id="i-guide" viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M8 7.5h8M8 11h6"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></symbol>
+  <symbol id="i-about" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></symbol>
+  <symbol id="i-split" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M11 4v16"/></symbol>
+  <symbol id="i-full" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></symbol>
+  <symbol id="i-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+</svg>
 
-<section id="play-section">
-  <div class="rail" aria-hidden="true">
-    <span class="rail-text">Cartridge <b>—</b> Emerald Legacy <b>—</b> Hoenn Region <b>—</b> Est. 2026</span>
-  </div>
+<nav id="dock" aria-label="Apps">
+  <button class="dock-btn" data-app="play" aria-label="Play"><span class="tile"><svg><use href="#i-play"/></svg></span><span class="tab-label">Play</span><span class="tip">Play</span></button>
+  <div class="dock-sep"></div>
+  <button class="dock-btn" data-app="pokedex" aria-label="Pokédex"><span class="tile"><svg><use href="#i-pokedex"/></svg></span><span class="tab-label">Dex</span><span class="tip">Pokédex</span></button>
+  <button class="dock-btn" data-app="trainers" aria-label="Trainers"><span class="tile"><svg><use href="#i-trainers"/></svg></span><span class="tab-label">Trainers</span><span class="tip">Trainers</span></button>
+  <button class="dock-btn" data-app="moves" aria-label="Moves"><span class="tile"><svg><use href="#i-moves"/></svg></span><span class="tab-label">Moves</span><span class="tip">Moves</span></button>
+  <button class="dock-btn" data-app="bag" aria-label="Bag"><span class="tile"><svg><use href="#i-bag"/></svg></span><span class="tab-label">Bag</span><span class="tip">Bag</span></button>
+  <button class="dock-btn" data-app="guide" aria-label="Guide"><span class="tile"><svg><use href="#i-guide"/></svg></span><span class="tab-label">Guide</span><span class="tip">Guide</span></button>
+  <div class="dock-spacer"></div>
+  <div class="dock-sep"></div>
+  <button class="dock-btn" id="dock-search" aria-label="Search"><span class="tile"><svg><use href="#i-search"/></svg></span><span class="tab-label">Search</span><span class="tip">Search <kbd>⌘K</kbd></span></button>
+  <button class="dock-btn" id="dock-about" aria-label="About"><span class="tile"><svg><use href="#i-about"/></svg></span><span class="tab-label">About</span><span class="tip">About</span></button>
+</nav>
 
-  <div class="specimen">
+<main id="stage">
+  <section id="app-play" class="app" aria-label="Play">
     <div class="bezel" id="bezel">
       <div id="game">
         <div id="splash">
-          <img src="title.png" alt="Pokémon Emerald Legacy title screen"
-               style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;">
+          <img src="title.png" alt="Pokémon Emerald Legacy title screen">
           <div class="splash-cta">
             <span class="splash-hint" id="splash-hint">Provide your Pokémon Emerald ROM</span>
             <button id="btn-start" onclick="document.getElementById('rom-input').click()">Upload your base ROM to play</button>
@@ -745,211 +289,374 @@
           </div>
         </div>
       </div>
-      <div class="bezel-label">
-        <span class="hinge"><i></i><i></i><i></i></span>
-        <span class="edition">— an heirloom in emerald —</span>
-        <span>GBA · AGB-001</span>
-      </div>
+      <div class="bezel-label"><span>GBA · AGB-001</span><em>— an heirloom in emerald —</em><span>Hoenn</span></div>
     </div>
-  </div>
+  </section>
+  <div id="divider" role="separator" aria-orientation="vertical" aria-label="Resize split view"></div>
+  <section id="app-window" class="app off" aria-live="polite">
+    <div class="titlebar" id="titlebar" title="Double-click to toggle split view">
+      <span class="t-name" id="t-name"></span>
+      <span class="t-count" id="t-count"></span>
+      <span class="t-hint" id="t-hint">double-click to pin beside the game</span>
+      <button class="t-btn" id="btn-split" aria-label="Pin beside the game"><svg><use href="#i-split"/></svg></button>
+      <button class="t-btn" id="btn-ext" aria-label="Open in a new tab"><svg><use href="#i-ext"/></svg></button>
+    </div>
+    <div class="frames" id="frames"></div>
+  </section>
+</main>
 
-  <aside class="placard" aria-label="Specimen data">
+<div class="scrim" id="palette" hidden>
+  <div class="glass-panel" role="dialog" aria-label="Search">
+    <input id="pal-input" type="text" placeholder="Search Pokémon, trainers, moves, items, guides…" autocomplete="off" spellcheck="false">
+    <div id="pal-results"></div>
+    <div class="pal-foot"><span><kbd>↑↓</kbd>navigate</span><span><kbd>↵</kbd>open</span><span><kbd>esc</kbd>close</span></div>
+  </div>
+</div>
+
+<div class="scrim" id="about" hidden>
+  <div class="glass-panel" role="dialog" aria-label="About">
+    <h2><em>Emerald</em> Legacy</h2>
+    <div class="sub">Solo Leveling Colosseum · Unofficial ROM hack</div>
     <dl>
-      <dt>Origin</dt>
-      <dd>Pokémon Emerald <span style="font-family:var(--f-mono); font-size:10px; color:var(--ink-mut); font-style:normal;">(2004)</span></dd>
-      <dt>Subject</dt>
-      <dd>Fan ROM Hack</dd>
-      <dt>System</dt>
-      <dd class="mono">Game Boy Advance</dd>
-      <dt>Region</dt>
-      <dd>Hoenn</dd>
+      <dt>Origin</dt><dd>Pokémon Emerald (2004)</dd>
+      <dt>System</dt><dd>Game Boy Advance</dd>
+      <dt>Region</dt><dd>Hoenn</dd>
     </dl>
-    <hr>
-    <p class="custodian">Kept by <a href="https://edge-cavai.diogodebastos18.workers.dev/" target="_blank" rel="noopener"><b>Diogo de Bastos</b></a>. For private study and shared delight.</p>
-  </aside>
-
-  <div id="dex-drawer">
-    <div id="dex-toggle" onclick="toggleDex()">
-      <span class="lhs">
-        <span class="dex-tabs">
-          <button class="dex-tab active" data-dex="pokedex" onclick="event.stopPropagation(); switchDex('pokedex')">Pokédex</button>
-          <button class="dex-tab" data-dex="trainerdex" onclick="event.stopPropagation(); switchDex('trainerdex')">Trainers</button>
-          <button class="dex-tab" data-dex="attackdex" onclick="event.stopPropagation(); switchDex('attackdex')">Moves</button>
-          <button class="dex-tab" data-dex="guide" onclick="event.stopPropagation(); switchDex('guide')">Guide</button>
-        </span>
-        <span class="title" id="dex-title">Pokédex</span>
-      </span>
-      <span class="count" id="dex-count"><b>386</b> Specimens · Hoenn + National</span>
-      <span style="display:inline-flex;align-items:center;gap:10px;">
-        <button id="btn-dex-max" title="Expand to full page" onclick="event.stopPropagation(); toggleMax()">⤢</button>
-        <span id="dex-arrow">▲</span>
-      </span>
+    <p>Built on <a href="https://mryakobo.github.io/poke-emerald-legacy-docs/" target="_blank" rel="noopener">Pokémon Emerald Legacy</a> by its original team, with Colosseum-style features, Battle Royale mode and more added on top.</p>
+    <p>Kept by <a href="https://edge-cavai.diogodebastos18.workers.dev/" target="_blank" rel="noopener"><b>Diogo de Bastos</b></a>. For private study and shared delight. You need your own copy of Pokémon Emerald to play.</p>
+    <div class="about-links">
+      <a class="pill-btn" href="https://github.com/diogodebastos/Pokemon_Emerald_Legacy" target="_blank" rel="noopener">Source ↗</a>
+      <a class="pill-btn" href="patch.bps" download="emerald-legacy.bps">Download patch (.bps)</a>
+      <a class="pill-btn" href="https://www.marcrobledo.com/RomPatcher.js/" target="_blank" rel="noopener">Patch for another emulator ↗</a>
     </div>
-    <iframe id="pokedex-frame" src="pokedex.html" title="Pokédex"></iframe>
   </div>
-</section>
+</div>
 
 <script>
-  const THEME_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--jade-bright').trim();
-
-  const _crcTable = (() => {
-    const t = new Uint32Array(256);
-    for (let i = 0; i < 256; i++) {
-      let c = i;
-      for (let j = 0; j < 8; j++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
-      t[i] = c;
-    }
-    return t;
-  })();
-
-  function crc32(buf) {
-    let c = 0xFFFFFFFF;
-    for (let i = 0; i < buf.length; i++) c = (c >>> 8) ^ _crcTable[(c ^ buf[i]) & 0xFF];
-    return (c ^ 0xFFFFFFFF) >>> 0;
+/* ─────────────── ROM patching + emulator ─────────────── */
+const THEME_COLOR = getComputedStyle(document.documentElement).getPropertyValue('--jade-bright').trim();
+const _crcTable = (() => {
+  const t = new Uint32Array(256);
+  for (let i = 0; i < 256; i++) { let c = i; for (let j = 0; j < 8; j++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1); t[i] = c; }
+  return t;
+})();
+function crc32(buf) { let c = 0xFFFFFFFF; for (let i = 0; i < buf.length; i++) c = (c >>> 8) ^ _crcTable[(c ^ buf[i]) & 0xFF]; return (c ^ 0xFFFFFFFF) >>> 0; }
+function applyBPS(srcBuf, patBuf) {
+  const src = new Uint8Array(srcBuf), pat = new Uint8Array(patBuf);
+  let pos = 0;
+  function readVLQ() { let data = 0, shift = 1; while (true) { const x = pat[pos++]; data += (x & 0x7f) * shift; if (x & 0x80) break; shift <<= 7; data += shift; } return data; }
+  if (pat[0] !== 66 || pat[1] !== 80 || pat[2] !== 83 || pat[3] !== 49) throw new Error('Invalid patch file');
+  pos = 4; readVLQ();
+  const targetSize = readVLQ(); const metaSize = readVLQ(); pos += metaSize;
+  const patchEnd = patBuf.byteLength - 12;
+  const expectedCRC = new DataView(patBuf).getUint32(patchEnd, true);
+  if (crc32(src) !== expectedCRC) throw new Error('Wrong ROM — need vanilla Pokémon Emerald (US/EU)');
+  const tgt = new Uint8Array(targetSize);
+  let outPos = 0, srcRel = 0, tgtRel = 0;
+  while (pos < patchEnd) {
+    const data = readVLQ(); const action = data & 3, length = (data >> 2) + 1;
+    if (action === 0) { for (let i = 0; i < length; i++) tgt[outPos + i] = src[outPos + i]; outPos += length; }
+    else if (action === 1) { for (let i = 0; i < length; i++) tgt[outPos++] = pat[pos++]; }
+    else if (action === 2) { const d = readVLQ(); srcRel += (d & 1) ? -(d >> 1) : (d >> 1); for (let i = 0; i < length; i++) tgt[outPos++] = src[srcRel++]; }
+    else { const d = readVLQ(); tgtRel += (d & 1) ? -(d >> 1) : (d >> 1); for (let i = 0; i < length; i++) tgt[outPos++] = tgt[tgtRel++]; }
   }
-
-  function applyBPS(srcBuf, patBuf) {
-    const src = new Uint8Array(srcBuf);
-    const pat = new Uint8Array(patBuf);
-    let pos = 0;
-    function readVLQ() {
-      let data = 0, shift = 1;
-      while (true) {
-        const x = pat[pos++];
-        data += (x & 0x7f) * shift;
-        if (x & 0x80) break;
-        shift <<= 7;
-        data += shift;
-      }
-      return data;
-    }
-    if (pat[0]!==66||pat[1]!==80||pat[2]!==83||pat[3]!==49) throw new Error('Invalid patch file');
-    pos = 4;
-    readVLQ();
-    const targetSize = readVLQ();
-    const metaSize = readVLQ(); pos += metaSize;
-    const patchEnd = patBuf.byteLength - 12;
-    const expectedCRC = new DataView(patBuf).getUint32(patchEnd, true);
-    if (crc32(src) !== expectedCRC) throw new Error('Wrong ROM — need vanilla Pokémon Emerald (US/EU)');
-    const tgt = new Uint8Array(targetSize);
-    let outPos = 0, srcRel = 0, tgtRel = 0;
-    while (pos < patchEnd) {
-      const data = readVLQ();
-      const action = data & 3, length = (data >> 2) + 1;
-      if (action === 0) {
-        for (let i = 0; i < length; i++) tgt[outPos + i] = src[outPos + i];
-        outPos += length;
-      } else if (action === 1) {
-        for (let i = 0; i < length; i++) tgt[outPos++] = pat[pos++];
-      } else if (action === 2) {
-        const d = readVLQ(); srcRel += (d & 1) ? -(d >> 1) : (d >> 1);
-        for (let i = 0; i < length; i++) tgt[outPos++] = src[srcRel++];
-      } else {
-        const d = readVLQ(); tgtRel += (d & 1) ? -(d >> 1) : (d >> 1);
-        for (let i = 0; i < length; i++) tgt[outPos++] = tgt[tgtRel++];
-      }
-    }
-    return tgt.buffer;
+  return tgt.buffer;
+}
+async function patchAndPlay(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const hint = document.getElementById('splash-hint'), btn = document.getElementById('btn-start');
+  btn.disabled = true; hint.style.color = ''; hint.textContent = 'Patching…';
+  try {
+    const [srcBuf, patBuf] = await Promise.all([
+      file.arrayBuffer(),
+      fetch('patch.bps').then(r => { if (!r.ok) throw new Error('Could not load patch'); return r.arrayBuffer(); }),
+    ]);
+    startGame(URL.createObjectURL(new Blob([applyBPS(srcBuf, patBuf)])));
+  } catch (e) {
+    hint.style.color = 'var(--ruby)'; hint.textContent = e.message; btn.disabled = false; input.value = '';
   }
+}
+let gameRunning = false;
+function startGame(romUrl) {
+  document.getElementById('splash').style.display = 'none';
+  document.getElementById('bezel').classList.add('running');
+  gameRunning = true;
+  updateDock();
+  window.EJS_player = '#game';
+  window.EJS_core = 'gba';
+  window.EJS_gameUrl = romUrl;
+  window.EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
+  window.EJS_color = THEME_COLOR;
+  window.EJS_startOnLoaded = true;
+  const s = document.createElement('script');
+  s.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
+  document.body.appendChild(s);
+}
 
-  async function patchAndPlay(input) {
-    const file = input.files[0];
-    if (!file) return;
-    const hint = document.getElementById('splash-hint');
-    const btn  = document.getElementById('btn-start');
-    btn.disabled = true;
-    hint.style.color = '';
-    hint.textContent = 'Patching…';
-    try {
-      const [srcBuf, patBuf] = await Promise.all([
-        file.arrayBuffer(),
-        fetch('patch.bps').then(r => { if (!r.ok) throw new Error('Could not load patch'); return r.arrayBuffer(); })
-      ]);
-      const romUrl = URL.createObjectURL(new Blob([applyBPS(srcBuf, patBuf)]));
-      startGame(romUrl);
-    } catch (e) {
-      hint.style.color = 'var(--ruby)';
-      hint.textContent = e.message;
-      btn.disabled = false;
-      input.value = '';
-    }
-  }
+/* ─────────────── apps, dock, routing ─────────────── */
+const APPS = {
+  pokedex:  { file: 'pokedex.html',    name: 'Pokédex',  unit: 'Pokémon' },
+  trainers: { file: 'trainerdex.html', name: 'Trainers', unit: 'notable trainers' },
+  moves:    { file: 'attackdex.html',  name: 'Moves',    unit: 'moves' },
+  bag:      { file: 'items.html',      name: 'Bag',      unit: 'items' },
+  guide:    { file: 'guide.html',      name: 'Guide',    unit: 'pages' },
+};
+const ORDER = ['play', 'pokedex', 'trainers', 'moves', 'bag', 'guide'];
+const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+                set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
+let manifest = { build: '', counts: {} };
+const manifestReady = fetch('manifest.json', { cache: 'no-store' }).then(r => r.json()).then(m => { manifest = m; }).catch(() => {});
 
-  function startGame(romUrl) {
-    document.getElementById('splash').style.display = 'none';
-    document.getElementById('bezel').classList.add('running');
+let current = 'play';      // app shown full (or pinned beside the game in split view)
+let split = false;
+const frames = {};          // app -> {el, ready: Promise}
+const stage = document.getElementById('stage');
+const isPhone = () => matchMedia('(max-width: 700px), (max-width: 900px) and (orientation: portrait)').matches;
+const canSplit = () => !isPhone() && window.innerWidth >= 1100;
 
-    window.EJS_player        = '#game';
-    window.EJS_core          = 'gba';
-    window.EJS_gameUrl       = romUrl;
-    window.EJS_pathtodata    = 'https://cdn.emulatorjs.org/stable/data/';
-    window.EJS_color         = THEME_COLOR;
-    window.EJS_startOnLoaded = true;
+function ensureFrame(app) {
+  if (frames[app]) return frames[app];
+  const wrap = document.getElementById('frames');
+  const loading = document.createElement('div');
+  loading.className = 'loading'; loading.textContent = 'Loading ' + APPS[app].name + '…';
+  const el = document.createElement('iframe');
+  el.title = APPS[app].name;
+  el.className = 'off';
+  const ready = manifestReady.then(() => new Promise(res => {
+    el.addEventListener('load', () => { loading.remove(); res(); }, { once: true });
+    el.src = APPS[app].file + (manifest.build ? '?v=' + manifest.build : '');
+  }));
+  wrap.append(loading, el);
+  loading.style.visibility = 'hidden';
+  frames[app] = { el, ready, loading };
+  return frames[app];
+}
 
-    const s = document.createElement('script');
-    s.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
-    document.body.appendChild(s);
-  }
-
-  function toggleDex() {
-    const drawer = document.getElementById('dex-drawer');
-    const toggle = document.getElementById('dex-toggle');
-    const isOpen = drawer.classList.toggle('open');
-    toggle.classList.toggle('open', isOpen);
-    document.getElementById('btn-dex-header').classList.toggle('active', isOpen);
-    if (!isOpen) {
-      drawer.classList.remove('maximized');
-      document.getElementById('btn-dex-max').title = 'Expand to full page';
-      document.getElementById('btn-dex-max').textContent = '⤢';
+function openApp(app, key, opts = {}) {
+  if (app !== 'play' && !APPS[app]) return;
+  if (app === 'play') {
+    split = false;
+    current = 'play';
+  } else {
+    current = app;
+    const f = ensureFrame(app);
+    Object.entries(frames).forEach(([a, fr]) => {
+      fr.el.classList.toggle('off', a !== app);
+      if (fr.loading.isConnected) fr.loading.style.visibility = a === app ? 'visible' : 'hidden';
+    });
+    document.getElementById('t-name').textContent = APPS[app].name;
+    manifestReady.then(() => {
+      const n = manifest.counts && manifest.counts[app];
+      document.getElementById('t-count').textContent = n ? `${n} ${APPS[app].unit}` : '';
+    });
+    if (key != null && key !== '') {
+      f.ready.then(() => { try { f.el.contentWindow.APP && f.el.contentWindow.APP.select(key); } catch (e) {} });
     }
   }
-
-  const DEX_VIEWS = {
-    pokedex:    { src: 'pokedex.html',    title: 'Pokédex',  count: '<b>386</b> Specimens · Hoenn + National' },
-    trainerdex: { src: 'trainerdex.html', title: 'Trainers', count: '<b>79</b> Notable Trainers · Hoenn' },
-    attackdex:  { src: 'attackdex.html',  title: 'Moves',    count: '<b>354</b> Moves · Learnsets' },
-    guide:      { src: 'guide.html',      title: 'Guide',    count: 'Trades · Gifts · Rematches · Thief' },
-  };
-  let currentDex = 'pokedex';
-
-  function switchDex(which) {
-    if (which === currentDex) {
-      if (!document.getElementById('dex-drawer').classList.contains('open')) toggleDex();
-      return;
-    }
-    currentDex = which;
-    const view = DEX_VIEWS[which];
-    const frame = document.getElementById('pokedex-frame');
-    frame.src = view.src;
-    frame.title = view.title;
-    document.getElementById('dex-title').textContent = view.title;
-    document.getElementById('dex-count').innerHTML = view.count;
-    document.querySelectorAll('.dex-tab').forEach(b =>
-      b.classList.toggle('active', b.dataset.dex === which));
-    if (!document.getElementById('dex-drawer').classList.contains('open')) toggleDex();
+  if (!canSplit()) split = false;
+  if (opts.split !== undefined) split = opts.split && canSplit() && app !== 'play';
+  layout();
+  if (!opts.fromHash) {
+    const h = app === 'play' ? '' : '#' + app + (key ? '/' + encodeURIComponent(key) : '');
+    if (location.hash !== h) history.pushState(null, '', h || location.pathname + location.search);
   }
+  store.set('el.lastApp', app);
+}
+window.openApp = openApp;
 
-  function toggleMax() {
-    const drawer = document.getElementById('dex-drawer');
-    const btn = document.getElementById('btn-dex-max');
-    const isMax = drawer.classList.toggle('maximized');
-    btn.title = isMax ? 'Restore' : 'Expand to full page';
-    btn.textContent = isMax ? '⤡' : '⤢';
-  }
-
-  document.getElementById('play-section').addEventListener('click', function(e) {
-    const drawer = document.getElementById('dex-drawer');
-    if (drawer.classList.contains('open') && !drawer.contains(e.target)) {
-      toggleDex();
-    }
+function layout() {
+  const play = document.getElementById('app-play'), win = document.getElementById('app-window');
+  stage.classList.toggle('split', split);
+  play.classList.toggle('off', current !== 'play' && !split);
+  win.classList.toggle('off', current === 'play');
+  document.getElementById('btn-split').hidden = !canSplit();
+  document.getElementById('btn-split').setAttribute('aria-label', split ? 'Show full width' : 'Pin beside the game');
+  document.querySelector('#btn-split use').setAttribute('href', split ? '#i-full' : '#i-split');
+  document.getElementById('t-hint').textContent = canSplit() ? (split ? 'double-click for full width' : 'double-click to pin beside the game') : '';
+  updateDock();
+  // some browsers don't fire resize inside a same-origin iframe when only its box changes
+  requestAnimationFrame(() => Object.values(frames).forEach(fr => {
+    try { fr.el.contentWindow.dispatchEvent(new Event('resize')); } catch (e) {}
+  }));
+}
+function updateDock() {
+  document.querySelectorAll('.dock-btn[data-app]').forEach(b => {
+    const a = b.dataset.app;
+    b.classList.toggle('active', a === current || (split && a === 'play'));
+    b.classList.toggle('open', a !== 'play' && !!frames[a]);
+    b.classList.toggle('running', a === 'play' && gameRunning);
   });
+}
+function toggleSplit() {
+  if (current === 'play' || !canSplit()) return;
+  split = !split;
+  layout();
+}
 
-  // Open the Field Guide on page load; the short delay lets the drawer's
-  // height transition play so it visibly slides up from its collapsed bar.
-  setTimeout(() => {
-    if (!document.getElementById('dex-drawer').classList.contains('open')) toggleDex();
-  }, 400);
+document.querySelectorAll('.dock-btn[data-app]').forEach(b => {
+  b.addEventListener('click', () => {
+    const app = b.dataset.app;
+    if (app === 'play') openApp('play');
+    else openApp(app, null, { split });
+  });
+  if (b.dataset.app !== 'play') b.addEventListener('pointerenter', () => ensureFrame(b.dataset.app), { once: true });
+});
+document.getElementById('titlebar').addEventListener('dblclick', e => { if (!e.target.closest('.t-btn')) toggleSplit(); });
+document.getElementById('btn-split').addEventListener('click', toggleSplit);
+document.getElementById('btn-ext').addEventListener('click', () => {
+  let hash = '';
+  try { hash = frames[current].el.contentWindow.location.hash; } catch (e) {}
+  window.open(APPS[current].file + hash, '_blank', 'noopener');
+});
+
+/* split divider drag */
+(() => {
+  const saved = store.get('el.split');
+  if (saved) document.documentElement.style.setProperty('--split', saved);
+  const div = document.getElementById('divider');
+  div.addEventListener('pointerdown', e => {
+    div.setPointerCapture(e.pointerId);
+    document.getElementById('frames').style.pointerEvents = 'none';
+    const rect = stage.getBoundingClientRect();
+    const move = ev => {
+      const pct = Math.min(75, Math.max(28, (ev.clientX - rect.left) / rect.width * 100));
+      document.documentElement.style.setProperty('--split', pct.toFixed(1) + '%');
+    };
+    const up = () => {
+      div.removeEventListener('pointermove', move);
+      document.getElementById('frames').style.pointerEvents = '';
+      store.set('el.split', getComputedStyle(document.documentElement).getPropertyValue('--split').trim());
+    };
+    div.addEventListener('pointermove', move);
+    div.addEventListener('pointerup', up, { once: true });
+  });
+})();
+
+/* dock magnification (desktop) */
+(() => {
+  const dock = document.getElementById('dock');
+  const btns = [...dock.querySelectorAll('.dock-btn')];
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+  dock.addEventListener('pointermove', e => {
+    if (isPhone() || reduce.matches || e.pointerType !== 'mouse') return;
+    btns.forEach(b => {
+      const r = b.getBoundingClientRect();
+      const d = Math.abs(e.clientY - (r.top + r.height / 2));
+      b.style.transform = `scale(${1 + Math.max(0, 1 - d / 110) * 0.28})`;
+    });
+  });
+  dock.addEventListener('pointerleave', () => btns.forEach(b => { b.style.transform = ''; }));
+})();
+
+function fromHash() {
+  const m = location.hash.match(/^#([a-z]+)(?:\/(.+))?$/);
+  if (m && APPS[m[1]]) openApp(m[1], m[2] ? decodeURIComponent(m[2]) : null, { fromHash: true });
+  else openApp('play', null, { fromHash: true });
+}
+window.addEventListener('popstate', fromHash);
+window.addEventListener('resize', () => { if (split && !canSplit()) { split = false; layout(); } else layout(); });
+
+/* ─────────────── Spotlight search ─────────────── */
+const palette = document.getElementById('palette'), palInput = document.getElementById('pal-input'), palResults = document.getElementById('pal-results');
+const TYPES = [
+  ['mon', 'Pokémon', 'pokedex', '#i-pokedex'], ['trainer', 'Trainers', 'trainers', '#i-trainers'],
+  ['move', 'Moves', 'moves', '#i-moves'], ['item', 'Items', 'bag', '#i-bag'], ['guide', 'Guide', 'guide', '#i-guide'],
+];
+let searchIndex = null, palRows = [], palSel = 0;
+const fold = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
+function loadIndex() {
+  if (!searchIndex) searchIndex = manifestReady.then(() => fetch('search-index.json' + (manifest.build ? '?v=' + manifest.build : '')))
+    .then(r => r.json()).then(list => list.map(e => ({ ...e, f: fold(e.n), fs: fold(e.s || '') })));
+  return searchIndex;
+}
+function openPalette() {
+  if (!palette.hidden) return;
+  palette.hidden = false; palInput.value = ''; palInput.focus();
+  loadIndex().then(runSearch);
+  runSearch();
+}
+window.openPalette = openPalette;
+function closePalette() { palette.hidden = true; }
+function score(e, q, words) {
+  if (e.f === q) return 100;
+  if (e.f.startsWith(q)) return 80;
+  if (words.every(w => e.f.split(' ').some(x => x.startsWith(w)))) return 60;
+  if (e.f.includes(q)) return 40;
+  if (words.every(w => e.fs.includes(w) || e.f.includes(w))) return 15;
+  return 0;
+}
+async function runSearch() {
+  const q = fold(palInput.value);
+  if (!q) {
+    palRows = [];
+    palResults.innerHTML = '<div class="pal-empty">Type a Pokémon, trainer, move, item or place.</div>';
+    return;
+  }
+  const list = await loadIndex();
+  if (fold(palInput.value) !== q) return;
+  const words = q.split(' ');
+  const hits = list.map(e => [score(e, q, words), e]).filter(([s]) => s > 0).sort((a, b) => b[0] - a[0] || a[1].n.length - b[1].n.length);
+  palRows = [];
+  let html = '';
+  TYPES.forEach(([t, label, app, icon]) => {
+    const group = hits.filter(([, e]) => e.t === t).slice(0, 6);
+    if (!group.length) return;
+    html += `<div class="pal-group">${label}</div>`;
+    group.forEach(([, e]) => {
+      const i = palRows.push({ app, key: e.k }) - 1;
+      const name = e.n.replace(new RegExp('(' + words.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')', 'ig'), '<mark>$1</mark>');
+      html += `<div class="pal-row" data-i="${i}"><svg><use href="${icon}"/></svg><span class="pn">${name}</span><span class="ps">${e.s || ''}</span></div>`;
+    });
+  });
+  palSel = 0;
+  palResults.innerHTML = html || '<div class="pal-empty">Nothing found.</div>';
+  markSel();
+}
+function markSel() {
+  palResults.querySelectorAll('.pal-row').forEach(r => r.classList.toggle('sel', +r.dataset.i === palSel));
+  const el = palResults.querySelector('.pal-row.sel'); if (el) el.scrollIntoView({ block: 'nearest' });
+}
+function choose(i) {
+  const r = palRows[i]; if (!r) return;
+  closePalette();
+  openApp(r.app, r.key, { split });
+}
+palInput.addEventListener('input', runSearch);
+palResults.addEventListener('click', e => { const r = e.target.closest('.pal-row'); if (r) choose(+r.dataset.i); });
+palResults.addEventListener('mousemove', e => { const r = e.target.closest('.pal-row'); if (r && +r.dataset.i !== palSel) { palSel = +r.dataset.i; markSel(); } });
+palette.addEventListener('keydown', e => {
+  if (e.key === 'ArrowDown') { palSel = Math.min(palRows.length - 1, palSel + 1); markSel(); e.preventDefault(); }
+  else if (e.key === 'ArrowUp') { palSel = Math.max(0, palSel - 1); markSel(); e.preventDefault(); }
+  else if (e.key === 'Enter') { choose(palSel); e.preventDefault(); }
+  else if (e.key === 'Escape') { closePalette(); }
+  e.stopPropagation();   // never let palette typing reach the emulator
+});
+palette.addEventListener('keyup', e => e.stopPropagation());
+palette.addEventListener('click', e => { if (e.target === palette) closePalette(); });
+document.getElementById('dock-search').addEventListener('click', openPalette);
+
+/* about */
+const about = document.getElementById('about');
+document.getElementById('dock-about').addEventListener('click', () => { about.hidden = false; });
+about.addEventListener('click', e => { if (e.target === about) about.hidden = true; });
+
+/* global keys */
+window.addEventListener('keydown', e => {
+  const typing = /INPUT|TEXTAREA|SELECT/.test((e.target.tagName || '')) && !palette.contains(e.target);
+  if (!palette.hidden && !palette.contains(e.target)) { e.stopPropagation(); return; }
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); e.stopPropagation(); openPalette(); return; }
+  if (e.key === '/' && !typing && current !== 'play') { e.preventDefault(); openPalette(); return; }
+  if (e.key === 'Escape') { about.hidden = true; }
+  if (e.altKey && /^Digit[1-6]$/.test(e.code)) { e.preventDefault(); openApp(ORDER[+e.code.slice(5) - 1], null, { split }); }
+}, true);
+
+/* start: hash > last app > Play */
+(() => {
+  if (location.hash.length > 1) { fromHash(); return; }
+  const last = store.get('el.lastApp');
+  openApp(last && (APPS[last] || last === 'play') ? last : 'play', null, { fromHash: true });
+})();
 </script>
-
 </body>
 </html>
