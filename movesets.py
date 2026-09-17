@@ -17,6 +17,7 @@ those). Built for double battles:
      Helping Hand / Wish for frail supports, otherwise Protect.
 """
 
+import re
 from functools import lru_cache
 
 import coverage_data as cov
@@ -33,6 +34,61 @@ HITS = {'EFFECT_MULTI_HIT': 3, 'EFFECT_DOUBLE_HIT': 2, 'EFFECT_TWINEEDLE': 2}
 FIXED_POWER = {'RETURN': 102}          # max friendship
 
 TAG_STAB, TAG_COVER, TAG_SPREAD, TAG_ALLY = 'STAB', 'Coverage', 'Hits both foes', 'Hits ally too'
+
+
+@lru_cache(maxsize=1)
+def natures():
+    """{('atk', 'spa'): 'Adamant', …} — the raised/lowered stat pair, from gNatureStatTable."""
+    order = ['atk', 'def_', 'spe', 'spa', 'spd']
+    table, body = {}, cov._read('src/pokemon.c').split('gNatureStatTable')[1]
+    for name, nums in re.findall(r'\[NATURE_(\w+)\]\s*=\s*\{([^}]*)\}', body):
+        vals = [int(x) for x in re.findall(r'[+-]?\d+', nums)]
+        plus = next((order[i] for i, v in enumerate(vals) if v > 0), None)
+        minus = next((order[i] for i, v in enumerate(vals) if v < 0), None)
+        if plus and minus:
+            table[(plus, minus)] = name.title()
+    return table
+
+
+STAT_NAME = dict(hp='HP', atk='Attack', def_='Defense', spa='Sp. Atk', spd='Sp. Def', spe='Speed')
+
+
+def _nature_entry(name):
+    for (plus, minus), n in natures().items():
+        if n == name:
+            return dict(name=n, plus=STAT_NAME[plus], minus=STAT_NAME[minus])
+    return dict(name=name, plus='', minus='')
+
+
+def pick_nature(sp, moves, support=False):
+    """Raise what the set actually uses; lower the offensive stat it needs least."""
+    D = cov.load()
+    b = D['species'][sp]['base']
+    damage = {'phys': 0.0, 'spec': 0.0}
+    for mv in moves:
+        if D['moves'][mv]['power'] > 0:
+            damage['phys' if D['moves'][mv]['type'] in cov.PHYSICAL else 'spec'] += attack_score(sp, mv)
+    # A move doing under 15% of the set's damage isn't worth protecting its stat.
+    if max(damage.values() or [0]) > 0:
+        for k in damage:
+            if damage[k] / max(damage.values()) < 0.15:
+                damage[k] = 0.0
+    fast = b['spe'] >= 100
+    lean = 'atk' if damage['phys'] >= damage['spec'] else 'spa'
+    spare = 'spa' if lean == 'atk' else 'atk'
+    if not any(damage.values()):                   # no attacks at all
+        spare = 'spa' if b['atk'] <= b['spa'] else 'atk'
+        lean = None
+    if support or lean is None:                    # frail: bulk (or speed) matters more than power
+        plus = 'spe' if fast else ('def_' if b['def_'] >= b['spd'] else 'spd')
+        minus = spare
+    elif damage['phys'] and damage['spec']:        # mixed: no offensive stat is really spare
+        plus = 'spe' if fast else lean
+        minus = 'spd' if plus == 'spe' and b['spd'] <= b['def_'] else 'def_'
+    else:
+        plus = 'spe' if fast else lean
+        minus = spare
+    return _nature_entry(natures()[(plus, minus)])
 
 
 def _attack_stat(sp, mtype):
@@ -87,7 +143,7 @@ def suggest(sp):
         t, x = cur
         moves = [mv[0] if isinstance(mv, tuple) else mv for mv in x['moves']]
         return _pack(sp, moves, source=dict(team=t['name'], id='team-' + t['id']),
-                     role=x['nature'] + ' · ' + x['ability'].replace('_', ' ').title())
+                     role=x['ability'].replace('_', ' ').title(), nature=_nature_entry(x['nature']))
 
     s = D['species'][sp]
     scored = sorted(((attack_score(sp, mv), mv) for mv in learn), reverse=True)
@@ -161,16 +217,21 @@ def suggest(sp):
                 break
             if mv not in moves:
                 moves.append(mv)
+    dmg = {'phys': 0.0, 'spec': 0.0}
+    for mv in chosen:
+        dmg['phys' if D['moves'][mv]['type'] in cov.PHYSICAL else 'spec'] += attack_score(sp, mv)
     if len(learn) <= 4:
         role = 'Learns only these moves'
     elif not chosen or (frail and support):
         role = 'Support'
+    elif dmg['phys'] and dmg['spec'] and min(dmg.values()) / max(dmg.values()) > 0.4:
+        role = 'Mixed attacker'
     else:
-        role = ('Physical' if D['moves'][chosen[0]]['type'] in cov.PHYSICAL else 'Special') + ' attacker'
-    return _pack(sp, moves, source=None, role=role)
+        role = ('Physical' if dmg['phys'] >= dmg['spec'] else 'Special') + ' attacker'
+    return _pack(sp, moves, source=None, role=role, nature=pick_nature(sp, [mv for mv in moves if mv in D['moves']], support=role == 'Support'))
 
 
-def _pack(sp, moves, source, role):
+def _pack(sp, moves, source, role, nature):
     D = cov.load()
     s = D['species'][sp]
     types_so_far = []
@@ -195,7 +256,7 @@ def _pack(sp, moves, source, role):
         how = [h for h in D['learn'][sp][mv] if h != 'Egg move'] or ['Egg move · Move Relearner']
         out.append(dict(move=mv, type=m['type'], power=FIXED_POWER.get(mv, m['power']), accuracy=m['accuracy'],
                         how=' · '.join(how), tags=tags))
-    return dict(moves=out, source=source, role=role)
+    return dict(moves=out, source=source, role=role, nature=nature)
 
 
 if __name__ == '__main__':
@@ -204,4 +265,5 @@ if __name__ == '__main__':
                'UNOWN', 'SMEARGLE', 'CLEFABLE', 'SHUCKLE', 'CHANSEY', 'PICHU', 'TYROGUE', 'WAILORD', 'DEOXYS_SPEED', 'BELDUM', 'SWALOT']:
         r = suggest(sp)
         if r:
-            print(f"{sp:12} {r['role']:32} {[m['move'] for m in r['moves']]} {r['source'] or ''}")
+            n = r['nature']
+            print(f"{sp:12} {r['role']:24} {n['name']:8} (+{n['plus']} -{n['minus']}) {[m['move'] for m in r['moves']]}")

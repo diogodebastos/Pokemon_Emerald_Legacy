@@ -1058,6 +1058,7 @@ def build_data():
         return {
             'role': r['role'],
             'source': r['source'],
+            'nature': r['nature'],
             'moves': [{'name': fmt_move('MOVE_' + m['move']), 'type': m['type'], 'power': m['power'],
                        'accuracy': m['accuracy'], 'how': m['how'], 'tags': m['tags']} for m in r['moves']],
         }
@@ -1909,6 +1910,13 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
     font-style: normal !important;
   }
 
+  .ms-nature {
+    display: inline-flex; align-items: baseline; gap: 10px; margin: 0 0 14px;
+    border: 1px solid var(--rule); padding: 7px 14px;
+  }
+  .ms-nature-label { font-family: var(--f-mono); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-mut); }
+  .ms-nature-name { font-family: var(--f-serif); font-style: italic; font-size: 18px; color: var(--ink); }
+  .ms-nature-effect { font-family: var(--f-mono); font-size: 11px; color: var(--jade-bright); }
   .ms-source { font-size: 13px; line-height: 1.6; color: var(--ink-dim); margin: 0 0 12px; max-width: 80ch; }
   .ms-how { font-family: var(--f-mono); font-size: 10px; color: var(--ink-mut); margin-right: 8px; }
   .ms-tag {
@@ -2640,8 +2648,14 @@ function buildMoveset(ms) {
   const source = ms.source
     ? `Hand-picked set from the <a class="xl" data-app="guide" data-key="${ms.source.id}">${ms.source.team}</a> team in the Guide (${ms.role}).`
     : `${ms.role}. Picked automatically for double battles from moves this Pokémon can really learn: its strongest same-type attack, attacks chosen for type coverage, and one support slot (Protect, Fake Out, Spore, Follow Me or a setup move).`;
+  const nat = ms.nature
+    ? `<div class="ms-nature"><span class="ms-nature-label">Suggested nature</span>
+         <span class="ms-nature-name">${ms.nature.name}</span>
+         <span class="ms-nature-effect">+${ms.nature.plus} · −${ms.nature.minus}</span></div>`
+    : '';
   return `<div class="section-title" style="margin-top:28px">Suggested Moveset</div>
     <p class="ms-source">${source}</p>
+    ${nat}
     <table class="level-table all-table ms-table">
       <thead><tr><th>Technique</th><th>Type</th><th>Pwr</th><th>Acc</th><th>How to learn · Notes</th></tr></thead>
       <tbody>${rows}</tbody>
