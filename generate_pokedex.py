@@ -460,6 +460,97 @@ def fmt_evo_method(method, param):
         return f'Beauty ≥ {param}'
     return method.replace('EVO_', '').replace('_', ' ').title()
 
+# --- Auto "How to Obtain" for species with no wild location and no hand-written note ---
+DAY_CARE = 'the Route 117 Day Care'
+INCENSE_BABIES = {  # src/daycare.c: baby only hatches if a parent holds the incense
+    'AZURILL': 'Sea Incense',
+    'WYNAUT': 'Lax Incense',
+}
+INCENSE_SHOPS = 'sold at the Lilycove Department Store (3F), and in Slateport City market after you become Champion'
+GIFT_OBTAIN = {  # gifts/prizes for species that have no wild encounter (see generate_guide.py)
+    'LILEEP': 'Revive the <b>Root Fossil</b> (Mirage Tower, Route 111 desert) at Devon Corp. 2F in Rustboro City.',
+    'ANORITH': 'Revive the <b>Claw Fossil</b> (Mirage Tower, Route 111 desert) at Devon Corp. 2F in Rustboro City.',
+    'SLAKING': 'Prize (Lv.50) for scoring 800+ in a Master Rank Cool contest in Lilycove.',
+    'GARDEVOIR': 'Prize (Lv.50) for scoring 800+ in a Master Rank Smart contest in Lilycove.',
+    'DELCATTY': 'Prize (Lv.50) for scoring 800+ in a Master Rank Cute contest in Lilycove.',
+}
+
+
+def _evo_phrase(method, param):
+    if method.startswith('EVO_LEVEL'):
+        extra = {'EVO_LEVEL_ATK_GT_DEF': ' with Attack higher than Defense',
+                 'EVO_LEVEL_ATK_LT_DEF': ' with Attack lower than Defense',
+                 'EVO_LEVEL_ATK_EQ_DEF': ' with Attack equal to Defense',
+                 'EVO_LEVEL_SHEDINJA': ' (with a free party slot and a spare Poké Ball)'}.get(method, '')
+        return f'at level {param}{extra}'
+    if method == 'EVO_ITEM':
+        return 'with a ' + ITEM_DISPLAY.get(param, param.replace('ITEM_', '').replace('_', ' ').title())
+    if method == 'EVO_FRIENDSHIP':
+        return 'with high friendship'
+    if method == 'EVO_FRIENDSHIP_DAY':
+        return 'with high friendship during the day'
+    if method == 'EVO_FRIENDSHIP_NIGHT':
+        return 'with high friendship at night'
+    if method == 'EVO_BEAUTY':
+        return f'with Beauty of {param} or more (Pokéblocks)'
+    if method == 'EVO_TRADE':
+        return 'by trading it'
+    if method == 'EVO_TRADE_ITEM':
+        return 'by trading it while it holds a ' + ITEM_DISPLAY.get(param, param.replace('ITEM_', '').replace('_', ' ').title())
+    return fmt_evo_method(method, param).lower()
+
+
+def build_auto_obtain_notes(entries_by_key, raw_evos, reverse_evo):
+    def name(k):
+        return entries_by_key[k]['name']
+
+    memo = {}
+    def obtainable(k, seen=()):
+        if k in memo:
+            return memo[k]
+        e = entries_by_key.get(k)
+        ok = bool(e and (e['locations'] or e['notes'] or k in GIFT_OBTAIN))
+        if not ok and k not in seen:
+            ok = any(obtainable(r['key'], seen + (k,)) for r in reverse_evo.get(k, []))
+        memo[k] = ok
+        return ok
+
+    def descendants(k):
+        out = []
+        for evo in raw_evos.get(k, []):
+            t = evo['target']
+            if t in entries_by_key and t not in out:
+                out.append(t)
+                out += [d for d in descendants(t) if d not in out]
+        return out
+
+    for k, e in entries_by_key.items():
+        if e['locations'] or e['notes']:
+            continue
+        parts = []
+        if k in GIFT_OBTAIN:
+            parts.append(GIFT_OBTAIN[k])
+        for r in reverse_evo.get(k, []):
+            if r['key'] in entries_by_key:
+                parts.append(f'Evolve <b>{name(r["key"])}</b> {_evo_phrase(r["method"], r["param"])}.')
+        if not reverse_evo.get(k):
+            parents = [d for d in descendants(k) if obtainable(d)]
+            if parents:
+                who = ' or '.join(f'<b>{name(d)}</b>' for d in parents)
+                line = f'{"You can also breed" if parts else "Breed"} {who} at {DAY_CARE} (with a Ditto or a compatible partner). The Egg hatches into {e["name"]}'
+                if k in INCENSE_BABIES:
+                    inc = INCENSE_BABIES[k]
+                    line += (f', but only if one parent is holding a <b>{inc}</b>; without it you get '
+                             f'{name(parents[0])} instead. {inc} is {INCENSE_SHOPS}.')
+                else:
+                    line += '.'
+                parts.append(line)
+        if not parts:
+            parts.append('There is no way to obtain it in this version. It appears only on trainers’ teams, '
+                         'so you would have to trade it in from another Gen 3 game.')
+        e['notes'] = ' '.join(parts)
+
+
 def parse_evolution(path):
     text = open(path).read()
     evolutions = {}  # species_key -> [{method, param, target}]
@@ -943,6 +1034,8 @@ def build_data():
                     'method': fmt_evo_method(rev['method'], rev['param']),
                 })
         entry['evolvesFrom'] = frm
+
+    build_auto_obtain_notes(entries_by_key, raw_evos, reverse_evo)
 
     pokemon_list.sort(key=lambda p: p['dexNum'])
     print(f"  Total: {len(pokemon_list)} Pokémon")

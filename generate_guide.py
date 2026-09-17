@@ -275,17 +275,259 @@ def build_pages(br_groups):
     return pages
 
 
+
+# ---------------------------------------------------------------------------
+# Where to use Thief — every trainer party with held items (src/data/trainer_parties.h).
+# Thief/Covet (EFFECT_THIEF) steals permanently in normal trainer battles; blocked only in
+# Trainer Hill, by Sticky Hold, on Mail / Enigma Berry, or if the user already holds an item
+# (src/battle_script_commands.c MOVE_EFFECT_STEAL_ITEM).
+# ---------------------------------------------------------------------------
+import re
+
+_LEAGUE_REPEAT = {'SIDNEY_2', 'PHOEBE_2', 'GLACIA_2', 'DRAKE_2', 'WALLACE_2'}
+
+
+def _all_trainers():
+    content = open(os.path.join(BASE, 'src/data/trainers.h')).read()
+    chunks = re.split(r'\[(TRAINER_\w+)\]\s*=\s*', content)
+    out = []
+    for i in range(1, len(chunks) - 1, 2):
+        tid, body = chunks[i], chunks[i + 1]
+        if tid.endswith(('_SINGLE', '_PLACEHOLDER')) or tid in ('TRAINER_NONE', 'TRAINER_BATTLE_ROYALE_MR_MIMIC'):
+            continue
+        cls = re.search(r'\.trainerClass\s*=\s*TRAINER_CLASS_(\w+)', body)
+        party = re.search(r'\.party\s*=\s*TRAINER_MON\((\w+)\)', body)
+        if not cls or not party:
+            continue
+        name = re.search(r'\.trainerName\s*=\s*_\("([^"]*)"\)', body)
+        pic = re.search(r'\.trainerPic\s*=\s*TRAINER_PIC_(\w+)', body)
+        out.append(dict(id=tid, cls=cls.group(1), name=name.group(1) if name else '',
+                        pic=pic.group(1) if pic else None, party=party.group(1).replace('sParty_', '')))
+    return out
+
+
+def _rematch_tables():
+    src = open(os.path.join(BASE, 'src/battle_setup.c')).read()
+    base_of, last = {}, set()
+    for m in re.finditer(r'\[REMATCH_\w+\]\s*=\s*REMATCH\(([^)]*)\)', src):
+        ids = [x.strip() for x in m.group(1).split(',')][:-1]
+        for x in ids:
+            base_of.setdefault(x, ids[0])
+        last.add(ids[-1])
+    return base_of, last
+
+
+# Rough story order of trainer maps (prefix match, longest wins) for the chronological sort.
+MAP_PROGRESSION = [
+    'Littleroot Town', 'Route 101', 'Oldale Town', 'Route 103', 'Route 102', 'Petalburg City', 'Route 104',
+    'Petalburg Woods', 'Rustboro City', 'Rustboro City Gym', 'Route 116', 'Rusturf Tunnel', 'Dewford Town',
+    'Dewford Town Gym', 'Granite Cave', 'Route 109', 'Slateport City', 'Slateport City Oceanic Museum',
+    'Route 110', 'Route 110 Trick House', 'Mauville City', 'Mauville City Gym', 'Route 117', 'Verdanturf Town',
+    'Route 111', 'Route 112', 'Route 113', 'Fallarbor Town', 'Route 114', 'Meteor Falls 1F', 'Mt Chimney',
+    'Jagged Pass', 'Lavaridge Town', 'Lavaridge Town Gym', 'Petalburg City Gym', 'Route 105', 'Route 106',
+    'Route 107', 'Route 108', 'Abandoned Ship', 'Route 118', 'Route 119', 'Route 119 Weather Institute',
+    'Route 120', 'Fortree City', 'Fortree City Gym', 'Route 121', 'Route 122', 'Mt Pyre', 'Route 123',
+    'Lilycove City', 'Magma Hideout', 'Aqua Hideout', 'Route 124', 'Mossdeep City', 'Mossdeep City Gym',
+    'Route 125', 'Mossdeep City Space Center', 'Route 126', 'Route 127', 'Route 128', 'Seafloor Cavern',
+    'Sootopolis City', 'Sootopolis City Gym', 'Route 129', 'Route 130', 'Route 131', 'Pacifidlog Town',
+    'Route 132', 'Route 133', 'Route 134', 'Sealed Chamber', 'Victory Road', 'Ever Grande City',
+    # post-game areas
+    'SSTidal', 'Battle Frontier', 'Meteor Falls Stevens Cave', 'Sky Pillar Top', 'Marine Cave', 'Terra Cave',
+    'Cave Of Origin',
+]
+POSTGAME_MAPS = ('SSTidal', 'Battle Frontier', 'Meteor Falls Stevens Cave', 'Sky Pillar Top', 'Marine Cave',
+                 'Terra Cave', 'Cave Of Origin', 'Route 110 Trick House Puzzle 8')
+POSTGAME_IDS = {'SIDNEY_2', 'PHOEBE_2', 'GLACIA_2', 'DRAKE_2', 'WALLACE_2', 'STEVEN_2', 'ZINNIA'}
+
+
+def map_rank(loc):
+    best, rank = -1, len(MAP_PROGRESSION)
+    for i, pre in enumerate(MAP_PROGRESSION):
+        if loc.startswith(pre) and len(pre) > best:
+            best, rank = len(pre), i
+    return rank
+
+
+# Importance tiers for held items (opinionated: competitive value in Gen 3 first).
+ITEM_TIERS = [
+    ('S', ['Leftovers', 'Choice Band', 'Lum Berry']),
+    ('A', ['Salac Berry', 'Liechi Berry', 'Petaya Berry', 'Starf Berry', 'Apicot Berry', 'Ganlon Berry',
+           'Light Ball', 'Thick Club', 'Soul Dew', 'Deepseatooth', 'Deepseascale', 'Shell Bell', "King's Rock",
+           'Scope Lens', 'Focus Band', 'Brightpowder', 'White Herb', 'Quick Claw', 'Sitrus Berry']),
+    ('B', ['Nugget', 'Charcoal', 'Mystic Water', 'Magnet', 'Miracle Seed', 'Nevermeltice', 'Black Belt',
+           'Soft Sand', 'Sharp Beak', 'Twistedspoon', 'Silverpowder', 'Hard Stone', 'Spell Tag', 'Blackglasses',
+           'Silk Scarf', 'Lax Incense', 'Sun Stone']),
+    ('C', ['Chesto Berry', 'Wiki Berry', 'Aguav Berry', 'Figy Berry', 'Persim Berry', 'Leppa Berry', 'Oran Berry']),
+]
+ITEM_IMPORTANCE = {}
+for _tier, _names in ITEM_TIERS:
+    for _n in _names:
+        ITEM_IMPORTANCE[_n] = (_tier, len(ITEM_IMPORTANCE))
+
+
+def load_item_icon_b64(const):
+    """ITEM_LEFTOVERS -> base64 PNG of its bag icon, palette applied, index 0 transparent."""
+    from PIL import Image
+    global _ICON_FILES
+    if '_ICON_FILES' not in globals():
+        gfx = open(os.path.join(BASE, 'src/data/graphics/items.h')).read()
+        sym_file = dict(re.findall(r'(gItemIcon(?:Palette)?_\w+)\[\]\s*=\s*INCBIN_U32\("([^"]+)"\)', gfx))
+        table = open(os.path.join(BASE, 'src/data/item_icon_table.h')).read()
+        _ICON_FILES = {}
+        for item, icon, pal in re.findall(r'\[(ITEM_\w+)\]\s*=\s*\{(\w+),\s*(\w+)\}', table):
+            if icon in sym_file and pal in sym_file:
+                _ICON_FILES[item] = (sym_file[icon].split('.')[0] + '.png', sym_file[pal].split('.')[0] + '.pal')
+    if const not in _ICON_FILES:
+        return ''
+    png, pal = (os.path.join(BASE, f) for f in _ICON_FILES[const])
+    img = Image.open(png)
+    if img.mode == 'P' and os.path.exists(pal):
+        colors = [tuple(int(x) for x in l.split()) for l in open(pal).read().splitlines()[3:] if len(l.split()) == 3]
+        flat = img.getpalette()
+        for i, c in enumerate(colors[:16]):
+            flat[i * 3:i * 3 + 3] = list(c)
+        img.putpalette(flat)
+        img.info['transparency'] = 0
+    return pdx._img_to_b64(img.convert('RGBA'))
+
+
+def build_thief_pages(tdex_groups):
+    parties = tdx.parse_parties(os.path.join(BASE, 'src/data/trainer_parties.h'))
+    class_names = tdx.parse_class_names(os.path.join(BASE, 'src/data/text/trainer_class_names.h'))
+    item_names = tdx.parse_item_names(os.path.join(BASE, 'src/data/items.h'))
+    pics = tdx.parse_trainer_pics(os.path.join(BASE, 'src/data/trainer_graphics/front_pic_tables.h'),
+                                  os.path.join(BASE, 'src/data/graphics/trainers.h'))
+    locations = tdx.parse_trainer_locations(os.path.join(BASE, 'data/maps'))
+    base_of, last_rematch = _rematch_tables()
+    leader_team5 = {f'TRAINER_{l}_5' for l in tdx._GYM_LEADERS}
+
+    br_ids = {'TRAINER_' + v['id'] for g in tdex_groups for v in g['variants']
+              if tdx.trainer_note(v['id'], g['category']) == tdx.BATTLE_ROYALE_NOTE}
+    entries = []
+    item_const = {}
+    for t in _all_trainers():
+        consts = [m['heldItem'] for m in parties.get(t['party'], [])
+                  if tdx.item_display(m['heldItem'], item_names)]
+        items = [tdx.item_display(c, item_names) for c in consts]
+        for c, n in zip(consts, items):
+            item_const[n] = c
+        if not items:
+            continue
+        locs = locations.get(t['id']) or locations.get(base_of.get(t['id'], ''), [])
+        if not locs:
+            continue  # unused / unreachable team
+        short = t['id'].replace('TRAINER_', '')
+        if t['id'] in leader_team5:
+            repeat = 'Gym Team 5: rebattle any time'
+        elif short in _LEAGUE_REPEAT:
+            repeat = 'Every League run after becoming Champion'
+        elif t['id'] == 'TRAINER_GRINDING_NURSE':
+            repeat = 'Rebattle any time'
+        elif t['id'] in last_rematch and t['id'] not in base_of.values() or t['id'] == 'TRAINER_WALLY_VR_5':
+            repeat = 'Match Call rematch: their final team repeats'
+        else:
+            repeat = ''
+        cls = class_names.get(t['cls'], t['cls'].replace('_', ' '))
+        cls = ' '.join(w[:1].upper() + w[1:].lower() for w in cls.split())
+        nm = t['name'].title() if t['name'].isupper() else t['name']
+        plain = ('pkmn trainer', 'pokémon trainer', 'leader', 'elite four', 'champion')
+        label = nm if (not nm or cls.lower() in plain) else f'{cls} {nm}'
+        # Tell apart the several teams of the same trainer
+        team = re.search(r'_(\d+)$', short)
+        if short in _LEAGUE_REPEAT:
+            label += ' (Champion)' if short == 'WALLACE_2' else ' (Rematch)'
+        elif team and (t['id'] in base_of or short.startswith('BRAWLY_1_')):
+            label += ' (Team ' + '.'.join(re.findall(r'_(\d+)', short)) + ')'
+        counts = {}
+        for it in items:
+            counts[it] = counts.get(it, 0) + 1
+        # Chronology: story fights, then in-story Match Call rematches, then post-game fights.
+        team_n = int(team.group(1)) if team else 1
+        if (short in POSTGAME_IDS or short.startswith(('WALLY_VR_', 'JUAN_')) and short != 'WALLY_VR_1'
+                or any(l.startswith(POSTGAME_MAPS) for l in locs)
+                or (t['id'] in base_of and short.split('_')[0] in {k.split('_')[0] for k in tdx._GYM_LEADERS} and team_n >= 3)):
+            phase = 2
+        elif t['id'] in base_of and t['id'] not in base_of.values():
+            phase = 1
+        else:
+            phase = 0
+        chrono = phase * 10000 + min(map_rank(l) for l in locs) * 10 + min(team_n, 9)
+        entries.append(dict(id=short, label=label or cls, cls=cls, locs=locs, repeat=repeat, counts=counts,
+                            pic=pics.get(t['pic']), chrono=chrono, phase=phase, br=t['id'] in br_ids))
+
+    how = dict(id='thief-how', section='Where to Use Thief', title='How Thief Works',
+        kicker='Steal held items from trainers', blocks=[
+        dict(type='p', html='<b>Thief</b> (and <b>Covet</b>, which has the same effect) takes the target’s held item, and '
+                            '<b>you keep it after the battle</b>. Many trainers hold competitive items such as Leftovers, '
+                            'Choice Band and King’s Rock that are hard to find anywhere else.'),
+        dict(type='h', text='Getting TM46 Thief'),
+        dict(type='list', items=[
+            'Free from the Team Aqua grunt in the <b>Slateport Oceanic Museum</b> (1F).',
+            'Buy more at the <b>Lilycove Department Store</b> (4F) or the <b>Sootopolis City Poké Mart</b>.',
+        ]),
+        dict(type='h', text='Rules'),
+        dict(type='list', items=[
+            'The Pokémon using Thief must be holding <b>nothing</b>. Once it steals, it holds the item, so bring several empty-handed Thief users to take more than one item per battle.',
+            'Thief has to hit and do damage. It fails against Pokémon with <b>Sticky Hold</b>, and <b>Mail</b> and the <b>Enigma Berry</b> can’t be stolen.',
+            'Works in every normal trainer battle, including rematches and Battle Royale trainers. It does <b>not</b> work in <b>Trainer Hill</b>.',
+            'A <b>Nugget</b> sells for ₽5,000, so trainers holding Nuggets are easy money.',
+        ]),
+        dict(type='callout', html='Tip: many trainers repeat forever. See <a onclick="selectPage(\'thief-farms\')">Repeatable Farms</a> '
+                                  'to steal the same item again and again, or the <a onclick="selectPage(\'thief-items\')">Item Finder</a> '
+                                  'to see who holds a specific item.'),
+    ])
+
+    farm = [e for e in entries if e['repeat']]
+    rank = {'Gym Team 5: rebattle any time': 0, 'Every League run after becoming Champion': 1,
+            'Rebattle any time': 2, 'Match Call rematch: their final team repeats': 3}
+    farm.sort(key=lambda e: (rank[e['repeat']], e['label']))
+    farms = dict(id='thief-farms', section='Where to Use Thief', title='Repeatable Farms',
+        kicker='Steal the same items again and again', blocks=[
+        dict(type='p', html='These trainers can be fought again and again, so their items can be stolen every time. '
+                            'Gym Team 5 and the League unlock after the Hall of Fame (see '
+                            '<a onclick="selectPage(\'rematch-gym\')">Gym Leaders</a>). Match Call trainers offer '
+                            'rematches at random as you walk around; once you have beaten their last team, it repeats on every later rematch. '
+                            'Your PokéNav shows who is ready.'),
+        dict(type='table', head=['Trainer', 'Where', 'How it repeats', 'Held items'], rows=[
+            [dict(sprite=('tr:' + e['pic']) if e['pic'] else None, text=e['label']),
+             dict(text=', '.join(e['locs'])), dict(text=e['repeat']),
+             dict(items=[dict(name=k, n=v, icon='item:' + item_const[k]) for k, v in sorted(e['counts'].items())])]
+            for e in farm]),
+    ])
+
+    by_item = {}
+    for e in entries:
+        for it, n in e['counts'].items():
+            by_item.setdefault(it, []).append((e, n))
+    items = []
+    for it, holders in by_item.items():
+        tier, imp = ITEM_IMPORTANCE.get(it, ('C', 999))
+        items.append(dict(name=it, icon='item:' + item_const[it], tier=tier, imp=imp,
+                          count=sum(n for _, n in holders),
+                          holders=[dict(label=e['label'], n=n, locs=', '.join(e['locs']), repeat=bool(e['repeat']),
+                                        chrono=e['chrono'], post=e['phase'] == 2, br=e['br']) for e, n in holders]))
+    finder = dict(id='thief-items', section='Where to Use Thief', title='Item Finder',
+        kicker='Who holds what', blocks=[
+        dict(type='p', html=f'Every held item on a reachable trainer’s team ({len(entries)} teams in total). '
+                            '<b>↻</b> marks a repeatable fight, <b>Post</b> a post-game fight and <b>BR</b> a Battle Royale mode trainer. '
+                            'Importance tiers (S → C) rank how useful an item is in Gen 3 battles. '
+                            'Chronological order is by the earliest trainer you can steal each item from, following the story.'),
+        dict(type='itemfinder', items=items),
+    ])
+    return [how, farms, finder]
+
+
 def build_data():
     with contextlib.redirect_stdout(io.StringIO()):
         trainers, _, trainer_pics, _, _ = tdx.build_data()
-    pages = build_pages(trainers)
+    pages = build_pages(trainers) + build_thief_pages(trainers)
 
     # Collect every sprite reference used by the pages and bake it once.
     refs = set()
     def walk(o):
         if isinstance(o, dict):
             for k, v in o.items():
-                if k in ('sprite', 'wantSprite') and v:
+                if k in ('sprite', 'wantSprite', 'icon') and v:
                     refs.add(v)
                 elif k == 'extra':
                     refs.update(v)
@@ -308,6 +550,8 @@ def build_data():
             sprites[ref] = tdx.load_trainer_pic_b64(key)
         elif kind == 'trpic':
             sprites[ref] = trainer_pics.get(key, '')
+        elif kind == 'item':
+            sprites[ref] = load_item_icon_b64(key)
     # Shiny variants for cards flagged shiny
     for p in pages:
         for b in p['blocks']:
@@ -458,6 +702,22 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
   tr:last-child td { border-bottom: 0; }
   td .ent { display: flex; align-items: center; gap: 8px; white-space: nowrap; font-family: var(--f-serif); font-style: italic; font-size: 15px; color: var(--ink); }
   td .ent img { width: 40px; height: 40px; image-rendering: pixelated; }
+  td .dim { color: var(--ink-mut); font-size: 12px; }
+  .chip { display: inline-flex; align-items: center; gap: 2px; margin: 0 8px 2px 0; white-space: nowrap; }
+  .chip img, .it-name img { width: 24px; height: 24px; image-rendering: pixelated; }
+  .it-name { display: flex; align-items: center; gap: 6px; font-weight: 600; color: var(--ink); white-space: nowrap; }
+  .tier { display: inline-block; min-width: 22px; text-align: center; font-family: var(--f-mono); font-size: 11px; padding: 2px 6px; border: 1px solid var(--rule); }
+  .tier-S { color: var(--dusk); border-color: var(--dusk); background: var(--dusk-soft); }
+  .tier-A { color: var(--jade-bright); border-color: var(--jade-bright); }
+  .tier-B { color: var(--ink-dim); }
+  .tier-C { color: var(--ink-mut); }
+  .sortbar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 4px 0 12px; }
+  .sortbar .lbl { font-family: var(--f-mono); font-size: 9px; color: var(--ink-mut); letter-spacing: 0.22em; text-transform: uppercase; margin-right: 4px; }
+  .sort-btn { font-family: var(--f-mono); font-size: 9px; padding: 5px 11px; letter-spacing: 0.14em; text-transform: uppercase; border: 1px solid var(--rule); background: transparent; color: var(--ink-dim); cursor: pointer; }
+  .sort-btn:hover { border-color: var(--jade-bright); color: var(--ink); }
+  .sort-btn.active { background: var(--jade-soft); border-color: var(--jade-bright); color: var(--jade-bright); }
+  .pg.br { color: var(--jade-bright); border-color: var(--jade-bright); }
+  .pg { font-family: var(--f-mono); font-size: 8px; letter-spacing: 0.14em; color: var(--dusk); border: 1px solid var(--dusk); padding: 0 4px; margin-left: 4px; vertical-align: middle; }
 
   #btn-back {
     display: none; align-items: center; gap: 8px; margin-bottom: 20px; padding: 7px 14px;
@@ -483,7 +743,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
 <div id="sidebar">
   <div id="sidebar-header">
     <h1>Field Guide</h1>
-    <span class="volume">Vol. IV · Trades · Gifts · Rematches</span>
+    <span class="volume">Vol. IV · Trades · Gifts · Rematches · Thief</span>
   </div>
   <div id="page-list"></div>
 </div>
@@ -520,8 +780,50 @@ function renderList() {
   list.innerHTML = html;
 }
 
+function chip(it) {
+  return `<span class="chip">${img(it.icon, it.name)}${it.name}${it.n > 1 ? ' ×' + it.n : ''}</span>`;
+}
+
+let finderSort = 'importance';
+let finderBR = true;
+const FINDER_SORTS = {
+  importance: (a, b) => a.imp - b.imp || a.name.localeCompare(b.name),
+  chrono:     (a, b) => a.first - b.first || a.imp - b.imp,
+  common:     (a, b) => b.count - a.count || a.imp - b.imp,
+};
+function setFinderBR(on) { finderBR = on; setFinderSort(finderSort); }
+function setFinderSort(mode) {
+  finderSort = mode;
+  const p = PAGES.find(x => x.id === currentPage);
+  const b = p.blocks.find(x => x.type === 'itemfinder');
+  document.getElementById('itemfinder').outerHTML = renderFinder(b);
+}
+function renderFinder(b) {
+  const items = b.items.map(it => {
+    const holders = it.holders.filter(h => finderBR || !h.br);
+    return {...it, holders, count: holders.reduce((s, h) => s + h.n, 0), first: Math.min(...holders.map(h => h.chrono))};
+  }).filter(it => it.holders.length).sort(FINDER_SORTS[finderSort]);
+  const holderSort = finderSort === 'chrono'
+    ? (x, y) => x.chrono - y.chrono
+    : (x, y) => (y.repeat - x.repeat) || x.chrono - y.chrono;
+  const btn = (m, label) => `<button class="sort-btn${finderSort === m ? ' active' : ''}" onclick="setFinderSort('${m}')">${label}</button>`;
+  return `<div id="itemfinder">
+    <div class="sortbar"><span class="lbl">Order by</span>${btn('importance', 'Importance')}${btn('chrono', 'Chronological')}${btn('common', 'Most common')}
+      <button class="sort-btn${finderBR ? ' active' : ''}" style="margin-left:auto" onclick="setFinderBR(${!finderBR})">${finderBR ? '☑' : '☐'} Battle Royale trainers</button></div>
+    <div class="tbl-wrap"><table><thead><tr><th>Item</th><th>Tier</th><th>Copies</th><th>Steal from</th></tr></thead><tbody>
+    ${items.map(it => `<tr>
+      <td><span class="it-name">${img(it.icon, it.name)}${it.name}</span></td>
+      <td><span class="tier tier-${it.tier}">${it.tier}</span></td>
+      <td>${it.count}</td>
+      <td>${[...it.holders].sort(holderSort).map(h =>
+        `${h.repeat ? '↻ ' : ''}${h.label}${h.n > 1 ? ' ×' + h.n : ''}${h.post ? '<span class="pg">Post</span>' : ''}${h.br ? '<span class="pg br">BR</span>' : ''} <span class="dim">· ${h.locs}</span>`).join('<br>')}</td>
+    </tr>`).join('')}
+    </tbody></table></div></div>`;
+}
+
 function cell(c) {
   if ('sprite' in c) return `<span class="ent">${img(c.sprite, c.text)}${c.text}</span>`;
+  if (c.items) return c.items.map(chip).join('');
   return c.html !== undefined ? c.html : c.text;
 }
 
@@ -534,6 +836,7 @@ function renderBlock(b) {
     case 'table':
       return `<div class="tbl-wrap"><table><thead><tr>${b.head.map(h => `<th>${h}</th>`).join('')}</tr></thead>
         <tbody>${b.rows.map(r => `<tr>${r.map(c => `<td>${cell(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+    case 'itemfinder': return renderFinder(b);
     case 'cards':
       return `<div class="cards">${b.items.map(it => `<div class="card">
         <div class="card-head">

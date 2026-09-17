@@ -250,7 +250,8 @@ def parse_item_names(path):
     result = {}
     for m in re.finditer(r'\[ITEM_(\w+)\]\s*=\s*\{.*?\.name\s*=\s*_\("([^"]*)"\)',
                          content, re.DOTALL):
-        result[m.group(1)] = _clean_text('"' + m.group(2) + '"').title()
+        # str.title() capitalises after apostrophes ("King'S Rock"); undo that
+        result[m.group(1)] = re.sub(r"'S\b", "'s", _clean_text('"' + m.group(2) + '"').title())
     return result
 
 def item_display(const, item_names):
