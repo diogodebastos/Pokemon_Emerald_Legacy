@@ -368,6 +368,26 @@ static void AggregateTrackerData(void)
     }
 }
 
+void BattleRoyale_GetMapsecCounts(u8 mapsec, u16 *defeated, u16 *total)
+{
+    u16 i;
+
+    *defeated = 0;
+    *total = 0;
+    if (mapsec == MAPSEC_NONE)
+        return;
+
+    for (i = 1; i < TRAINERS_COUNT; i++)
+    {
+        if (sTrainerMapSections[i] != mapsec || !IsTrainerEligibleForBattleRoyale(i))
+            continue;
+
+        (*total)++;
+        if (HasTrainerBeenFought(i))
+            (*defeated)++;
+    }
+}
+
 static void DrawTrackerWindowFrames(void)
 {
     /* Draw header frame on BG1 */

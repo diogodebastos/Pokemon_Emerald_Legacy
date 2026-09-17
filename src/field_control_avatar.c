@@ -1,4 +1,5 @@
 #include "global.h"
+#include "battle_royale.h"
 #include "battle_setup.h"
 #include "bike.h"
 #include "coord_event_weather.h"
@@ -86,6 +87,7 @@ void FieldClearPlayerInput(struct FieldInput *input)
     input->input_field_1_3 = FALSE;
     input->dpadDirection = 0;
     input->pressedRButton = FALSE;
+    input->pressedLButton = FALSE;
 }
 
 void FieldGetPlayerInput(struct FieldInput *input, u16 newKeys, u16 heldKeys)
@@ -116,6 +118,8 @@ void FieldGetPlayerInput(struct FieldInput *input, u16 newKeys, u16 heldKeys)
 
         if (newKeys & R_BUTTON)
             input->pressedRButton = TRUE;
+        if (newKeys & L_BUTTON)
+            input->pressedLButton = TRUE;
     }
 
     if (forcedMove == FALSE)
@@ -193,7 +197,15 @@ int ProcessPlayerFieldInput(struct FieldInput *input)
     if (input->pressedSelectButton && UseRegisteredKeyItemOnField() == TRUE)
         return TRUE;
 
-    if (input->pressedRButton && TestPlayerAvatarFlags(PLAYER_AVATAR_FLAG_MACH_BIKE | PLAYER_AVATAR_FLAG_ACRO_BIKE) && FlagGet(FLAG_UNLOCKED_BIKE_SWITCHING))
+    if (input->pressedRButton)
+        CycleBattleRoyaleHudView();
+
+    // Bike switching lives on L (R cycles the Battle Royale HUD). Skipped in L=A mode,
+    // where L already acts as the A button.
+    if (input->pressedLButton
+     && gSaveBlock2Ptr->optionsButtonMode != OPTIONS_BUTTON_MODE_L_EQUALS_A
+     && TestPlayerAvatarFlags(PLAYER_AVATAR_FLAG_MACH_BIKE | PLAYER_AVATAR_FLAG_ACRO_BIKE)
+     && FlagGet(FLAG_UNLOCKED_BIKE_SWITCHING))
     {
         if (gPlayerAvatar.flags & PLAYER_AVATAR_FLAG_MACH_BIKE)
         {

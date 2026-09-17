@@ -10,6 +10,7 @@ void BattleRoyale_ResetAllTrainerFlags(void);
 void BattleRoyale_OnTrainerDefeated(u16 trainerIdA, u16 trainerIdB);
 void ShowBattleRoyaleHud(void);
 void RemoveBattleRoyaleHud(void);
+void CycleBattleRoyaleHudView(void);
 void ResetBattleRoyaleTransientState(void);
 void GetHallOfFameEntries(void);
 

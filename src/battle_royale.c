@@ -1,5 +1,6 @@
 #include "global.h"
 #include "battle_royale.h"
+#include "battle_royale_tracker.h"
 #include "battle_setup.h"
 #include "bg.h"
 #include "event_data.h"
@@ -8,6 +9,8 @@
 #include "menu.h"
 #include "overworld.h"
 #include "palette.h"
+#include "region_map.h"
+#include "sound.h"
 #include "script.h"
 #include "string_util.h"
 #include "task.h"
@@ -17,12 +20,13 @@
 #include "constants/characters.h"
 #include "constants/game_stat.h"
 #include "constants/opponents.h"
+#include "constants/songs.h"
 #include "gym_leader_rematch.h"
 #include "constants/flags.h"
 #include "constants/vars.h"
 
 static void Task_BattleRoyaleHud(u8 taskId);
-static void DrawBattleRoyaleHud(void);
+static void DrawBattleRoyaleHud(u16 scrollOffset);
 static void CreateBattleRoyaleHudWindow(void);
 static bool8 IsBattleRoyaleHudPositionUnsafe(void);
 static bool8 IsBattleRoyaleHudSceneActive(void);
@@ -31,14 +35,31 @@ static EWRAM_DATA u8 sBattleRoyaleHudWindowId = WINDOW_NONE;
 static EWRAM_DATA bool8 sBattleRoyaleJustCompleted = FALSE;
 static EWRAM_DATA u8 sRematchVariantBits[(TRAINERS_COUNT + 7) / 8] = {0};
 static EWRAM_DATA bool8 sRematchCacheBuilt = FALSE;
+static EWRAM_DATA u8 sBattleRoyaleHudView = 0;
+
+// Views cycled with R in the overworld
+enum
+{
+    BR_HUD_GLOBAL, // LEFT (whole challenge) + DIES
+    BR_HUD_AREA,   // current place name + TRACKER defeated/total in that place
+    BR_HUD_HIDDEN,
+    BR_HUD_VIEW_COUNT
+};
 
 static const u8 sText_Left[] = _("LEFT: ");
 static const u8 sText_Deaths[] = _("DIES: ");
+static const u8 sText_Tracker[] = _("TRACKER: ");
 static const u8 sText_Complete[] = _("COMPLETE!");
 
 #define HUD_WIDTH  9
 #define HUD_HEIGHT 3
 #define HUD_LEFT   19
+
+#define HUD_TEXT_X          2
+#define HUD_NAME_MAX_WIDTH  (HUD_WIDTH * 8 - HUD_TEXT_X * 2)
+#define HUD_SCROLL_PAUSE    60 // frames to hold the start of a long name
+#define HUD_SCROLL_STEP     10 // frames per character scrolled
+#define HUD_SCROLL_GAP      3  // spaces between the end of the name and its repeat
 
 static bool8 IsBattleRoyaleHudPositionUnsafe(void)
 {
@@ -332,7 +353,51 @@ void GetHallOfFameEntries(void)
 
 // HUD
 
-static void DrawBattleRoyaleHud(void)
+// Name of the player's current place; long names loop, shifted by scrollOffset characters.
+static void BuildHudAreaName(u8 *dest, u16 scrollOffset)
+{
+    u8 name[MAP_NAME_LENGTH + 1];
+    u8 *ptr;
+    u16 len, i;
+
+    GetMapNameGeneric(name, gMapHeader.regionMapSectionId);
+    if (GetStringWidth(FONT_SMALL, name, 0) <= HUD_NAME_MAX_WIDTH)
+    {
+        StringCopy(dest, name);
+        return;
+    }
+
+    len = StringLength(name);
+    scrollOffset %= len + HUD_SCROLL_GAP;
+    ptr = dest;
+    if (scrollOffset < len)
+        ptr = StringCopy(ptr, name + scrollOffset);
+    for (i = max(scrollOffset, len); i < len + HUD_SCROLL_GAP; i++)
+        *ptr++ = CHAR_SPACE;
+    StringCopy(ptr, name);
+}
+
+// Returns how many characters a long name loops over (0 if it fits and doesn't scroll).
+static u16 GetHudAreaNameScrollLength(void)
+{
+    u8 name[MAP_NAME_LENGTH + 1];
+
+    GetMapNameGeneric(name, gMapHeader.regionMapSectionId);
+    if (GetStringWidth(FONT_SMALL, name, 0) <= HUD_NAME_MAX_WIDTH)
+        return 0;
+    return StringLength(name) + HUD_SCROLL_GAP;
+}
+
+static void DrawHudAreaNameRow(u16 scrollOffset)
+{
+    u8 text[(MAP_NAME_LENGTH + 1) * 2 + HUD_SCROLL_GAP];
+
+    BuildHudAreaName(text, scrollOffset);
+    FillWindowPixelRect(sBattleRoyaleHudWindowId, PIXEL_FILL(1), 0, 0, HUD_WIDTH * 8, 12);
+    AddTextPrinterParameterized(sBattleRoyaleHudWindowId, FONT_SMALL, text, HUD_TEXT_X, 1, TEXT_SKIP_DRAW, NULL);
+}
+
+static void DrawBattleRoyaleHud(u16 scrollOffset)
 {
     u8 text[32];
     u8 *ptr;
@@ -346,6 +411,24 @@ static void DrawBattleRoyaleHud(void)
 
     LoadMessageBoxGfx(sBattleRoyaleHudWindowId, 0x200, BG_PLTT_ID(15));
     DrawDialogueFrame(sBattleRoyaleHudWindowId, FALSE);
+
+    if (sBattleRoyaleHudView == BR_HUD_AREA)
+    {
+        u16 areaDefeated, areaTotal;
+
+        DrawHudAreaNameRow(scrollOffset);
+
+        BattleRoyale_GetMapsecCounts(gMapHeader.regionMapSectionId, &areaDefeated, &areaTotal);
+        ptr = StringCopy(text, sText_Tracker);
+        ptr = ConvertIntToDecimalStringN(ptr, areaDefeated, STR_CONV_MODE_LEFT_ALIGN, 3);
+        *ptr++ = CHAR_SLASH;
+        ptr = ConvertIntToDecimalStringN(ptr, areaTotal, STR_CONV_MODE_LEFT_ALIGN, 3);
+        *ptr = EOS;
+        AddTextPrinterParameterized(sBattleRoyaleHudWindowId, FONT_SMALL, text, HUD_TEXT_X, 13, TEXT_SKIP_DRAW, NULL);
+
+        CopyWindowToVram(sBattleRoyaleHudWindowId, COPYWIN_FULL);
+        return;
+    }
 
     if (mode == 2)
     {
@@ -370,7 +453,11 @@ static void DrawBattleRoyaleHud(void)
 }
 
 // data[4] tracks whether the HUD is currently hidden due to script/dialogue
-#define tHidden data[4]
+#define tHidden       data[4]
+#define tLastView     data[5]
+#define tLastMapsec   data[6]
+#define tScrollTimer  data[7]
+#define tScrollOffset data[8]
 
 static void Task_BattleRoyaleHud(u8 taskId)
 {
@@ -396,8 +483,8 @@ static void Task_BattleRoyaleHud(u8 taskId)
         return;
     }
 
-    // Hide HUD when dialogue/script/map popup is active
-    if (shouldHide)
+    // Hide HUD when dialogue/script/map popup is active, or the player hid it with R
+    if (shouldHide || sBattleRoyaleHudView == BR_HUD_HIDDEN)
     {
         if (!gTasks[taskId].tHidden)
         {
@@ -407,6 +494,11 @@ static void Task_BattleRoyaleHud(u8 taskId)
                 ClearDialogWindowAndFrameToTransparent(sBattleRoyaleHudWindowId, FALSE);
                 ScheduleBgCopyTilemapToVram(0);
             }
+        }
+        if (sBattleRoyaleJustCompleted && !shouldHide)
+        {
+            sBattleRoyaleJustCompleted = FALSE;
+            ScriptContext_SetupScript(EventScript_BattleRoyaleVictory);
         }
         return;
     }
@@ -427,6 +519,16 @@ static void Task_BattleRoyaleHud(u8 taskId)
         gTasks[taskId].data[0] = 0xFFFF; // Force redraw
     }
 
+    if (gTasks[taskId].tLastView != sBattleRoyaleHudView
+     || gTasks[taskId].tLastMapsec != gMapHeader.regionMapSectionId)
+    {
+        gTasks[taskId].tLastView = sBattleRoyaleHudView;
+        gTasks[taskId].tLastMapsec = gMapHeader.regionMapSectionId;
+        gTasks[taskId].tScrollTimer = 0;
+        gTasks[taskId].tScrollOffset = 0;
+        gTasks[taskId].data[0] = 0xFFFF; // Force redraw
+    }
+
     if (gTasks[taskId].data[0] != remaining
      || gTasks[taskId].data[1] != deaths
      || gTasks[taskId].data[2] != mode)
@@ -434,7 +536,25 @@ static void Task_BattleRoyaleHud(u8 taskId)
         gTasks[taskId].data[0] = remaining;
         gTasks[taskId].data[1] = deaths;
         gTasks[taskId].data[2] = mode;
-        DrawBattleRoyaleHud();
+        DrawBattleRoyaleHud(gTasks[taskId].tScrollOffset);
+    }
+    else if (sBattleRoyaleHudView == BR_HUD_AREA && sBattleRoyaleHudWindowId != WINDOW_NONE)
+    {
+        // Marquee long place names one character at a time
+        u16 loopLen = GetHudAreaNameScrollLength();
+
+        if (loopLen != 0)
+        {
+            u16 wait = (gTasks[taskId].tScrollOffset == 0) ? HUD_SCROLL_PAUSE : HUD_SCROLL_STEP;
+
+            if (++gTasks[taskId].tScrollTimer >= wait)
+            {
+                gTasks[taskId].tScrollTimer = 0;
+                gTasks[taskId].tScrollOffset = (gTasks[taskId].tScrollOffset + 1) % loopLen;
+                DrawHudAreaNameRow(gTasks[taskId].tScrollOffset);
+                CopyWindowToVram(sBattleRoyaleHudWindowId, COPYWIN_GFX);
+            }
+        }
     }
 
     if (sBattleRoyaleJustCompleted && !shouldHide)
@@ -510,7 +630,18 @@ void ShowBattleRoyaleHud(void)
         gTasks[taskId].data[1] = 0xFFFF;
         gTasks[taskId].data[2] = 0xFFFF;
         gTasks[taskId].data[3] = -1;     // Last known BG0VOFS
+        gTasks[taskId].tLastView = sBattleRoyaleHudView;
+        gTasks[taskId].tLastMapsec = gMapHeader.regionMapSectionId;
     }
+}
+
+void CycleBattleRoyaleHudView(void)
+{
+    if (VarGet(VAR_BATTLE_ROYALE_MODE) == 0)
+        return;
+
+    sBattleRoyaleHudView = (sBattleRoyaleHudView + 1) % BR_HUD_VIEW_COUNT;
+    PlaySE(SE_SELECT);
 }
 
 void RemoveBattleRoyaleHud(void)
@@ -534,6 +665,7 @@ void ResetBattleRoyaleTransientState(void)
 
     sBattleRoyaleHudWindowId = WINDOW_NONE;
     sBattleRoyaleJustCompleted = FALSE;
+    sBattleRoyaleHudView = BR_HUD_GLOBAL;
     sRematchCacheBuilt = FALSE;
     CpuFill16(0, sRematchVariantBits, sizeof(sRematchVariantBits));
 }
