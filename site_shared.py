@@ -96,9 +96,16 @@ def load_item_icon_b64(const):
         sym_file = dict(re.findall(r'(gItemIcon(?:Palette)?_\w+)\[\]\s*=\s*INCBIN_U32\("([^"]+)"\)', gfx))
         table = open(os.path.join(BASE, 'src/data/item_icon_table.h')).read()
         _ICON_FILES = {}
+        # The icon table keys TMs/HMs as ITEM_TM01 / ITEM_HM01; items.h uses ITEM_TM_FOCUS_PUNCH (tms_hms.h order)
+        tmhm = open(os.path.join(BASE, 'include/constants/tms_hms.h')).read()
+        alias = {}
+        for kind in ('TM', 'HM'):
+            body = re.search(r'#define FOREACH_%s\(F\)(.*?)(?:\n\s*\n|#define|$)' % kind, tmhm, re.S).group(1)
+            for i, move in enumerate(re.findall(r'F\((\w+)\)', body)):
+                alias[f'ITEM_{kind}{i + 1:02d}'] = f'ITEM_{kind}_{move}'
         for item, icon, pal in re.findall(r'\[(ITEM_\w+)\]\s*=\s*\{(\w+),\s*(\w+)\}', table):
             if icon in sym_file and pal in sym_file:
-                _ICON_FILES[item] = (sym_file[icon].split('.')[0] + '.png', sym_file[pal].split('.')[0] + '.pal')
+                _ICON_FILES[alias.get(item, item)] = (sym_file[icon].split('.')[0] + '.png', sym_file[pal].split('.')[0] + '.pal')
     if const not in _ICON_FILES:
         return ''
     png, pal = (os.path.join(BASE, f) for f in _ICON_FILES[const])

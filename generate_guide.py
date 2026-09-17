@@ -474,8 +474,8 @@ def build_frontier_pages(item_names):
         dict(type='table', head=['Clerk', 'Prizes'], rows=[
             [dict(text=name), dict(items=[dict(name=f'{tdx.item_display(c, item_names)} · {bp} BP', n=1, icon='item:' + c) for c, bp in lst])]
             for name, lst in bp_rows] + [[dict(text='Decorations'), dict(text='Dolls, cushions and posters (16–100 BP)')]]),
-        dict(type='callout', html='<b>Move tutors in Lounge 7 are free</b> in this version, even though the menu still shows the old '
-                                  '16 / 24 / 48 BP prices. They teach Softboiled, Seismic Toss, Dream Eater, Mega Punch, Mega Kick, Body Slam, '
+        dict(type='callout', html='<b>Move tutors in Lounge 7 are free</b> in this version (vanilla charged 16–48 BP). '
+                                  'They teach Softboiled, Seismic Toss, Dream Eater, Mega Punch, Mega Kick, Body Slam, '
                                   'Rock Slide, Counter, Thunder Wave, Swords Dance, Defense Curl, Snore, Mud-Slap, Swift, Icy Wind, Endure, '
                                   'Psych Up, Ice Punch, ThunderPunch and Fire Punch.'),
         dict(type='h', text='Around the Frontier'),

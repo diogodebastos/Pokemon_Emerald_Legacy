@@ -301,9 +301,8 @@ BattleFrontier_Lounge7_Text_LeftTutorIntro:
 	.string "Let me prove it to you.\n"
 	.string "I can teach your POKéMON special and\l"
 	.string "yet cute moves.\p"
-	.string "But my lessons don't come free.\n"
-	.string "How about paying for the moves I teach\l"
-	.string "with a wee bit of Battle Points?$"
+	.string "And my lessons are completely free.\n"
+	.string "Not a single Battle Point needed!$"
 
 BattleFrontier_Lounge7_Text_LeftTutorWelcomeBack:
 	.string "Buhahaha!\p"
@@ -316,7 +315,7 @@ BattleFrontier_Lounge7_Text_TeachWhichMove:
 
 BattleFrontier_Lounge7_Text_MoveWillBeXBattlePoints:
 	.string "The move {STR_VAR_1}, is it?\n"
-	.string "That will be {STR_VAR_2} Battle Points, okay?$"
+	.string "I'll teach it for free, okay?$"
 
 BattleFrontier_Lounge7_Text_TeachMoveToWhichMon:
 	.string "Fine, fine, now pick the POKéMON\n"
@@ -328,7 +327,7 @@ BattleFrontier_Lounge7_Text_HaventGotEnoughPoints:
 
 BattleFrontier_Lounge7_Text_IllTakeBattlePoints:
 	.string "Do you see how skilled I am now?\n"
-	.string "I'll take your Battle Points, thanks!$"
+	.string "And it didn't cost you a thing!$"
 
 BattleFrontier_Lounge7_Text_YouDontWantTo:
 	.string "What's that?\n"
@@ -350,9 +349,8 @@ BattleFrontier_Lounge7_Text_RightTutorIntro:
 	.string "I can prove it to you.\n"
 	.string "I can teach your POKéMON hard and\l"
 	.string "yet pretty moves.\p"
-	.string "But my lessons don't come free.\n"
-	.string "How about paying for the moves I teach\l"
-	.string "with a wee bit of Battle Points?$"
+	.string "And my lessons are completely free.\n"
+	.string "Not a single Battle Point needed!$"
 
 BattleFrontier_Lounge7_Text_RightTutorWelcomeBack:
 	.string "Ihihihi!\p"
