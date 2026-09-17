@@ -775,6 +775,7 @@
           <button class="dex-tab active" data-dex="pokedex" onclick="event.stopPropagation(); switchDex('pokedex')">Pokédex</button>
           <button class="dex-tab" data-dex="trainerdex" onclick="event.stopPropagation(); switchDex('trainerdex')">Trainers</button>
           <button class="dex-tab" data-dex="attackdex" onclick="event.stopPropagation(); switchDex('attackdex')">Moves</button>
+          <button class="dex-tab" data-dex="guide" onclick="event.stopPropagation(); switchDex('guide')">Guide</button>
         </span>
         <span class="title" id="dex-title">Pokédex</span>
       </span>
@@ -905,8 +906,9 @@
 
   const DEX_VIEWS = {
     pokedex:    { src: 'pokedex.html',    title: 'Pokédex',  count: '<b>386</b> Specimens · Hoenn + National' },
-    trainerdex: { src: 'trainerdex.html', title: 'Trainers', count: '<b>74</b> Notable Trainers · Hoenn' },
+    trainerdex: { src: 'trainerdex.html', title: 'Trainers', count: '<b>79</b> Notable Trainers · Hoenn' },
     attackdex:  { src: 'attackdex.html',  title: 'Moves',    count: '<b>354</b> Moves · Learnsets' },
+    guide:      { src: 'guide.html',      title: 'Guide',    count: 'Trades · Gifts · Rematches' },
   };
   let currentDex = 'pokedex';
 

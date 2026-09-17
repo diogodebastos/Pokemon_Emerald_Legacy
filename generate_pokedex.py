@@ -489,7 +489,7 @@ EVENT_ENCOUNTERS = {
     'MOLTRES':   [{'map': 'Magma Hideout',      'method': 'Event', 'minLvl': 50, 'maxLvl': 50, 'postgame': True}],
     'MEWTWO':    [{'map': 'Altering Cave',      'method': 'Event', 'minLvl': 50, 'maxLvl': 50, 'postgame': True}],
     'MEW':       [{'map': 'Faraway Island',     'method': 'Event', 'minLvl': 30, 'maxLvl': 30, 'postgame': True}],
-    'RAIKOU':    [{'map': 'Space Center',       'method': 'Event', 'minLvl': 40, 'maxLvl': 40, 'postgame': True}],
+    'RAIKOU':    [{'map': 'Route 119',          'method': 'Event', 'minLvl': 40, 'maxLvl': 40, 'postgame': True}],
     'ENTEI':     [{'map': 'Scorched Slab',      'method': 'Event', 'minLvl': 40, 'maxLvl': 40, 'postgame': True}],
     'SUICUNE':   [{'map': 'Abandoned Ship',     'method': 'Event', 'minLvl': 40, 'maxLvl': 40, 'postgame': True}],
     'LUGIA':     [{'map': 'Navel Rock',         'method': 'Event', 'minLvl': 70, 'maxLvl': 70, 'postgame': True}],
@@ -501,10 +501,72 @@ EVENT_ENCOUNTERS = {
     'REGISTEEL': [{'map': 'Ancient Tomb',       'method': 'Event', 'minLvl': 40, 'maxLvl': 40, 'postgame': True}],
     'LATIAS':    [{'map': 'Southern Island',    'method': 'Event', 'minLvl': 50, 'maxLvl': 50, 'postgame': True}],
     'LATIOS':    [{'map': 'Southern Island',    'method': 'Event', 'minLvl': 50, 'maxLvl': 50, 'postgame': True}],
-    'KYOGRE':    [{'map': 'Marine Cave',        'method': 'Event', 'minLvl': 70, 'maxLvl': 70, 'postgame': False}],
-    'GROUDON':   [{'map': 'Terra Cave',         'method': 'Event', 'minLvl': 70, 'maxLvl': 70, 'postgame': False}],
+    'KYOGRE':    [{'map': 'Marine Cave',        'method': 'Event', 'minLvl': 70, 'maxLvl': 70, 'postgame': True}],
+    'GROUDON':   [{'map': 'Terra Cave',         'method': 'Event', 'minLvl': 70, 'maxLvl': 70, 'postgame': True}],
     'RAYQUAZA':  [{'map': 'Sky Pillar',         'method': 'Event', 'minLvl': 70, 'maxLvl': 70, 'postgame': False}],
     'DEOXYS':    [{'map': 'Birth Island',       'method': 'Event', 'minLvl': 30, 'maxLvl': 30, 'postgame': True}],
+    # Feebas lives on hidden Route 119 fishing tiles (src/wild_encounter.c), not in wild_encounters.json
+    'FEEBAS':    [{'map': 'Route 119',          'method': 'Fishing', 'minLvl': 20, 'maxLvl': 25, 'postgame': False}],
+}
+
+# Hand-written "How to Obtain" notes (HTML) shown under Where Observed.
+_RESPAWN = ' If you knock it out instead of catching it, it comes back after your next Hall of Fame entry.'
+_BIRDS = ('Beat all eight Gym Leaders in their <b>third</b> fight (Team 3, unlocked after the Hall of Fame). '
+          'Articuno, Zapdos and Moltres then appear at once.' + _RESPAWN)
+_WEATHER_CAVE = ('After the Hall of Fame (and once you have Castform), talk to the scientist on Weather Institute 2F '
+                 'to track the abnormal weather. The first cave to appear is random; after it, the other one opens. '
+                 '<b>One chance only</b>: the event ends whether you catch it or knock it out.')
+SPECIES_NOTES = {
+    'FEEBAS': ('Fish on Route 119 with any rod (Lv.20–25). Feebas only bites on 6 secret water tiles out of hundreds, '
+               'and those tiles move whenever the Dewford trendy phrase changes. Each cast on a right tile has a 50% chance. '
+               'To find them, we recommend <a href="https://mucksw.github.io/Feebas-Tile-Calculator/" target="_blank" '
+               'rel="noopener">this calculator</a>.'),
+    'ARTICUNO': 'Shoal Cave, Low Tide Ice Room. ' + _BIRDS,
+    'ZAPDOS': 'New Mauville. ' + _BIRDS,
+    'MOLTRES': 'Magma Hideout. ' + _BIRDS,
+    'MEWTWO': ('Altering Cave. Earn all seven Silver Symbols at the Battle Frontier, then <b>talk to Scott</b> in his house '
+               'to claim the reward. Having the symbols alone does not unlock it.' + _RESPAWN),
+    'HO_OH': ('Navel Rock summit. Hang all five Master Rank paintings in the Lilycove Museum '
+              '(score 800+ in each contest category) and the curator hands you the Mystic Ticket. '
+              'The ferry to Navel Rock runs after the Hall of Fame.' + _RESPAWN),
+    'LUGIA': ('Navel Rock basement. Hang all five Master Rank paintings in the Lilycove Museum '
+              '(score 800+ in each contest category) and the curator hands you the Mystic Ticket. '
+              'The ferry to Navel Rock runs after the Hall of Fame.' + _RESPAWN),
+    'RAIKOU': ('After the Hall of Fame, talk to the researcher on Weather Institute 2F. Follow its trail: '
+               'first a sighting on Route 123, then the western Battle Frontier, and finally it appears on Route 119.' + _RESPAWN),
+    'ENTEI': ('After the Hall of Fame, talk to the researcher on Weather Institute 2F. Take a seismic reading at '
+              'Mt. Chimney, collect an ash sample on Route 113, then head to the Scorched Slab.' + _RESPAWN),
+    'SUICUNE': ('After the Hall of Fame, talk to the researcher on Weather Institute 1F. Collect water samples by diving on '
+                'Route 128 and Route 134, then go to the Abandoned Ship on Route 108 (hidden floor rooms).' + _RESPAWN),
+    'KYOGRE': 'Marine Cave. Beat Archie there first. ' + _WEATHER_CAVE,
+    'GROUDON': 'Terra Cave. Beat Maxie there first. ' + _WEATHER_CAVE,
+    'RAYQUAZA': ('Sky Pillar summit. After Rayquaza calms Kyogre and Groudon in Sootopolis during the story, climb back to '
+                 'the top of Sky Pillar. <b>One chance only.</b> After the Hall of Fame, Zinnia waits on the Pillar too.'),
+    'REGIROCK': ('Desert Ruins. First open the Sealed Chamber: Dig in the outer room, then read the inner wall with '
+                 'Wailord first and Relicanth last in your party. At the Desert Ruins braille, use '
+                 '<b>Rock Smash</b> from the party menu.'),
+    'REGICE': ('Island Cave (Route 105). Open the Sealed Chamber first. Then read the braille, walk one full lap along the '
+               'edge of the room and read the braille again.'),
+    'REGISTEEL': ('Ancient Tomb (Route 120). Open the Sealed Chamber first. Then stand in the middle of the room and '
+                  'use <b>Flash</b> from the party menu.'),
+    'LATIAS': ('After the Hall of Fame, visit your Dad for the S.S. Ticket, then watch the TV report and pick a colour. '
+               'The one you pick roams Hoenn (Lv.40). The <b>other</b> one waits on Southern Island (Lv.50). To get there, '
+               'beat Steven in Meteor Falls for the Eon Ticket.'),
+    'LATIOS': ('After the Hall of Fame, visit your Dad for the S.S. Ticket, then watch the TV report and pick a colour. '
+               'The one you pick roams Hoenn (Lv.40). The <b>other</b> one waits on Southern Island (Lv.50). To get there, '
+               'beat Steven in Meteor Falls for the Eon Ticket.'),
+    'JIRACHI': ('Mossdeep City. After the Hall of Fame <b>and</b> Professor Birch\'s National Dex upgrade, meet Birch by '
+                'the big rock in Mossdeep and make a wish. <b>One chance only.</b> Afterwards the Game Corner Porygon, '
+                'the Helix and Dome Fossils and new wild encounters unlock.'),
+    'CELEBI': ('Mirage Island (Route 130). As Champion, go home and set your bedroom wall clock to exactly '
+               '<b>4:00</b>, then <b>10:00</b>, then <b>18:00</b>, in that order. Then examine the clock to travel to '
+               'Route 130. Setting any time wrong restarts the sequence. There\'s a hint NPC in Pacifidlog Town.'),
+    'MEW': ('Faraway Island. Complete the National Pokédex (Mew, Celebi, Jirachi and Deoxys don\'t count), then have '
+            'Professor Birch rate your Pokédex to receive the Old Sea Map.' + _RESPAWN),
+    'DEOXYS': ('Birth Island. Give Cozmo in Fallarbor Town the Meteorite, then talk to him with <b>Rayquaza in your party</b> '
+               'to get the Aurora Ticket. The ferry runs after the Hall of Fame.' + _RESPAWN +
+               '<br><br><b>Forms:</b> after the battle, visit Cozmo with Deoxys in your party and let it touch the meteorite. '
+               'Each visit cycles Normal → Attack → Defense → Speed → Normal.'),
 }
 
 # --- Parse wild encounters ---
@@ -757,6 +819,7 @@ def build_data():
             'egg': egg.get(key, []),
             'tutor': tutor.get(key, []),
             'locations': locs.get(key, []),
+            'notes': SPECIES_NOTES.get(key, ''),
             'forms': [],
         }
         entries_by_key[key] = entry
@@ -1329,6 +1392,19 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
     padding-left: 16px;
     border-left: 2px solid var(--jade-bright);
   }
+
+  /* Hand-written obtain / unlock notes */
+  .obtain-note {
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--ink-dim);
+    margin: 4px 0 8px;
+    padding: 2px 0 2px 16px;
+    border-left: 2px solid var(--jade-bright);
+    max-width: 72ch;
+  }
+  .obtain-note b { color: var(--ink); font-weight: 600; }
+  .obtain-note a { color: var(--jade-bright); }
 
   /* Spec table — hairline rules */
   .spec-grid {
@@ -2306,6 +2382,7 @@ function renderDetail(p, formIdx, shiny) {
 
     <div class="section-title">Where Observed</div>
     ${locHtml}
+    ${p.notes ? `<div class="section-title">How to Obtain</div><div class="obtain-note">${p.notes}</div>` : ''}
 
     ${statsHtml}
 

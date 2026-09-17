@@ -89,6 +89,78 @@ STARTER_LABEL = {'TREECKO': 'Treecko / Eevee', 'TORCHIC': 'Torchic / Espeon', 'M
 RIVAL_LOC_RANK = {'ROUTE_103': 0, 'RUSTBORO': 1, 'ROUTE_110': 2,
                   'ROUTE_119': 3, 'LILYCOVE': 4, 'EVERGRANDE': 5}
 
+# --- Hand-written "How to Unlock" notes, keyed by variant id (TRAINER_ prefix stripped) ---
+# Sources: src/gym_leader_rematch.c, data/scripts/hall_of_fame.inc, each gym's scripts.inc.
+_HOF_SKIP = (' <b>Fight it before entering the Hall of Fame</b>: becoming Champion marks any unfought '
+             'Team 2 as beaten, and you can no longer battle it.')
+_GYM_TIERS = {
+    3: 'Unlocks after you enter the Hall of Fame and have beaten Team 2.',
+    4: ('Unlocks after beating Team 3, earning all seven Silver Symbols at the Battle Frontier and '
+        '<b>talking to Scott</b> in his house to claim the reward.'),
+    5: ('Unlocks once <b>all eight</b> Gym Leaders have been beaten with their Team 4. '
+        'Team 5 can be rebattled as many times as you like.'),
+}
+_GYM_COMMON = (' Talk to the leader in their gym. Rematches are double battles, so bring at least two healthy Pokémon. '
+               "The game checks for new rematches as you walk around towns and routes, so if the leader isn't ready yet, take a few steps outside and come back.")
+_GYM_LEADERS = {  # leader id prefix -> (Team 2 unlock, rematch reward given after beating Team 3)
+    'ROXANNE':       ('Unlocks after you beat Wattson in Mauville City.', 'Old Amber'),
+    'BRAWLY':        ('Unlocks after you beat Flannery in Lavaridge Town.', 'Brick Piece'),
+    'WATTSON':       ('Unlocks after you clear New Mauville and collect TM Thunderbolt from Wattson.', 'Up-Grade'),
+    'FLANNERY':      ('Unlocks after you beat Maxie in the Magma Hideout.', 'Sacred Ash ×5'),
+    'NORMAN':        ('After you earn your 8th badge, Norman calls you on the PokéNav a little later. The rematch unlocks after that call.', 'Lucky Egg'),
+    'WINONA':        ('Unlocks after you beat Wally at the entrance of Victory Road.', 'Togepi Egg'),
+    'TATE_AND_LIZA': ('Unlocks after you beat Wally at the entrance of Victory Road.', "King's Rock"),
+    'JUAN':          (None, 'Dragon Scale'),
+}
+TRAINER_NOTES = {
+    'BRAWLY_1':   'Your first fight if you challenge Dewford Gym before beating Wattson.',
+    'BRAWLY_1_2': 'Your first fight if you challenge Dewford Gym after beating Wattson.',
+    'BRAWLY_1_3': 'Your first fight if you challenge Dewford Gym after beating Flannery.',
+    'JUAN_1': 'Juan returns to the Sootopolis Gym after you enter the Hall of Fame (Wallace holds the gym during the story).',
+    'JUAN_2': 'Skipped: the game marks this team as beaten when you enter the Hall of Fame, so Juan goes straight to Team 3.',
+    'SIDNEY_2': 'After you become Champion, challenge the Pokémon League again. Every Hall of Fame run resets the Elite Four, so you can repeat it.',
+    'PHOEBE_2': 'After you become Champion, challenge the Pokémon League again. Every Hall of Fame run resets the Elite Four, so you can repeat it.',
+    'GLACIA_2': 'After you become Champion, challenge the Pokémon League again. Every Hall of Fame run resets the Elite Four, so you can repeat it.',
+    'DRAKE_2':  'After you become Champion, challenge the Pokémon League again. Every Hall of Fame run resets the Elite Four, so you can repeat it.',
+    'STEVEN_1': 'The Champion on your first run through the Pokémon League.',
+    'WALLACE_2': 'After your first Hall of Fame entry, Wallace takes over as Champion and waits at the end of every later League run.',
+    'WALLY_VR_1': 'Story battle at the entrance of Victory Road. Beating him unlocks the Team 2 rematches for Winona and Tate & Liza.',
+    'WALLY_VR_2': 'After you enter the Hall of Fame, Wally waits at the Victory Road exit near Ever Grande City.',
+    'STEVEN_2': ("Steven's Cave in Meteor Falls, reached with Waterfall. One battle only. "
+                 'Your first win earns the Eon Ticket to Southern Island (Latias / Latios).'),
+    'ZINNIA': ('Sky Pillar, after you become Champion. Talk to Zinnia on each floor as you climb; she battles you '
+               'at the summit. One battle only. Winning unlocks the shiny-converter NPC.'),
+    'BATTLE_ROYALE_MR_MIMIC': 'Ever Grande City. Rebattle him as often as you like. He copies your current team.',
+    'GRINDING_NURSE': 'Ever Grande City. Rebattle her as often as you like.',
+}
+for _vr in (3, 4, 5):
+    TRAINER_NOTES[f'WALLY_VR_{_vr}'] = (
+        'Rematch at the Victory Road exit. Beat Team 2 while you have the PokéNav so Wally is registered in Match Call. '
+        'After that he occasionally asks for a rematch: walk about 255 steps (with at least 5 badges), then re-enter '
+        'Victory Road. The PokéNav shows when he is ready. Team 5 can be rebattled again and again.')
+for _lid, (_t2, _reward) in _GYM_LEADERS.items():
+    if _t2:
+        TRAINER_NOTES[f'{_lid}_2'] = _t2 + _HOF_SKIP + _GYM_COMMON
+    for _tier, _txt in _GYM_TIERS.items():
+        _extra = f' Beating it earns a one-time reward: <b>{_reward}</b>.' if _tier == 3 else ''
+        if _tier == 3 and _lid == 'JUAN':
+            _txt = 'Unlocks after you enter the Hall of Fame and beat Juan\'s Team 1 in Sootopolis.'
+        TRAINER_NOTES[f'{_lid}_{_tier}'] = _txt + _extra + _GYM_COMMON
+TRAINER_NOTES['WALLACE_1'] = 'Sootopolis Gym Leader during the story (the 8th badge).'
+
+_BR_CATEGORIES = {'Supertrainers', 'Myth Trainers', 'Frontier Brains', 'Kanto Gauntlet',
+                  'Johto Gauntlet', 'Kanto Elite Four', 'Battle Royale'}
+BATTLE_ROYALE_NOTE = ('<b>Battle Royale mode</b> trainer. Say yes when Mom offers the mode (when she gives you the '
+                      'Running Shoes, or later whenever she heals you at home). Battle Royale trainers then appear on the '
+                      'overworld at the location above. One battle each.')
+
+def trainer_note(vid, category):
+    if vid in TRAINER_NOTES:
+        return TRAINER_NOTES[vid]
+    if category in _BR_CATEGORIES or vid in ('RED', 'LEAF'):
+        return BATTLE_ROYALE_NOTE
+    return ''
+
 # --- Display helpers ---
 
 def _clean_text(raw):
@@ -488,6 +560,7 @@ def build_data():
             'double': t['double'],
             'bag': bag,
             'location': locations.get(t['id'], []),
+            'note': trainer_note(t['id'].replace('TRAINER_', ''), cat),
             'party': party,
         })
 
@@ -701,6 +774,8 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
   .variant-btn:hover { border-color: var(--jade-bright); color: var(--ink); }
   .variant-btn.active { background: var(--jade-soft); border-color: var(--jade-bright); color: var(--jade-bright); }
 
+  .obtain-note { font-size: 14px; line-height: 1.65; color: var(--ink-dim); margin: 4px 0 8px; padding: 2px 0 2px 16px; border-left: 2px solid var(--jade-bright); max-width: 72ch; }
+  .obtain-note b { color: var(--ink); font-weight: 600; }
   .section-title {
     font-family: var(--f-mono); font-size: 10px; color: var(--jade-bright); letter-spacing: 0.3em;
     text-transform: uppercase; margin-bottom: 14px; margin-top: 36px; display: flex;
@@ -1005,6 +1080,7 @@ function renderDetail(t, vIdx) {
       </div>
     </div>
     ${locRow}
+    ${v.note ? `<div class="section-title">How to Unlock</div><div class="obtain-note">${v.note}</div>` : ''}
     <div class="section-title">Team · ${v.party.length} Pokémon</div>
     <div class="party-grid">${cards}</div>
   `;
