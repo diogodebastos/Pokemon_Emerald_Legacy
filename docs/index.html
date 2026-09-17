@@ -705,7 +705,8 @@
     .hdr-mark { font-size: 22px; }
     #dex-toggle { padding: 12px 16px; gap: 12px; }
     #dex-toggle .mono-pre { display: none; }
-    #dex-toggle .title { font-size: 15px; }
+    #dex-toggle .title { display: none; }
+    .dex-tab { padding: 6px 9px; letter-spacing: 0.12em; }
     #dex-toggle .count { display: none; }
   }
 </style>
@@ -773,6 +774,7 @@
         <span class="dex-tabs">
           <button class="dex-tab active" data-dex="pokedex" onclick="event.stopPropagation(); switchDex('pokedex')">Pokédex</button>
           <button class="dex-tab" data-dex="trainerdex" onclick="event.stopPropagation(); switchDex('trainerdex')">Trainers</button>
+          <button class="dex-tab" data-dex="attackdex" onclick="event.stopPropagation(); switchDex('attackdex')">Moves</button>
         </span>
         <span class="title" id="dex-title">Pokédex</span>
       </span>
@@ -904,6 +906,7 @@
   const DEX_VIEWS = {
     pokedex:    { src: 'pokedex.html',    title: 'Pokédex',  count: '<b>386</b> Specimens · Hoenn + National' },
     trainerdex: { src: 'trainerdex.html', title: 'Trainers', count: '<b>74</b> Notable Trainers · Hoenn' },
+    attackdex:  { src: 'attackdex.html',  title: 'Moves',    count: '<b>354</b> Moves · Learnsets' },
   };
   let currentDex = 'pokedex';
 
