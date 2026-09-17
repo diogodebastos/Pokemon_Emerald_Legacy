@@ -782,7 +782,7 @@
         <span id="dex-arrow">▲</span>
       </span>
     </div>
-    <iframe id="pokedex-frame" src="pokedex.html" title="Pokédex" loading="lazy"></iframe>
+    <iframe id="pokedex-frame" src="pokedex.html" title="Pokédex"></iframe>
   </div>
 </section>
 
@@ -938,6 +938,12 @@
       toggleDex();
     }
   });
+
+  // Open the Field Guide on page load; the short delay lets the drawer's
+  // height transition play so it visibly slides up from its collapsed bar.
+  setTimeout(() => {
+    if (!document.getElementById('dex-drawer').classList.contains('open')) toggleDex();
+  }, 400);
 </script>
 
 </body>

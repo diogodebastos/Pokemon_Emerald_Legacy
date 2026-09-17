@@ -1097,6 +1097,17 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+  .poke-item .poke-loc {
+    display: block;
+    font-family: var(--f-mono);
+    font-style: normal;
+    font-size: 9px;
+    color: var(--jade-bright);
+    letter-spacing: 0.02em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
   .poke-item:hover .poke-name { color: var(--ink); }
   .poke-item.active .poke-num  { color: var(--jade-bright); }
   .poke-item.active .poke-name { color: var(--ink); font-style: normal; font-weight: 500; }
@@ -1909,7 +1920,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
   <div id="sidebar-header">
     <h1>Pokédex</h1>
     <span class="volume">Vol. I · National Dex</span>
-    <input type="text" id="search" placeholder="Search the index…" oninput="filterList(this.value)">
+    <input type="text" id="search" placeholder="Search name or location…" oninput="filterList(this.value)">
   </div>
   <div id="pokemon-count"></div>
   <div id="pokemon-list"></div>
@@ -2089,18 +2100,28 @@ function renderList(items) {
     div.innerHTML = `
       <span class="poke-num">${String(p.dexNum).padStart(3, '0')}</span>
       ${p.sprite ? `<img src="${p.sprite}" alt="${p.name}">` : `<div style="width:36px;height:36px;"></div>`}
-      <span class="poke-name">${p.name}</span>
+      <span class="poke-name">${p.name}${p._locHits ? `<span class="poke-loc">${p._locHits.join(', ')}</span>` : ''}</span>
     `;
     div.onclick = () => selectPokemon(p._origIdx);
     list.appendChild(div);
   });
 }
 
+const normSearch = s => s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+
 function filterList(query) {
-  const q = query.toLowerCase().trim();
+  const q = normSearch(query);
   const filtered = DATA
-    .map((p, i) => ({...p, _origIdx: i}))
-    .filter(p => !q || p.name.toLowerCase().includes(q));
+    .map((p, i) => {
+      if (!q) return {...p, _origIdx: i};
+      if (normSearch(p.name).includes(q)) return {...p, _origIdx: i};
+      // Location search: "granite" lists every mon found in Granite Cave
+      const hits = [...new Set(p.locations
+        .filter(l => normSearch(l.map).includes(q))
+        .map(l => `${l.map} · ${l.method}`))];
+      return hits.length ? {...p, _origIdx: i, _locHits: hits} : null;
+    })
+    .filter(Boolean);
   renderList(filtered);
 }
 
