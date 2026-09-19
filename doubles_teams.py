@@ -118,10 +118,49 @@ TEAMS = [
               'Intimidate lowers both foes’ Attack on entry. Rock Slide hits both foes (at half power) and can make them flinch.'),
             m('SWAMPERT', 'TORRENT', 'LEFTOVERS', 'Relaxed', ['SURF', 'EARTHQUAKE', 'ICE_BEAM', 'PROTECT'],
               'Surf hits only the two foes, never your ally. Its only weakness is Grass.'),
-            m('FLYGON', 'LEVITATE', 'SOFT_SAND', 'Adamant', ['EARTHQUAKE', 'ROCK_SLIDE', 'FIRE_BLAST', 'PROTECT'],
+            m('FLYGON', 'LEVITATE', 'SOFT_SAND', 'Naive', ['EARTHQUAKE', 'ROCK_SLIDE', 'FIRE_BLAST', 'PROTECT'],
               'Levitate, so it can sit beside another Earthquake user. Fire Blast handles Skarmory and Metagross.'),
-            m('ZAPDOS', 'PRESSURE', 'LEFTOVERS', 'Modest', ['THUNDERBOLT', 'DRILL_PECK', 'LIGHT_SCREEN', 'PROTECT'],
+            m('ZAPDOS', 'PRESSURE', 'LEFTOVERS', 'Mild', ['THUNDERBOLT', 'DRILL_PECK', 'LIGHT_SCREEN', 'PROTECT'],
               'The only Pokémon in the top tier of Smogon’s ADV Doubles viability rankings. Flying, so Earthquake can’t touch it. Post-game; before that, Salamence takes this role.'),
+         ]),
+    dict(id='pre-e4', name='Before the Elite Four', tag='Main game · no post-game Pokémon or tutors', pre_e4=True,
+         blurb='Every Pokémon here can be caught before the Elite Four (or evolves from one that can), and every move comes from level-up, a TM sold in Lilycove, '
+               'a main-game tutor or the Move Relearner, never the post-game Battle Frontier tutors. It is the Earthquake Core rebuilt for the Hoenn rematches: '
+               'two Earthquake users, each with an immune partner (<b>Salamence</b> is Flying, <b>Weezing</b> has Levitate).',
+         leads=[('METAGROSS', 'SALAMENCE'), ('SWAMPERT', 'WEEZING')],
+         members=[
+            m('METAGROSS', 'CLEAR_BODY', 'LEFTOVERS', 'Adamant', ['METEOR_MASH', 'EARTHQUAKE', 'BRICK_BREAK', 'PROTECT'],
+              'Catch Beldum in Steven’s room in Granite Cave. Clear Body ignores Intimidate. Brick Break hits Tyranitar, Aggron and enemy screens; Rock Slide would need the post-game tutor.'),
+            m('SALAMENCE', 'INTIMIDATE', 'LEFTOVERS', 'Naive', ['DRAGON_CLAW', 'FIRE_BLAST', 'AERIAL_ACE', 'PROTECT'],
+              'Bagon lives deep in Meteor Falls. Intimidate lowers both foes’ Attack on entry, and Flying makes it Metagross’s safe Earthquake partner. Dragon Claw and Fire Blast are special, Aerial Ace physical, so Naive keeps both.'),
+            m('SWAMPERT', 'TORRENT', 'LEFTOVERS', 'Relaxed', ['SURF', 'EARTHQUAKE', 'ICE_BEAM', 'PROTECT'],
+              'Mudkip is wild on Route 103 in this hack. Surf hits only the two foes. Earthquake next to Weezing or Salamence.'),
+            m('WEEZING', 'LEVITATE', 'LEFTOVERS', 'Impish', ['SLUDGE_BOMB', 'WILL_O_WISP', 'EXPLOSION', 'PROTECT'],
+              'Koffing is on the Fiery Path. Levitate makes it immune to Earthquake, and Will-O-Wisp (egg move, from the Move Relearner) halves a physical attacker’s damage. Explode when it’s worn down.'),
+            m('BRELOOM', 'EFFECT_SPORE', 'LUM_BERRY', 'Jolly', ['SPORE', 'SKY_UPPERCUT', 'MACH_PUNCH', 'PROTECT'],
+              'Shroomish is in Petalburg Woods. Spore never misses, and Mach Punch has priority. Keep it away from its partners’ Earthquake.'),
+            m('MANECTRIC', 'LIGHTNING_ROD', 'MAGNET', 'Timid', ['THUNDERBOLT', 'OVERHEAT', 'THUNDER_WAVE', 'PROTECT'],
+              'Wild on Route 118. Lightning Rod pulls the foes’ single-target Electric moves onto itself, and Electric resists them. Overheat (egg move) burns through Steel and Bug types.'),
+         ],
+         variants=[
+            dict(name='Without pseudo-legendaries',
+                 blurb='<b>Beldum</b> and <b>Bagon</b> are pseudo-legendaries: 600 total base stats, a long climb to the final form (Metagross at 45, Salamence at 50) and, in Beldum’s case, a single rare catch. '
+                       'Swap them for two Pokémon you can raise from the wild at a normal pace. <b>Flygon</b> takes over as the Levitate partner that lets Swampert use Earthquake, '
+                       '<b>Gyarados</b> is Flying so it can use its own Earthquake beside anyone, and <b>Gardevoir</b> replaces the special power the team loses.',
+                 members=[
+                    m('SWAMPERT', 'TORRENT', 'LEFTOVERS', 'Relaxed', ['SURF', 'EARTHQUAKE', 'ICE_BEAM', 'PROTECT'],
+                      'Same set as above. Earthquake only next to Flygon, Gyarados or Weezing.'),
+                    m('FLYGON', 'LEVITATE', 'SOFT_SAND', 'Naive', ['EARTHQUAKE', 'DRAGON_CLAW', 'FIRE_BLAST', 'PROTECT'],
+                      'Trapinch is wild in the Route 111 desert, and Vibrava evolves at 45. Levitate means it and Swampert can both use Earthquake. Dragon Claw and Fire Blast are special, Earthquake physical, so Naive keeps both.'),
+                    m('GYARADOS', 'INTIMIDATE', 'LEFTOVERS', 'Adamant', ['DRAGON_DANCE', 'EARTHQUAKE', 'DOUBLE_EDGE', 'PROTECT'],
+                      'A Magikarp from any rod, or catch Gyarados itself in Sootopolis. Intimidate weakens both foes on entry, and Flying keeps it safe from its partners’ Earthquake. Double-Edge comes from the Sootopolis tutor.'),
+                    m('GARDEVOIR', 'TRACE', 'LEFTOVERS', 'Modest', ['PSYCHIC', 'THUNDERBOLT', 'CALM_MIND', 'PROTECT'],
+                      'Ralts is on Route 102, right at the start. Trace copies a foe’s ability, such as Intimidate or Levitate, and Calm Mind turns it into the team’s special threat.'),
+                    m('BRELOOM', 'EFFECT_SPORE', 'LUM_BERRY', 'Jolly', ['SPORE', 'SKY_UPPERCUT', 'MACH_PUNCH', 'PROTECT'],
+                      'Unchanged: Spore is the best support move in the game.'),
+                    m('MANECTRIC', 'LIGHTNING_ROD', 'MAGNET', 'Timid', ['THUNDERBOLT', 'OVERHEAT', 'THUNDER_WAVE', 'PROTECT'],
+                      'Unchanged. With Gardevoir alongside, the team keeps two special attackers.'),
+                 ]),
          ]),
     dict(id='rain', name='Rain Dance Offense', tag='Weather · Swift Swim',
          blurb='Kyogre is the only Pokémon with Drizzle, so rain comes from <b>Rain Dance</b> (5 turns). '
@@ -166,12 +205,12 @@ TEAMS = [
          leads=[('TYRANITAR', 'FLYGON'), ('AERODACTYL', 'CLAYDOL')],
          members=[
             m('TYRANITAR', 'SAND_STREAM', 'LEFTOVERS', 'Adamant', ['DRAGON_DANCE', 'ROCK_SLIDE', 'EARTHQUAKE', 'CRUNCH'],
-              'Smogon’s Tyranitar setup sweeper: one Dragon Dance, then Rock Slide and Earthquake. Crunch is special in Gen 3.'),
-            m('FLYGON', 'LEVITATE', 'LEFTOVERS', 'Adamant', ['EARTHQUAKE', 'ROCK_SLIDE', 'DRAGON_CLAW', 'PROTECT'],
+              'Smogon’s Tyranitar setup sweeper: one Dragon Dance, then Rock Slide and Earthquake. This hack makes Dark physical, so Adamant powers Crunch too.'),
+            m('FLYGON', 'LEVITATE', 'LEFTOVERS', 'Naive', ['EARTHQUAKE', 'ROCK_SLIDE', 'DRAGON_CLAW', 'PROTECT'],
               'Immune to both sandstorm damage and Earthquake, making it the ideal partner for Tyranitar.'),
             m('AERODACTYL', 'ROCK_HEAD', 'LEFTOVERS', 'Jolly', ['ROCK_SLIDE', 'EARTHQUAKE', 'AERIAL_ACE', 'PROTECT'],
               'Very fast Rock Slide flinches. Flying type, so partner Earthquakes can’t hit it.'),
-            m('CLAYDOL', 'LEVITATE', 'LEFTOVERS', 'Modest', ['PSYCHIC', 'ICE_BEAM', 'EARTHQUAKE', 'PROTECT'],
+            m('CLAYDOL', 'LEVITATE', 'LEFTOVERS', 'Quiet', ['PSYCHIC', 'ICE_BEAM', 'EARTHQUAKE', 'PROTECT'],
               'A bulky Levitate Pokémon with Ice Beam for opposing Flygon and Salamence.'),
             m('SKARMORY', 'STURDY', 'LEFTOVERS', 'Impish', ['DRILL_PECK', 'STEEL_WING', 'TAUNT', 'PROTECT'],
               'Taunt stops enemy Rain Dance, Sunny Day and Follow Me. Steel/Flying is immune to sand and Earthquake.'),
@@ -204,15 +243,15 @@ TEAMS = [
                'because both Eeveelutions are grounded.',
          leads=[('ESPEON', 'UMBREON'), ('METAGROSS', 'ARCANINE')],
          members=[
-            m('ESPEON', 'SYNCHRONIZE', 'LEFTOVERS', 'Timid', ['PSYCHIC', 'CRUNCH', 'REFLECT', 'LIGHT_SCREEN'],
+            m('ESPEON', 'SYNCHRONIZE', 'LEFTOVERS', 'Timid', ['PSYCHIC', 'SHADOW_BALL', 'REFLECT', 'LIGHT_SCREEN'],
               'Screens first. In doubles, Reflect and Light Screen cut damage to ⅔ while both allies stand, including spread moves. '
-              'Crunch uses Sp. Atk in Gen 3 and hits opposing Psychic and Ghost types. It learns Crunch as an Eevee at level 45, so evolve it after that.'),
+              'Shadow Ball hits opposing Psychic and Ghost types, and this hack makes Ghost special, so it uses Espeon’s Sp. Atk (TM30).'),
             m('UMBREON', 'SYNCHRONIZE', 'LEFTOVERS', 'Bold', ['WISH', 'HELPING_HAND', 'TAUNT', 'PROTECT'],
               'The wall. Wish heals whoever stands in its slot next turn, Helping Hand powers up Espeon’s Psychic, and Taunt stops enemy screens, weather and Follow Me. '
               'Synchronize passes burn, poison and paralysis back to the attacker.'),
             m('METAGROSS', 'CLEAR_BODY', 'LEFTOVERS', 'Adamant', ['METEOR_MASH', 'ROCK_SLIDE', 'BRICK_BREAK', 'PROTECT'],
               'Steel resists Bug, Psychic and Rock. No Earthquake here, since it would hit both Eeveelutions. Brick Break breaks enemy screens and hits Tyranitar.'),
-            m('ARCANINE', 'INTIMIDATE', 'CHARCOAL', 'Adamant', ['HEAT_WAVE', 'EXTREME_SPEED', ('CRUNCH', 'HELPING_HAND'), 'PROTECT'],
+            m('ARCANINE', 'INTIMIDATE', 'CHARCOAL', 'Mild', ['HEAT_WAVE', 'EXTREME_SPEED', ('CRUNCH', 'HELPING_HAND'), 'PROTECT'],
               'Intimidate on entry, and Heat Wave burns through the Bug types that threaten the core. Flash Fire makes it immune to Fire.'),
             m('SWAMPERT', 'TORRENT', 'LEFTOVERS', 'Relaxed', ['SURF', 'ICE_BEAM', 'ROCK_SLIDE', 'PROTECT'],
               'Surf and Rock Slide both miss your own side, and Rock Slide hits Bug and Flying foes. Water/Ground covers Arcanine’s and Metagross’s weaknesses.'),
@@ -257,11 +296,11 @@ TEAMS = [
          members=[
             m('METAGROSS', 'CLEAR_BODY', 'LEFTOVERS', 'Adamant', ['METEOR_MASH', 'EARTHQUAKE', 'ROCK_SLIDE', 'PROTECT'],
               'Cipher Nascour’s Shadow Metagross. Only use Earthquake when Flygon is its partner, because everyone else on the team is grounded.'),
-            m('RAIKOU', 'PRESSURE', 'MAGNET', 'Timid', ['THUNDERBOLT', 'CRUNCH', 'CALM_MIND', 'PROTECT'],
-              'Cipher Admin Ein’s Shadow Raikou. Very fast Thunderbolts hit the Water and Flying types, and Crunch hits Psychic and Ghost types.'),
+            m('RAIKOU', 'PRESSURE', 'MAGNET', 'Timid', ['THUNDERBOLT', 'SHADOW_BALL', 'CALM_MIND', 'PROTECT'],
+              'Cipher Admin Ein’s Shadow Raikou. Very fast Thunderbolts hit the Water and Flying types, and Shadow Ball (special in this hack, boosted by Calm Mind) hits Psychic and Ghost types.'),
             m('SUICUNE', 'PRESSURE', 'LEFTOVERS', 'Bold', ['SURF', 'ICE_BEAM', 'CALM_MIND', 'PROTECT'],
               'Cipher Admin Venus’s Shadow Suicune. Bulky and boosts itself with Calm Mind. Surf hits both foes and never its partner. Ice Beam handles Dragon and Flying types.'),
-            m('FLYGON', 'LEVITATE', 'SOFT_SAND', 'Adamant', ['EARTHQUAKE', 'ROCK_SLIDE', 'DRAGON_CLAW', 'FIRE_BLAST'],
+            m('FLYGON', 'LEVITATE', 'SOFT_SAND', 'Naive', ['EARTHQUAKE', 'ROCK_SLIDE', 'DRAGON_CLAW', 'FIRE_BLAST'],
               'Evolved from Cipher Peon Remil’s Shadow Vibrava. Levitate makes it the only team member Earthquake can’t hit, so it’s Metagross’s partner. Fire Blast handles Steel types.'),
             m('HITMONTOP', 'INTIMIDATE', 'LEFTOVERS', 'Adamant', ['FAKE_OUT', 'HELPING_HAND', 'BRICK_BREAK', 'ROCK_SLIDE'],
               'Cipher Peon Skrub’s Shadow Hitmontop. Intimidate plus Fake Out on turn one lets Raikou or Suicune set up Calm Mind.'),
@@ -276,10 +315,10 @@ TEAMS = [
          members=[
             m('WALREIN', 'THICK_FAT', 'LEFTOVERS', 'Modest', ['HAIL', 'BLIZZARD', 'SURF', 'PROTECT'],
               'The main Hail setter. Water/Ice already takes neutral damage from Fire, and Thick Fat halves Fire and Ice damage on top of that.'),
-            m('GLALIE', 'LEVITATE', 'NEVER_MELT_ICE', 'Modest', ['HAIL', 'BLIZZARD', 'CRUNCH', 'PROTECT'],
-              'Second setter. In this hack Glalie can have Levitate, which makes it immune to Ground moves, a partner’s Earthquake included. Crunch uses Sp. Atk in Gen 3.'),
-            m('REGICE', 'CLEAR_BODY', 'LEFTOVERS', 'Modest', ['BLIZZARD', 'THUNDERBOLT', 'EXPLOSION', 'PROTECT'],
-              'Post-game. Base 200 Sp. Def. Thunderbolt hits the Water types that resist Blizzard. Explosion hits your partner too, so pair it with Protect.'),
+            m('GLALIE', 'LEVITATE', 'NEVER_MELT_ICE', 'Modest', ['HAIL', 'BLIZZARD', 'SHADOW_BALL', 'PROTECT'],
+              'Second setter. In this hack Glalie can have Levitate, which makes it immune to Ground moves, a partner’s Earthquake included. Ghost is special in this hack, so Modest powers Shadow Ball too.'),
+            m('REGICE', 'CLEAR_BODY', 'LEFTOVERS', 'Modest', ['BLIZZARD', 'THUNDERBOLT', 'THUNDER_WAVE', 'PROTECT'],
+              'Post-game. Base 200 Sp. Def. Thunderbolt hits the Water types that resist Blizzard, and Thunder Wave slows the fast threats.'),
             m('LAPRAS', 'WATER_ABSORB', 'LEFTOVERS', 'Modest', ['BLIZZARD', 'THUNDERBOLT', 'HAIL', 'PROTECT'],
               'A bulky third Hail user. Water Absorb makes it immune to Water.'),
             m('DEWGONG', 'THICK_FAT', 'LEFTOVERS', 'Calm', ['FAKE_OUT', 'ENCORE', 'BLIZZARD', 'PROTECT'],
@@ -296,7 +335,7 @@ TEAMS = [
               'Fast Intimidate lead. Use Earthquake when Aerodactyl is the partner. Iron Tail hits Rock types.'),
             m('SWAMPERT', 'TORRENT', 'LEFTOVERS', 'Relaxed', ['SURF', 'EARTHQUAKE', 'ICE_BEAM', 'PROTECT'],
               'The Water third of the core: resists Fire and Steel, immune to Electric. Surf never hits the partner.'),
-            m('ARCANINE', 'INTIMIDATE', 'CHARCOAL', 'Adamant', ['HEAT_WAVE', 'EXTREME_SPEED', 'HELPING_HAND', 'PROTECT'],
+            m('ARCANINE', 'INTIMIDATE', 'CHARCOAL', 'Mild', ['HEAT_WAVE', 'EXTREME_SPEED', 'HELPING_HAND', 'PROTECT'],
               'The Fire third: resists Grass, Bug, Steel and Ice. The second Intimidate lets you switch it in to weaken foes again.'),
             m('VENUSAUR', 'OVERGROW', 'LEFTOVERS', 'Modest', ['SLEEP_POWDER', 'GIGA_DRAIN', 'LEECH_SEED', 'PROTECT'],
               'The Grass third: resists Water, Electric, Grass and Fighting. Sleep Powder shuts down the biggest threat.'),
@@ -304,6 +343,25 @@ TEAMS = [
               'The Explosion user. Explosion hits your partner too, so have the partner Protect that turn.'),
             m('AERODACTYL', 'ROCK_HEAD', 'LEFTOVERS', 'Jolly', ['ROCK_SLIDE', 'AERIAL_ACE', 'TAUNT', 'PROTECT'],
               'Flying, so Tauros, Swampert and Metagross can Earthquake next to it. Taunt stops setup and support moves.'),
+         ]),
+    dict(id='intimidate', name='Intimidate Cycling', tag='Four Intimidate users · switch to reuse',
+         blurb='<b>Intimidate</b> lowers both foes’ Attack by one stage every time the Pokémon enters the battle, so switching an Intimidate user out and back in stacks the drop. '
+               'Four of them here make physical attackers useless, and <b>Starmie</b> adds special damage that the foes’ own Intimidate can’t touch. '
+               'Clear Body (Metagross), Hyper Cutter and White Smoke block it.',
+         leads=[('HITMONTOP', 'SALAMENCE'), ('ARCANINE', 'STARMIE')],
+         members=[
+            m('SALAMENCE', 'INTIMIDATE', 'LEFTOVERS', 'Naive', ['DRAGON_CLAW', 'ROCK_SLIDE', 'FIRE_BLAST', 'PROTECT'],
+              'Flying, so Gyarados’s Earthquake can’t hit it. Rock Slide hits both foes and can make them flinch.'),
+            m('GYARADOS', 'INTIMIDATE', 'LEFTOVERS', 'Adamant', ['DRAGON_DANCE', 'EARTHQUAKE', 'DOUBLE_EDGE', 'PROTECT'],
+              'The win condition: Dragon Dance behind the Attack drops. Earthquake only next to Salamence, the other Flying type.'),
+            m('HITMONTOP', 'INTIMIDATE', 'LEFTOVERS', 'Adamant', ['FAKE_OUT', 'HELPING_HAND', 'BRICK_BREAK', 'ROCK_SLIDE'],
+              'Intimidate plus Fake Out on the same turn it enters: the best lead in the game for buying a free turn.'),
+            m('ARCANINE', 'INTIMIDATE', 'CHARCOAL', 'Mild', ['HEAT_WAVE', 'EXTREME_SPEED', 'HELPING_HAND', 'PROTECT'],
+              'Heat Wave hits both foes and is special, so its own team’s Attack drops don’t matter. Extreme Speed finishes weakened foes first.'),
+            m('MIGHTYENA', 'INTIMIDATE', 'LEFTOVERS', 'Adamant', ['CRUNCH', 'SUPER_FANG', 'TAUNT', 'PROTECT'],
+              'The fourth Intimidate. Crunch is physical in this hack, Super Fang halves any foe’s HP, and Taunt stops enemy screens and setup.'),
+            m('STARMIE', 'NATURAL_CURE', 'LEFTOVERS', 'Timid', ['SURF', 'THUNDERBOLT', 'ICE_BEAM', 'PROTECT'],
+              'Special attacks, so opposing Intimidate doesn’t weaken it. Natural Cure clears its status when it switches, which fits a team that switches a lot.'),
          ]),
     dict(id='boom', name='Explosion Core', tag='Self-KO · Ghost partners',
          blurb='<b>Explosion</b> (250 power) hits both foes <i>and</i> your partner at full power, and halves the targets’ Defense. Ghost types are immune, so every '
@@ -321,7 +379,7 @@ TEAMS = [
               'Immune to its partners’ Explosion (Ghost) and Earthquake (Levitate), and can explode itself.'),
             m('DUSCLOPS', 'PRESSURE', 'LEFTOVERS', 'Impish', ['WILL_O_WISP', 'HELPING_HAND', 'PAIN_SPLIT', 'PROTECT'],
               'The Ghost partner. Helping Hand plus a partner’s Explosion is ×1.5 on top. It’s immune to Explosion, Normal and Fighting moves.'),
-            m('WEEZING', 'LEVITATE', 'LEFTOVERS', 'Bold', ['EXPLOSION', 'SLUDGE_BOMB', 'WILL_O_WISP', 'PROTECT'],
+            m('WEEZING', 'LEVITATE', 'LEFTOVERS', 'Impish', ['EXPLOSION', 'SLUDGE_BOMB', 'WILL_O_WISP', 'PROTECT'],
               'Levitate, so Earthquake can’t hit it. Burn physical attackers first, then explode.'),
          ]),
     dict(id='status', name='Sleep & Status', tag='Spore · Sleep Powder · Will-O-Wisp · Confusion',
@@ -335,7 +393,7 @@ TEAMS = [
               'Very fast Sleep Powder, and Encore locks a foe into its last move. Leech Seed drains HP every turn.'),
             m('GARDEVOIR', 'TRACE', 'LEFTOVERS', 'Modest', ['HYPNOSIS', 'WILL_O_WISP', 'PSYCHIC', 'PROTECT'],
               'Hypnosis and Will-O-Wisp. Trace copies a foe’s ability, such as Intimidate or Levitate.'),
-            m('HOUNDOOM', 'FLASH_FIRE', 'LEFTOVERS', 'Timid', ['WILL_O_WISP', ('HEAT_WAVE', 'FLAMETHROWER'), 'CRUNCH', 'PROTECT'],
+            m('HOUNDOOM', 'FLASH_FIRE', 'LEFTOVERS', 'Hasty', ['WILL_O_WISP', ('HEAT_WAVE', 'FLAMETHROWER'), 'CRUNCH', 'PROTECT'],
               'Burn halves a physical attacker’s damage. Heat Wave can also burn both foes.'),
             m('CROBAT', 'INNER_FOCUS', 'LEFTOVERS', 'Jolly', ['CONFUSE_RAY', 'TAUNT', 'AERIAL_ACE', 'PROTECT'],
               'One of the fastest Pokémon in the game. Confuse Ray and Taunt go before most foes move, and Inner Focus stops Fake Out’s flinch.'),
@@ -375,26 +433,45 @@ TEAMS = [
               'The attacker: fast Dragon Claw (special in Gen 3) and Psychic.'),
             m('MEWTWO', 'PRESSURE', 'LEFTOVERS', 'Timid', ['PSYCHIC', 'FLAMETHROWER', 'CALM_MIND', 'PROTECT'],
               'Highest Sp. Atk of any legendary here. Rain halves Fire damage, so Flamethrower is only for Steel types that resist Psychic.'),
-            m('ZAPDOS', 'PRESSURE', 'LEFTOVERS', 'Modest', ['THUNDER', 'DRILL_PECK', 'LIGHT_SCREEN', 'PROTECT'],
+            m('ZAPDOS', 'PRESSURE', 'LEFTOVERS', 'Mild', ['THUNDER', 'DRILL_PECK', 'LIGHT_SCREEN', 'PROTECT'],
               'Thunder never misses in rain. It hits the opposing Water types that Kyogre can’t hurt.'),
             m('JIRACHI', 'SERENE_GRACE', 'LEFTOVERS', 'Calm', ['WISH', 'HELPING_HAND', 'PSYCHIC', 'PROTECT'],
               'Steel/Psychic support. Wish heals half of the partner’s max HP next turn, and it resists Dragon and Ice.'),
+         ]),
+    dict(id='groudon-sun', name='Groudon Sun', tag='Post-game · Drought · Chlorophyll',
+         blurb='<b>Drought</b> sets sun the moment Groudon enters, and ability weather in Gen 3 lasts until another weather replaces it, so no one spends a turn on Sunny Day. '
+               'Sun doubles Chlorophyll users’ Speed, lets <b>Solar Beam</b> fire in one turn, boosts Fire moves by 50% and halves Water moves, Groudon’s weakness. '
+               'Only Exeggutor is grounded, so Groudon can Earthquake freely next to anyone else.',
+         leads=[('GROUDON', 'HO_OH'), ('TROPIUS', 'JUMPLUFF')],
+         members=[
+            m('GROUDON', 'DROUGHT', 'LEFTOVERS', 'Naive', ['EARTHQUAKE', 'FIRE_BLAST', 'SOLAR_BEAM', 'PROTECT'],
+              'Post-game (Terra Cave). Earthquake uses its 150 Attack; sun-boosted Fire Blast and one-turn Solar Beam are special, so Naive keeps both sides.'),
+            m('HO_OH', 'PRESSURE', 'LEFTOVERS', 'Modest', ['SACRED_FIRE', 'THUNDERBOLT', 'RECOVER', 'PROTECT'],
+              'Post-game (Navel Rock). Sacred Fire is special here and hits very hard in sun. Flying, so Groudon’s Earthquake never hits it.'),
+            m('LATIOS', 'LEVITATE', 'LEFTOVERS', 'Timid', ['DRAGON_CLAW', 'PSYCHIC', 'THUNDERBOLT', 'PROTECT'],
+              'Post-game. Dragon resists Water, Grass, Fire and Electric, and Levitate keeps it safe from Earthquake.'),
+            m('TROPIUS', 'CHLOROPHYLL', 'LEFTOVERS', 'Modest', ['SOLAR_BEAM', 'SYNTHESIS', 'SUNNY_DAY', 'PROTECT'],
+              'A Flying Chlorophyll sweeper, so Earthquake can’t hit it. Synthesis heals ⅔ of its HP in sun, and Sunny Day brings the sun back if Groudon faints.'),
+            m('EXEGGUTOR', 'CHLOROPHYLL', 'LEFTOVERS', 'Modest', ['SLEEP_POWDER', 'SOLAR_BEAM', 'PSYCHIC', 'PROTECT'],
+              'The strongest Solar Beam on the team. The only grounded member: Groudon must not Earthquake while it’s out.'),
+            m('JUMPLUFF', 'CHLOROPHYLL', 'LEFTOVERS', 'Jolly', ['SLEEP_POWDER', 'LEECH_SEED', 'ENCORE', 'PROTECT'],
+              'Grass/Flying support, immune to Earthquake. In sun it outspeeds everything, so Sleep Powder lands first.'),
          ]),
     dict(id='eevee', name='Eeveelution Team', tag='This version’s starters',
          blurb='Every Gen 3 Eeveelution, plus Eevee itself. Your starter is an Eevee, Espeon or Umbreon, and the rest can be caught (see the Pokédex). '
                'All of them learn <b>Helping Hand</b>, so any pair can boost the other. Espeon and Umbreon are covered in more depth on their own team page.',
          leads=[('ESPEON', 'UMBREON'), ('VAPOREON', 'JOLTEON')],
          members=[
-            m('ESPEON', 'SYNCHRONIZE', 'LEFTOVERS', 'Timid', ['PSYCHIC', 'CRUNCH', 'LIGHT_SCREEN', 'PROTECT'],
-              'The special attacker. Learns Crunch as an Eevee at level 45, so evolve it after that.'),
+            m('ESPEON', 'SYNCHRONIZE', 'LEFTOVERS', 'Timid', ['PSYCHIC', 'SHADOW_BALL', 'LIGHT_SCREEN', 'PROTECT'],
+              'The special attacker. Ghost is special in this hack, so Shadow Ball uses its Sp. Atk and hits Psychic and Ghost types.'),
             m('UMBREON', 'SYNCHRONIZE', 'LEFTOVERS', 'Bold', ['WISH', 'HELPING_HAND', 'CONFUSE_RAY', 'PROTECT'],
               'The wall. Immune to Psychic, and resists Ghost and Dark, which covers Espeon’s weaknesses.'),
             m('VAPOREON', 'WATER_ABSORB', 'LEFTOVERS', 'Bold', ['SURF', 'ICE_BEAM', 'WISH', 'PROTECT'],
               'Base 130 HP. Water Absorb heals it when hit by Water. Surf never hits its partner.'),
             m('JOLTEON', 'VOLT_ABSORB', 'MAGNET', 'Timid', ['THUNDERBOLT', 'THUNDER_WAVE', 'HELPING_HAND', 'PROTECT'],
               'Base 130 Speed. Thunder Wave slows the fast threats, and Volt Absorb heals it when hit by Electric.'),
-            m('FLAREON', 'FLASH_FIRE', 'CHARCOAL', 'Adamant', ['FLAMETHROWER', 'SHADOW_BALL', 'HELPING_HAND', 'PROTECT'],
-              'Base 130 Attack. Shadow Ball uses Attack in Gen 3 (Ghost is physical), so Flareon hits hard with it. Flash Fire makes it immune to Fire.'),
+            m('FLAREON', 'FLASH_FIRE', 'CHARCOAL', 'Modest', ['FLAMETHROWER', 'SHADOW_BALL', 'HELPING_HAND', 'PROTECT'],
+              'Fire is special and this hack makes Ghost special too, so Flamethrower and Shadow Ball both use its 110 Sp. Atk. Flash Fire makes it immune to Fire.'),
             m('EEVEE', 'RUN_AWAY', 'LEFTOVERS', 'Bold', ['WISH', 'BATON_PASS', 'HELPING_HAND', 'PROTECT'],
               'Weak stats, but pure support: Wish heals a partner, Helping Hand boosts one, and Baton Pass passes boosts. Learns Wish at level 50.'),
          ]),
@@ -428,7 +505,7 @@ TEAMS = [
               'Base 190 HP. Counter and Mirror Coat return double the damage it takes, and Shadow Tag stops foes from escaping.'),
             m('WAILORD', 'WATER_VEIL', 'LEFTOVERS', 'Modest', ['WATER_SPOUT', 'ICE_BEAM', 'REST', 'PROTECT'],
               'Base 170 HP. Water Spout at full HP has 150 power and hits both foes. Water Veil prevents burns.'),
-            m('SNORLAX', 'THICK_FAT', 'LEFTOVERS', 'Adamant', ['BODY_SLAM', 'ROCK_SLIDE', 'SHADOW_BALL', 'PROTECT'],
+            m('SNORLAX', 'THICK_FAT', 'LEFTOVERS', 'Adamant', ['BODY_SLAM', 'ROCK_SLIDE', 'BRICK_BREAK', 'PROTECT'],
               'Base 160 HP. Thick Fat halves Fire and Ice damage, and Body Slam paralyzes 30% of the time.'),
             m('HARIYAMA', 'THICK_FAT', 'LEFTOVERS', 'Adamant', ['FAKE_OUT', ('CROSS_CHOP', 'BRICK_BREAK'), 'ROCK_SLIDE', 'HELPING_HAND'],
               'Base 144 HP. Fake Out plus Helping Hand support that can take hits.'),
@@ -437,15 +514,15 @@ TEAMS = [
          ]),
     dict(id='stat-atk', group='Stat Specialists', stat='atk', name='Attack Specialists', tag='Huge Power · Pure Power · Truant',
          blurb='The hardest physical hitters. <b>Huge Power</b> and <b>Pure Power</b> double the Attack stat, which is why base-50 Azumarill and base-60 Medicham belong here. '
-               'Remember that in Gen 3 only Normal, Fighting, Flying, Poison, Ground, Rock, Bug, Ghost and Steel moves use Attack. '
+               'Remember that only Normal, Fighting, Flying, Poison, Ground, Rock, Bug, Steel and Dark moves use Attack: this hack swaps Dark and Ghost. '
                'Support comes from Follow Me, Fake Out, Helping Hand and Intimidate.',
          leads=[('TOGETIC', 'SLAKING'), ('HITMONTOP', 'MEDICHAM')],
          members=[
             m('AZUMARILL', 'HUGE_POWER', 'LEFTOVERS', 'Adamant', ['RETURN', 'BRICK_BREAK', 'ICE_PUNCH', 'PROTECT'],
               'Huge Power doubles its Attack. Ice Punch is special in Gen 3, so it’s only for Dragon and Flying types; Return and Brick Break do the real damage.'),
-            m('MEDICHAM', 'PURE_POWER', 'LEFTOVERS', 'Jolly', ['HI_JUMP_KICK', 'ROCK_SLIDE', 'SHADOW_BALL', 'FAKE_OUT'],
-              'Pure Power doubles its Attack. Shadow Ball uses Attack in Gen 3, so it covers Ghost types.'),
-            m('SLAKING', 'TRUANT', 'CHOICE_BAND', 'Adamant', ['RETURN', 'SHADOW_BALL', 'ROCK_SLIDE', 'BRICK_BREAK'],
+            m('MEDICHAM', 'PURE_POWER', 'LEFTOVERS', 'Jolly', ['HI_JUMP_KICK', 'ROCK_SLIDE', 'BODY_SLAM', 'FAKE_OUT'],
+              'Pure Power doubles its Attack. Body Slam hits what resists Hi Jump Kick and paralyzes 30% of the time. Ghost moves are special in this hack, so Shadow Ball would waste Pure Power.'),
+            m('SLAKING', 'TRUANT', 'CHOICE_BAND', 'Adamant', ['RETURN', 'FAINT_ATTACK', 'ROCK_SLIDE', 'BRICK_BREAK'],
               'Base 160 Attack, the highest non-legendary. Truant makes it skip every other turn, so pair it with Togetic’s Follow Me for the loafing turns.'),
             m('HERACROSS', 'GUTS', 'LEFTOVERS', 'Adamant', ['MEGAHORN', 'ROCK_SLIDE', 'BRICK_BREAK', 'PROTECT'],
               'Base 125 Attack. Guts turns a status condition into ×1.5 Attack.'),
@@ -473,7 +550,7 @@ TEAMS = [
               'Base 180 Defense. Shell Armor blocks critical hits, which would otherwise bypass Reflect.'),
          ]),
     dict(id='stat-spa', group='Stat Specialists', stat='spa', name='Sp. Atk Specialists', tag='Special attackers · Plus & Minus',
-         blurb='The hardest special hitters. In Gen 3, <b>Fire, Water, Grass, Electric, Ice, Psychic, Dragon and Dark</b> moves use Sp. Atk, including Fire, Ice and Thunder Punch. '
+         blurb='The hardest special hitters. In Gen 3 the type decides it, and this hack swaps Dark and Ghost: <b>Fire, Water, Grass, Electric, Ice, Psychic, Dragon and Ghost</b> moves use Sp. Atk, including Fire, Ice and Thunder Punch. '
                'Plusle and Minun each get ×1.5 Sp. Atk while the other is on the field. These attackers are fragile, so Protect is on almost every set.',
          leads=[('PLUSLE', 'MINUN'), ('ALAKAZAM', 'GENGAR')],
          members=[
@@ -495,7 +572,7 @@ TEAMS = [
                'Recovery moves and Wish keep them healthy, and burns from Will-O-Wisp cover their weakness to physical attackers.',
          leads=[('MILOTIC', 'DUSCLOPS'), ('MANTINE', 'UMBREON')],
          members=[
-            m('REGICE', 'CLEAR_BODY', 'LEFTOVERS', 'Calm', ['ICE_BEAM', 'THUNDERBOLT', 'EXPLOSION', 'PROTECT'],
+            m('REGICE', 'CLEAR_BODY', 'LEFTOVERS', 'Calm', ['ICE_BEAM', 'THUNDERBOLT', 'REST', 'PROTECT'],
               'Post-game. Base 200 Sp. Def, the highest of any obtainable Pokémon besides Shuckle.'),
             m('MANTINE', 'WATER_ABSORB', 'LEFTOVERS', 'Calm', ['SURF', 'ICE_BEAM', 'HAZE', 'PROTECT'],
               'Base 140 Sp. Def. Water Absorb makes it immune to Water, and Haze resets every stat boost on the field.'),
@@ -505,7 +582,7 @@ TEAMS = [
               'Base 130 Sp. Def. Wish heals partners, and Taunt stops enemy setup.'),
             m('MILOTIC', 'MARVEL_SCALE', 'LEFTOVERS', 'Calm', ['SURF', 'ICE_BEAM', 'RECOVER', 'PROTECT'],
               'Base 125 Sp. Def. Marvel Scale gives ×1.5 Defense while it has a status condition, and Recover heals half its HP.'),
-            m('TENTACRUEL', 'CLEAR_BODY', 'LEFTOVERS', 'Calm', ['SURF', 'SLUDGE_BOMB', 'ICE_BEAM', 'PROTECT'],
+            m('TENTACRUEL', 'CLEAR_BODY', 'LEFTOVERS', 'Sassy', ['SURF', 'SLUDGE_BOMB', 'ICE_BEAM', 'PROTECT'],
               'Base 120 Sp. Def. Clear Body blocks Intimidate. Water/Poison resists Fire, Water, Ice, Fighting, Poison, Bug and Steel.'),
          ]),
     dict(id='stat-spe', group='Stat Specialists', stat='spe', name='Speed Specialists', tag='Speed Boost · Baton Pass · Thunder Wave',
@@ -523,14 +600,14 @@ TEAMS = [
               'Base 130 Speed. Inner Focus stops Fake Out’s flinch, and Taunt shuts down slower support Pokémon.'),
             m('JOLTEON', 'VOLT_ABSORB', 'MAGNET', 'Timid', ['THUNDERBOLT', 'THUNDER_WAVE', 'HELPING_HAND', 'PROTECT'],
               'Base 130 Speed. Thunder Wave quarters a foe’s Speed.'),
-            m('SCEPTILE', 'OVERGROW', 'MIRACLE_SEED', 'Timid', ['LEAF_BLADE', 'DRAGON_CLAW', 'CRUNCH', 'FAKE_OUT'],
-              'Base 120 Speed. In Gen 3 Leaf Blade, Dragon Claw and Crunch are all special, so a Timid Sceptile uses its 105 Sp. Atk. It learns Fake Out by level-up in this hack.'),
+            m('SCEPTILE', 'OVERGROW', 'MIRACLE_SEED', 'Timid', ['LEAF_BLADE', 'DRAGON_CLAW', 'THUNDER_PUNCH', 'FAKE_OUT'],
+              'Base 120 Speed. Leaf Blade, Dragon Claw and Thunder Punch are all special in Gen 3, so a Timid Sceptile uses its 110 Sp. Atk. Thunder Punch (Battle Frontier tutor) hits Water and Flying types. It learns Fake Out by level-up in this hack.'),
          ]),
 ]
 
 COMBOS = [
     dict(name='Wonder Guard shield', pair=[
-            m('SHEDINJA', 'WONDER_GUARD', 'BRIGHT_POWDER', 'Adamant', ['SHADOW_BALL', 'AERIAL_ACE', 'TOXIC', 'PROTECT'], ''),
+            m('SHEDINJA', 'WONDER_GUARD', 'BRIGHT_POWDER', 'Adamant', ['FAINT_ATTACK', 'AERIAL_ACE', 'TOXIC', 'PROTECT'], ''),
             m('GOLEM', 'STURDY', 'SOFT_SAND', 'Adamant', ['EARTHQUAKE', 'EXPLOSION', 'ROCK_SLIDE', 'PROTECT'], '')],
          html='Wonder Guard blocks every hit that isn’t super effective, <b>including your partner’s</b>. Ground is not very effective on Bug/Ghost, '
               'and Normal can’t touch Ghost, so Golem can use Earthquake and Explosion freely beside Shedinja. '
@@ -538,7 +615,7 @@ COMBOS = [
               'That includes spread Rock Slide and Heat Wave.'),
     dict(name='Lightning Rod bodyguard', pair=[
             m('MAROWAK', 'LIGHTNING_ROD', 'THICK_CLUB', 'Adamant', ['EARTHQUAKE', 'ROCK_SLIDE', 'SWORDS_DANCE', 'PROTECT'], ''),
-            m('GYARADOS', 'INTIMIDATE', 'LEFTOVERS', 'Adamant', ['DRAGON_DANCE', 'DOUBLE_EDGE', 'HYDRO_PUMP', 'PROTECT'], '')],
+            m('GYARADOS', 'INTIMIDATE', 'LEFTOVERS', 'Adamant', ['DRAGON_DANCE', 'DOUBLE_EDGE', 'BOUNCE', 'PROTECT'], '')],
          html='Lightning Rod pulls the <b>opponents’</b> single-target Electric moves onto Marowak, which is a Ground type and takes no damage. '
               'That protects Gyarados’s 4× Electric weakness. Gyarados is Flying, so Thick Club Earthquake never hits it. '
               'Lightning Rod doesn’t redirect your own team’s moves.'),
@@ -571,37 +648,37 @@ COMBOS = [
               'neither fears the other side’s Electric attacks. It costs a turn, so do it while the partner Protects or the foes are slowed.'),
     dict(name='Flash Fire power-up', pair=[
             m('NINETALES', 'FLASH_FIRE', 'CHARCOAL', 'Timid', ['FLAMETHROWER', 'HEAT_WAVE', 'WILL_O_WISP', 'PROTECT'], ''),
-            m('ARCANINE', 'FLASH_FIRE', 'CHARCOAL', 'Adamant', ['FLAMETHROWER', 'HEAT_WAVE', 'EXTREME_SPEED', 'PROTECT'], '')],
+            m('ARCANINE', 'FLASH_FIRE', 'CHARCOAL', 'Modest', ['FLAMETHROWER', 'HEAT_WAVE', 'EXTREME_SPEED', 'PROTECT'], '')],
          html='On turn one, each <b>Flamethrowers its partner</b>. Flash Fire absorbs the hit (no damage) and powers up the holder’s own Fire moves <b>×1.5</b> until it switches out. '
               'After that, both fire boosted Heat Waves into the foes, and Heat Wave never hits your own side. Will-O-Wisp won’t work here: it fails against Fire types before Flash Fire can activate.'),
     dict(name='Skill Swap away Truant', pair=[
             m('GARDEVOIR', 'TRACE', 'LEFTOVERS', 'Modest', ['SKILL_SWAP', 'PSYCHIC', 'CALM_MIND', 'PROTECT'], ''),
-            m('SLAKING', 'TRUANT', 'CHOICE_BAND', 'Adamant', ['RETURN', 'SHADOW_BALL', 'ROCK_SLIDE', 'BRICK_BREAK'], '')],
+            m('SLAKING', 'TRUANT', 'CHOICE_BAND', 'Adamant', ['RETURN', 'FAINT_ATTACK', 'ROCK_SLIDE', 'BRICK_BREAK'], '')],
          html='Skill Swap trades abilities with the target, and in Gen 3 it only fails on Wonder Guard. Swap with Slaking: <b>Slaking loses Truant</b> and attacks every turn with base 160 Attack and Choice Band. '
               'Gardevoir now has Truant, so on its next active turn it can Skill Swap again with a dangerous foe, handing Truant to that foe.'),
     dict(name='Soundproof + Perish Song', pair=[
-            m('EXPLOUD', 'SOUNDPROOF', 'SILK_SCARF', 'Modest', ['HYPER_VOICE', 'ICE_BEAM', 'FLAMETHROWER', 'PROTECT'], ''),
+            m('EXPLOUD', 'SOUNDPROOF', 'SILK_SCARF', 'Hasty', ['HYPER_VOICE', 'ICE_BEAM', 'FLAMETHROWER', 'PROTECT'], ''),
             m('LAPRAS', 'WATER_ABSORB', 'LEFTOVERS', 'Calm', ['PERISH_SONG', 'SURF', 'ICE_BEAM', 'PROTECT'], '')],
          html='Perish Song starts a 3-turn countdown on every Pokémon on the field, <b>except those with Soundproof</b>. Exploud ignores it and keeps attacking with Hyper Voice (hits both foes), '
               'so only Lapras has to switch out before the count ends.'),
     dict(name='Imprison + Protect', pair=[
-            m('BANETTE', 'INSOMNIA', 'LEFTOVERS', 'Adamant', ['IMPRISON', 'PROTECT', 'WILL_O_WISP', 'SHADOW_BALL'], ''),
+            m('BANETTE', 'INSOMNIA', 'LEFTOVERS', 'Modest', ['IMPRISON', 'PROTECT', 'WILL_O_WISP', 'SHADOW_BALL'], ''),
             m('GOLEM', 'STURDY', 'SOFT_SAND', 'Adamant', ['EXPLOSION', 'EARTHQUAKE', 'ROCK_SLIDE', 'PROTECT'], '')],
          html='<b>Imprison</b> stops both foes from using any move the user also knows. Because Banette knows <b>Protect</b>, the foes can’t Protect, so Golem’s Earthquake and Explosion land. '
               'Banette is a Ghost, so Explosion can’t hurt it. In Gen 3 Imprison fails if no foe shares a move with the user, but almost everything carries Protect.'),
     dict(name='Swagger + Own Tempo', pair=[
             m('CROBAT', 'INNER_FOCUS', 'LEFTOVERS', 'Jolly', ['SWAGGER', 'AERIAL_ACE', 'TAUNT', 'PROTECT'], ''),
-            m('LICKITUNG', 'OWN_TEMPO', 'LEFTOVERS', 'Adamant', ['RETURN', 'EARTHQUAKE', 'SHADOW_BALL', 'PROTECT'], '')],
+            m('LICKITUNG', 'OWN_TEMPO', 'LEFTOVERS', 'Adamant', ['RETURN', 'EARTHQUAKE', 'KNOCK_OFF', 'PROTECT'], '')],
          html='Swagger raises the target’s Attack by 2 and then tries to confuse it. <b>Own Tempo</b> blocks the confusion but not the boost, so fast Crobat can Swagger Lickitung for a free +2. '
               'Crobat is Flying, so Lickitung’s boosted Earthquake never hits it. The same trick works once on any partner holding a <b>Lum Berry</b>, which cures confusion.'),
     dict(name='Memento into a sweeper', pair=[
-            m('WEEZING', 'LEVITATE', 'LEFTOVERS', 'Bold', ['MEMENTO', 'WILL_O_WISP', 'SLUDGE_BOMB', 'PROTECT'], ''),
+            m('WEEZING', 'LEVITATE', 'LEFTOVERS', 'Impish', ['MEMENTO', 'WILL_O_WISP', 'SLUDGE_BOMB', 'PROTECT'], ''),
             m('GYARADOS', 'INTIMIDATE', 'LEFTOVERS', 'Adamant', ['DRAGON_DANCE', 'EARTHQUAKE', 'DOUBLE_EDGE', 'PROTECT'], '')],
          html='<b>Memento</b> makes Weezing faint and sharply lowers one foe’s Attack <i>and</i> Sp. Atk (−2 each). Use it on the foe most able to hurt Gyarados, while Gyarados uses Dragon Dance. '
               'Before that, Weezing’s Levitate lets Gyarados use Earthquake freely.'),
     dict(name='Magnet Pull trap', pair=[
             m('MAGNETON', 'MAGNET_PULL', 'MAGNET', 'Modest', ['THUNDERBOLT', 'THUNDER_WAVE', 'SUBSTITUTE', 'PROTECT'], ''),
-            m('ARCANINE', 'INTIMIDATE', 'CHARCOAL', 'Adamant', ['FLAMETHROWER', 'HEAT_WAVE', 'EXTREME_SPEED', 'PROTECT'], '')],
+            m('ARCANINE', 'INTIMIDATE', 'CHARCOAL', 'Modest', ['FLAMETHROWER', 'HEAT_WAVE', 'EXTREME_SPEED', 'PROTECT'], '')],
          html='<b>Magnet Pull</b> stops Steel types from switching out, so Skarmory, Metagross, Aggron and Forretress are stuck in front of Arcanine’s Fire attacks. '
               '<b>Careful:</b> in Gen 3 it checks the whole field, so Magneton also traps <b>your own</b> Steel types. Arcanine isn’t one.'),
     dict(name='Forecast in the rain', pair=[
@@ -609,6 +686,26 @@ COMBOS = [
             m('KINGDRA', 'SWIFT_SWIM', 'MYSTIC_WATER', 'Modest', ['SURF', 'HYDRO_PUMP', 'ICE_BEAM', 'PROTECT'], '')],
          html='<b>Forecast</b> turns Castform into a Water type in rain (Fire in sun, Ice in hail). In weather, <b>Weather Ball</b> doubles to 100 power and takes the weather’s type, so in rain it’s a boosted Water move. '
               'Castform sets the rain, and Kingdra’s Swift Swim doubles its Speed. Thunder never misses in rain.'),
+    dict(name='Cloud Nine against weather', pair=[
+            m('GOLDUCK', 'CLOUD_NINE', 'LEFTOVERS', 'Modest', ['SURF', 'ICE_BEAM', 'CALM_MIND', 'PROTECT'], ''),
+            m('ARCANINE', 'INTIMIDATE', 'CHARCOAL', 'Mild', ['HEAT_WAVE', 'EXTREME_SPEED', 'HELPING_HAND', 'PROTECT'], '')],
+         html='While <b>Cloud Nine</b> Golduck is on the field, weather has no effect at all: rain stops boosting Water and weakening Fire, Swift Swim and Chlorophyll stop doubling Speed, '
+              'and Thunder and Solar Beam go back to normal. That shuts down the post-game Kyogre rain and Groudon sun teams, and it lets Arcanine’s Heat Wave hit full strength into rain.'),
+    dict(name='Psych Up + Belly Drum', pair=[
+            m('AZUMARILL', 'HUGE_POWER', 'LEFTOVERS', 'Adamant', ['BELLY_DRUM', 'RETURN', 'BRICK_BREAK', 'PROTECT'], ''),
+            m('GOLDUCK', 'CLOUD_NINE', 'LEFTOVERS', 'Adamant', ['PSYCH_UP', 'CROSS_CHOP', 'RETURN', 'PROTECT'], '')],
+         html='Azumarill uses <b>Belly Drum</b> (half its HP for maximum Attack). Next turn Golduck uses <b>Psych Up on its own partner</b>, which copies every stat change, so both now have +6 Attack. '
+              'Golduck is faster, so it must wait a turn for the Belly Drum to happen first. Pair it with Follow Me or Fake Out support to survive the setup turn.'),
+    dict(name='Screens + Dragon Dance', pair=[
+            m('CLAYDOL', 'LEVITATE', 'LEFTOVERS', 'Bold', ['REFLECT', 'LIGHT_SCREEN', 'EARTHQUAKE', 'EXPLOSION'], ''),
+            m('DRAGONITE', 'INNER_FOCUS', 'LEFTOVERS', 'Adamant', ['DRAGON_DANCE', 'EARTHQUAKE', 'EXTREME_SPEED', 'PROTECT'], '')],
+         html='Claydol sets <b>Reflect and Light Screen</b>, which cut damage to ⅔ in doubles (spread moves included) for 5 turns, while Dragonite uses Dragon Dance behind them. '
+              'Inner Focus stops Fake Out from flinching it on the setup turn. Claydol has Levitate and Dragonite is Flying, so both can Earthquake freely. Claydol explodes once the screens are up and its job is done.'),
+    dict(name='Rest + Heal Bell', pair=[
+            m('SNORLAX', 'THICK_FAT', 'LEFTOVERS', 'Adamant', ['CURSE', 'BODY_SLAM', 'REST', 'BRICK_BREAK'], ''),
+            m('MILTANK', 'THICK_FAT', 'LEFTOVERS', 'Impish', ['HEAL_BELL', 'MILK_DRINK', 'BODY_SLAM', 'PROTECT'], '')],
+         html='Snorlax uses <b>Curse</b> to raise Attack and Defense, and <b>Rest</b> when it gets low: full HP, but asleep for two turns. On the next turn Miltank uses <b>Heal Bell</b>, '
+              'which cures the whole team’s status, so Snorlax wakes up at once and keeps its boosts. Miltank is faster, so it must wait until the turn after Rest.'),
     dict(name='Guts from your own partner', pair=[
             m('SWELLOW', 'GUTS', 'LEFTOVERS', 'Jolly', ['FACADE', 'AERIAL_ACE', 'QUICK_ATTACK', 'PROTECT'], ''),
             m('UMBREON', 'SYNCHRONIZE', 'LEFTOVERS', 'Bold', ['TOXIC', 'WISH', 'HELPING_HAND', 'PROTECT'], '')],

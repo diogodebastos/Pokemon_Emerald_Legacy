@@ -703,6 +703,11 @@ SPECIES_NOTES = {
 
 # --- Parse wild encounters ---
 
+# Maps the encounter data can't flag by itself: the Safari Zone expansion is opened by
+# data/scripts/hall_of_fame.inc (FLAG_HIDE_SAFARI_ZONE_SOUTH_EAST_EXPANSION), so it is post-game.
+POSTGAME_MAPS = {'Safari Zone Northeast', 'Safari Zone Southeast'}
+
+
 def parse_encounters(path):
     with open(path) as f:
         lines = f.readlines()
@@ -742,7 +747,7 @@ def parse_encounters(path):
                     'method': method,
                     'minLvl': mon['min_level'],
                     'maxLvl': mon['max_level'],
-                    'postgame': enc.get('base_label', '').endswith('_2'),
+                    'postgame': enc.get('base_label', '').endswith('_2') or pretty_map in POSTGAME_MAPS,
                 }
                 if entry not in species_locs[sp]:
                     species_locs[sp].append(entry)

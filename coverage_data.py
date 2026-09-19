@@ -22,8 +22,17 @@ BASE = os.path.dirname(os.path.abspath(__file__))
 
 TYPES = ['NORMAL', 'FIGHTING', 'FLYING', 'POISON', 'GROUND', 'ROCK', 'BUG', 'GHOST', 'STEEL',
          'FIRE', 'WATER', 'GRASS', 'ELECTRIC', 'PSYCHIC', 'ICE', 'DRAGON', 'DARK']
-# Gen 3 split is by type.
-PHYSICAL = {'NORMAL', 'FIGHTING', 'FLYING', 'POISON', 'GROUND', 'ROCK', 'BUG', 'GHOST', 'STEEL'}
+
+
+def _physical_types():
+    """Gen 3 decides physical/special by type. Evaluates IS_TYPE_PHYSICAL from include/battle.h
+    for every type, because this hack swaps Dark (physical) and Ghost (special)."""
+    ids = {n: int(v) for n, v in re.findall(r'#define TYPE_(\w+)\s+(\d+)', _read('include/constants/pokemon.h'))}
+    expr = re.search(r'#define IS_TYPE_PHYSICAL\(moveType\)\s*(.*?)(?://|$)', _read('include/battle.h'), re.M).group(1)
+    expr = re.sub(r'TYPE_(\w+)', lambda m: str(ids[m.group(1)]), expr).replace('&&', ' and ').replace('||', ' or ')
+    return {t for t in TYPES if eval(expr, {}, {'moveType': ids[t]})}
+
+
 TYPE_ICON_FILE = {t: t.lower() for t in TYPES} | {'FIGHTING': 'fight'}
 
 ABILITY_BLOCKS = {'LEVITATE': 'GROUND', 'FLASH_FIRE': 'FIRE', 'VOLT_ABSORB': 'ELECTRIC',
@@ -46,6 +55,9 @@ MIN_POWER = 60
 def _read(rel):
     with open(os.path.join(BASE, rel), encoding='utf-8') as f:
         return f.read()
+
+
+PHYSICAL = _physical_types()
 
 
 @lru_cache(maxsize=1)

@@ -546,6 +546,7 @@ COVERAGE_SAFE_DUOS = [
     ('SCEPTILE', ['FIGHTING', 'GROUND', 'GRASS', 'DARK'], 'SALAMENCE', ['FLYING', 'ROCK', 'FIRE', 'DRAGON'], True),
 ]
 TYPE_LABEL = {t: t.title() for t in cov.TYPES}
+SPECIAL_LABELS = [TYPE_LABEL[t] for t in cov.TYPES if t not in cov.PHYSICAL]
 
 
 def build_coverage_pages():
@@ -807,7 +808,7 @@ def build_doubles_pages():
         dict(type='table', head=['Mechanic', 'How it works in this game'], rows=[
             [dict(html='<b>Spread moves</b>'), dict(html='Moves that hit <b>both foes</b> (Surf, Rock Slide, Heat Wave, Blizzard…) deal <b>half damage</b> to each while both foes are standing. They never hit your partner.')],
             [dict(html='<b>Earthquake &amp; Explosion</b>'), dict(html='Hit <b>everyone else</b> at <b>full power</b>, including your partner. Pair Earthquake with a Flying type or Levitate. Explosion also halves the target’s Defense, and Ghost types are immune.')],
-            [dict(html='<b>Physical / special</b>'), dict(html='Decided by type, not by move. Fire, Water, Grass, Electric, Ice, Psychic, Dragon and Dark are special, so Crunch and Dragon Claw use Sp. Atk. The other types are physical.')],
+            [dict(html='<b>Physical / special</b>'), dict(html='Decided by type, not by move. ' + ', '.join(SPECIAL_LABELS[:-1]) + ' and ' + SPECIAL_LABELS[-1] + ' are special, so Dragon Claw and Shadow Ball use Sp. Atk. The other types are physical. This hack swaps Dark and Ghost: Crunch uses Attack.')],
             [dict(html='<b>Fake Out</b>'), dict(html='Priority, and the target flinches, but only on the user’s first turn out. Inner Focus blocks the flinch.')],
             [dict(html='<b>Follow Me</b>'), dict(html='Redirects every <b>single-target</b> move from the other side to the user for that turn. It doesn’t redirect spread moves.')],
             [dict(html='<b>Helping Hand</b>'), dict(html='Priority. The partner’s move this turn does ×1.5 damage.')],
@@ -848,6 +849,23 @@ def build_doubles_pages():
                 n = dex_order.get(x['sp'])
                 if x['sp'] not in exempt and not (n and lo <= n <= hi):
                     raise ValueError(f"{t['id']}: {x['sp']} (#{n}) is not a {label} Pokémon ({lo}-{hi})")
+
+    # "Before the Elite Four" teams: every member (or a pre-evolution) must be catchable before the
+    # post-game, and every move needs a source other than the post-game Battle Frontier tutors.
+    wild = pdx.parse_encounters(os.path.join(BASE, 'src/data/wild_encounters.json'))
+    for t in dt.TEAMS:
+        if not t.get('pre_e4'):
+            continue
+        for x in [x for g in [t] + list(t.get('variants') or []) for x in g['members']]:
+            line = [x['sp']]
+            while line[-1] in D['prevo']:
+                line.append(D['prevo'][line[-1]])
+            if not any(not l['postgame'] for s in line for l in wild.get(s, [])):
+                raise ValueError(f"{t['id']}: {x['sp']} can't be caught before the Elite Four")
+            for mv in x['moves']:
+                mv = mv[0] if isinstance(mv, tuple) else mv
+                if all('Battle Frontier' in h for h in D['learn'][x['sp']][mv]):
+                    raise ValueError(f"{t['id']}: {x['sp']}'s {mv} only comes from a post-game Battle Frontier tutor")
 
     STAT_LABEL = dict(hp='HP', atk='Attack', def_='Defense', spa='Sp. Atk', spd='Sp. Def', spe='Speed')
     team_pages = []

@@ -14,9 +14,8 @@ import generate_pokedex as pdx
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 
-# Mirrors IS_TYPE_PHYSICAL in include/battle.h — this hack swaps Ghost to special
-# and Dark to physical, so the vanilla Gen 3 table would be wrong.
-PHYSICAL_TYPES = {'NORMAL', 'FIGHTING', 'FLYING', 'POISON', 'GROUND', 'ROCK', 'BUG', 'STEEL', 'DARK'}
+# IS_TYPE_PHYSICAL from include/battle.h (this hack swaps Ghost to special and Dark to physical).
+from coverage_data import PHYSICAL as PHYSICAL_TYPES
 
 TARGET_DISPLAY = {
     'SELECTED':        'Single target',
