@@ -713,6 +713,85 @@ COMBOS = [
               'Wish heals back the poison damage. Guts also ignores burn’s Attack drop, so a partner’s Will-O-Wisp works too, if it isn’t a Fire type.'),
 ]
 
+# ---------------------------------------------------------------------------
+# Held items: one each per line-up
+# ---------------------------------------------------------------------------
+# The Battle Tower and Frontier refuse a party that holds two of the same item
+# (src/battle_tower.c), so no team or pair here may repeat one. Sets declare the item they
+# want; where two members want the same thing, the one that needs it keeps it and the others
+# fall back to a type-boosting item for something they actually attack with, then to a
+# generic hold item.
+TYPE_ITEM = {
+    'NORMAL': 'SILK_SCARF', 'FIGHTING': 'BLACK_BELT', 'FLYING': 'SHARP_BEAK', 'POISON': 'POISON_BARB',
+    'GROUND': 'SOFT_SAND', 'ROCK': 'HARD_STONE', 'BUG': 'SILVER_POWDER', 'GHOST': 'SPELL_TAG',
+    'STEEL': 'METAL_COAT', 'FIRE': 'CHARCOAL', 'WATER': 'MYSTIC_WATER', 'GRASS': 'MIRACLE_SEED',
+    'ELECTRIC': 'MAGNET', 'PSYCHIC': 'TWISTED_SPOON', 'ICE': 'NEVER_MELT_ICE', 'DRAGON': 'DRAGON_FANG',
+    'DARK': 'BLACK_GLASSES',
+}
+FILLER_ITEMS = ['LUM_BERRY', 'SITRUS_BERRY', 'CHESTO_BERRY', 'SHELL_BELL', 'BRIGHT_POWDER', 'QUICK_CLAW',
+                'SCOPE_LENS', 'FOCUS_BAND', 'WHITE_HERB', 'MENTAL_HERB', 'LAX_INCENSE', 'KINGS_ROCK']
+
+
+def _flat(text):
+    return ''.join(c for c in (text or '').lower() if c.isalnum() or c == ' ')
+
+
+def _wants_item(mem, prose):
+    """True when the prose names this item for this Pokémon, so the set must keep it: its own
+    note naming the item, or shared prose naming both the item and this species."""
+    item = _flat(mem['item'].replace('_', ' '))
+    if item in _flat(mem['note']):
+        return True
+    shared = _flat(prose)
+    return item in shared and _flat(mem['sp'].replace('_', ' ')) in shared
+
+
+def _item_candidates(mem):
+    """What this set would like to hold, best first."""
+    D = cov.load()
+    sp = D['species'][mem['sp']]
+    yield mem['item']
+    moves = [mv for x in mem['moves'] for mv in ((x,) if isinstance(x, str) else x)]
+    attacks = [D['moves'][mv] for mv in moves if D['moves'][mv]['power'] > 1]
+    for stab in (True, False):
+        for m in sorted(attacks, key=lambda m: -m['power']):
+            if (m['type'] in sp['types']) == stab and m['type'] in TYPE_ITEM:
+                yield TYPE_ITEM[m['type']]
+    yield from FILLER_ITEMS
+
+
+def dedupe_items(members, prose=''):
+    """Give every member of one line-up a different held item, in place."""
+    bulk = lambda m: cov.load()['species'][m['sp']]['bulk']
+    # Sets whose note names the item keep it; then unusual items over Leftovers; then the bulkiest.
+    order = sorted(range(len(members)), key=lambda i: (
+        not _wants_item(members[i], prose),
+        members[i]['item'] == 'LEFTOVERS', -bulk(members[i])))
+    taken = set()
+    for i in order:
+        for cand in _item_candidates(members[i]):
+            if cand not in taken:
+                taken.add(cand)
+                members[i]['item'] = cand
+                break
+        else:
+            raise ValueError(f"{members[i]['sp']}: no free held item")
+
+
+def _groups():
+    for t in TEAMS:
+        for g in [t] + list(t.get('variants') or []):
+            yield g['members'], t.get('blurb', '') + g.get('blurb', '')
+    for c in COMBOS:
+        yield c['pair'], c.get('html', '')
+
+
+for _members, _prose in _groups():
+    dedupe_items(_members, _prose)
+    _items = [m['item'] for m in _members]
+    assert len(set(_items)) == len(_items), f'duplicate held item in {[m["sp"] for m in _members]}'
+
+
 # Obtainability exceptions: species the Pokédex marks as unobtainable.
 UNOBTAINABLE = {'SUDOWOODO'}
 
