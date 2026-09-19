@@ -530,7 +530,7 @@ function buildPrompt() {
   const miss = S.missed.map(s => s.n);
   const out = [
     'Review my Pokémon team. Be concise.',
-    'Game: Pokémon Emerald, Gen 3 mechanics: no Fairy, physical/special decided by move type (but here Dark is physical and Ghost is special), Gen 3 abilities. Main format: double battles.',
+    'Game: a modded Pokémon Emerald, Gen 3 mechanics: no Fairy, physical/special decided by move type, Gen 3 abilities. This mod swaps two of those: Dark is physical, Ghost is special. Rosters and learnsets differ from vanilla. Main format: double battles.',
     '',
     'Team (Pokémon | type | ability | held item | moves):',
     ...lines,
@@ -545,7 +545,7 @@ function buildPrompt() {
     '',
     'Reply in under 150 words, no preamble, bullets only:',
     '1) Top 3 problems, one line each.',
-    '2) Up to 3 concrete fixes (Move → Move, or Pokémon → Pokémon), one-line reason each. Gen 3 only; learnsets may differ from vanilla, so mark any move you are unsure the Pokémon can learn with (?).',
+    '2) Up to 3 concrete fixes (Move → Move, or Pokémon → Pokémon), one-line reason each. Gen 3 only; mark any move you are unsure the Pokémon can learn with (?).',
     '3) One doubles tip for this team.',
   ];
   return out.filter(l => l !== null).join('\\n');
