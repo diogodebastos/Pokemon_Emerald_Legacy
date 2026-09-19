@@ -78,3 +78,6 @@ pokeemerald-*.png
 
 # Local-only skill: deploys ROM to my Steam Deck over SSH (contains LAN IP/user)
 .claude/skills/deploy-to-steamdeck/
+
+# Runtime cache: the 3DS ftpd address changes on every restart, and it is per-machine.
+.claude/skills/deploy-to-3ds/scripts/.last_target
