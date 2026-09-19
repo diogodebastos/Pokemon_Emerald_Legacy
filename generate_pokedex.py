@@ -401,6 +401,35 @@ def parse_base_stats(path):
         i += 2
     return result
 
+def parse_type_chart(path):
+    """gTypeEffectiveness from battle_main.c -> {attacking: {defending: multiplier}}.
+    Entries after TYPE_FORESIGHT (Normal/Fighting vs Ghost) still apply in normal battles."""
+    with open(path) as f:
+        content = f.read()
+    m = re.search(r'gTypeEffectiveness\[\d*\]\s*=\s*\{(.*?)\};', content, re.S)
+    mul = {'SUPER_EFFECTIVE': 2, 'NOT_EFFECTIVE': 0.5, 'NO_EFFECT': 0}
+    chart = {}
+    for atk, dfn, eff in re.findall(r'TYPE_(\w+),\s*TYPE_(\w+),\s*TYPE_MUL_(\w+)', m.group(1)):
+        if atk in ('FORESIGHT', 'ENDTABLE'):
+            continue
+        chart.setdefault(atk, {})[dfn] = mul[eff]
+    return chart
+
+TYPE_ORDER = ['NORMAL', 'FIGHTING', 'FLYING', 'POISON', 'GROUND', 'ROCK', 'BUG', 'GHOST', 'STEEL',
+              'FIRE', 'WATER', 'GRASS', 'ELECTRIC', 'PSYCHIC', 'ICE', 'DRAGON', 'DARK']
+
+def load_type_icon_b64(t):
+    """The in-game type icon (graphics/types), palette index 0 made transparent."""
+    from PIL import Image
+    im = Image.open(os.path.join(BASE, 'graphics/types', ('fight' if t == 'FIGHTING' else t.lower()) + '.png'))
+    rgba = im.convert('RGBA')
+    px, idx = rgba.load(), im.load()
+    for y in range(im.height):
+        for x in range(im.width):
+            if idx[x, y] == 0:
+                px[x, y] = (0, 0, 0, 0)
+    return _img_to_b64(rgba)
+
 # --- Build move info dict (keyed by display name) ---
 
 def build_move_info(moves_path, desc_path):
@@ -887,6 +916,8 @@ def build_data():
     ability_info = parse_ability_info(os.path.join(BASE, 'src/data/text/abilities.h'))
     print(f"  {len(ability_info)} abilities")
 
+    type_chart = parse_type_chart(os.path.join(BASE, 'src/battle_main.c'))
+
     print("Loading sprites...")
     pokemon_list = []
     # First pass: build all base entries
@@ -1071,7 +1102,7 @@ def build_data():
 
     pokemon_list.sort(key=lambda p: p['dexNum'])
     print(f"  Total: {len(pokemon_list)} Pokémon")
-    return pokemon_list, move_info, ability_info
+    return pokemon_list, move_info, ability_info, type_chart
 
 # --- Generate HTML ---
 
@@ -1917,6 +1948,16 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
   .ms-nature-label { font-family: var(--f-mono); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-mut); }
   .ms-nature-name { font-family: var(--f-serif); font-style: italic; font-size: 18px; color: var(--ink); }
   .ms-nature-effect { font-family: var(--f-mono); font-size: 11px; color: var(--jade-bright); }
+  .tyicon { image-rendering: pixelated; vertical-align: middle; }
+  .mu-wrap { overflow-x: auto; max-width: 100%; }
+  table.mu { width: auto; border-collapse: separate; border-spacing: 2px; font-family: var(--f-mono); font-size: 11px; }
+  table.mu th { padding: 0; background: none; border: 0; }
+  table.mu th .tyicon { width: 32px; height: 16px; display: block; }
+  table.mu .mu-name { font-family: var(--f-serif); font-style: italic; font-size: 13px; color: var(--ink); text-transform: none; letter-spacing: 0; text-align: right; padding-right: 8px; white-space: nowrap; font-weight: 400; }
+  table.mu td { width: 32px; height: 22px; padding: 0; text-align: center; border: 0; border-radius: 3px; background: var(--paper-2); color: var(--ink-mut); cursor: default; }
+  table.mu td.weak { background: rgba(232,165,48,0.28); color: var(--ink); }
+  table.mu td.res { background: rgba(46,176,112,0.22); color: var(--ink); }
+  table.mu td.imm { background: rgba(46,176,112,0.5); color: var(--ink); font-weight: 700; }
   .ms-source { font-size: 13px; line-height: 1.6; color: var(--ink-dim); margin: 0 0 12px; max-width: 80ch; }
   .ms-how { font-family: var(--f-mono); font-size: 10px; color: var(--ink-mut); margin-right: 8px; }
   .ms-tag {
@@ -2155,6 +2196,8 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
 const DATA = POKEMON_DATA_PLACEHOLDER;
 const MOVES = MOVE_INFO_PLACEHOLDER;
 const ABILITIES = ABILITY_INFO_PLACEHOLDER;
+const TYPE_CHART = TYPE_CHART_PLACEHOLDER;
+const TYPE_ICONS = TYPE_ICONS_PLACEHOLDER;
 const dexIdx = {};
 DATA.forEach((p, i) => dexIdx[p.dexNum] = i);
 
@@ -2526,6 +2569,8 @@ function renderDetail(p, formIdx, shiny) {
 
     ${statsHtml}
 
+    ${buildTypeEffectiveness(src.name || p.name, types, abilities)}
+
     <div class="section-title" style="margin-top:28px">Learned Techniques</div>
     <div class="tabs">
       <div class="tab-bar">
@@ -2633,6 +2678,38 @@ function buildAllTab(p) {
   </table>`;
 }
 
+const ATTACK_TYPES = ['NORMAL','FIGHTING','FLYING','POISON','GROUND','ROCK','BUG','GHOST','STEEL',
+  'FIRE','WATER','GRASS','ELECTRIC','PSYCHIC','ICE','DRAGON','DARK'];
+const titleCase = t => t[0] + t.slice(1).toLowerCase();
+// Abilities that change what hits this Pokémon (Gen 3 rules): multiplier -> new multiplier.
+const ABILITY_DEFENSE = {
+  LEVITATE:     (atk, m) => atk === 'GROUND' ? 0 : m,
+  FLASH_FIRE:   (atk, m) => atk === 'FIRE' ? 0 : m,
+  VOLT_ABSORB:  (atk, m) => atk === 'ELECTRIC' ? 0 : m,
+  WATER_ABSORB: (atk, m) => atk === 'WATER' ? 0 : m,
+  THICK_FAT:    (atk, m) => (atk === 'FIRE' || atk === 'ICE') ? m / 2 : m,
+  WONDER_GUARD: (atk, m) => m > 1 ? m : 0,
+};
+
+// Same matchup grid as the Guide's Coverage Duos (renderMatchups there).
+function buildTypeEffectiveness(name, types, abilities) {
+  if (!types.length) return '';
+  const base = ATTACK_TYPES.map(atk => types.reduce((n, d) => n * ((TYPE_CHART[atk] || {})[d] ?? 1), 1));
+  const rows = [{name, vals: base}];
+  abilities.filter(a => ABILITY_DEFENSE[a.key])
+    .forEach(a => rows.push({name: `w/ ${a.name}`, vals: base.map((m, i) => ABILITY_DEFENSE[a.key](ATTACK_TYPES[i], m))}));
+  const lab = x => x === 0 ? '0' : x >= 4 ? '4×' : x >= 2 ? '2×' : x <= 0.25 ? '¼' : x <= 0.5 ? '½' : '';
+  const cls = x => x === 0 ? 'imm' : x > 1 ? 'weak' : x < 1 ? 'res' : '';
+  const word = x => x === 0 ? 'immune' : x > 1 ? `weak (${lab(x)})` : x < 1 ? `resists (${lab(x)})` : 'neutral';
+  const icon = t => `<img class="tyicon" src="${TYPE_ICONS[t]}" alt="${t}" title="${titleCase(t)}">`;
+  return `<div class="section-title" style="margin-top:28px">Type Effectiveness</div>
+    <p class="ms-source">Damage this Pokémon takes from each attacking type${rows.length > 1 ? ', with and without its ability' : ''}.</p>
+    <div class="mu-wrap"><table class="mu"><thead><tr><th></th>${ATTACK_TYPES.map(t => `<th>${icon(t)}</th>`).join('')}</tr></thead><tbody>
+    ${rows.map(r => `<tr><th class="mu-name">${r.name}</th>${r.vals.map((x, j) =>
+      `<td class="${cls(x)}" title="${r.name} vs ${titleCase(ATTACK_TYPES[j])}: ${word(x)}">${lab(x)}</td>`).join('')}</tr>`).join('')}
+    </tbody></table></div>`;
+}
+
 function buildMoveset(ms) {
   if (!ms || !ms.moves.length) return '';
   const rows = ms.moves.map(m => {
@@ -2682,7 +2759,7 @@ registerApp('pokedex', key => {
 '''
 
 def generate():
-    pokemon_list, move_info, ability_info = build_data()
+    pokemon_list, move_info, ability_info, type_chart = build_data()
 
     data_json = json.dumps(pokemon_list, ensure_ascii=False, separators=(',', ':'))
     move_json = json.dumps(move_info, ensure_ascii=False, separators=(',', ':'))
@@ -2692,6 +2769,8 @@ def generate():
     html = site_shared.inject(HTML_TEMPLATE).replace('POKEMON_DATA_PLACEHOLDER', data_json)
     html = html.replace('MOVE_INFO_PLACEHOLDER', move_json)
     html = html.replace('ABILITY_INFO_PLACEHOLDER', ability_json)
+    html = html.replace('TYPE_CHART_PLACEHOLDER', json.dumps(type_chart, separators=(',', ':')))
+    html = html.replace('TYPE_ICONS_PLACEHOLDER', json.dumps({t: load_type_icon_b64(t) for t in TYPE_ORDER}, separators=(',', ':')))
 
     docs_dir = os.path.join(BASE, 'docs')
     os.makedirs(docs_dir, exist_ok=True)

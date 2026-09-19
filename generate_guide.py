@@ -883,15 +883,7 @@ def build_doubles_pages():
 
 
 def load_type_icon_b64(t):
-    from PIL import Image
-    im = Image.open(os.path.join(BASE, 'graphics/types', cov.TYPE_ICON_FILE[t] + '.png'))
-    rgba = im.convert('RGBA')
-    px, idx = rgba.load(), im.load()
-    for y in range(im.height):
-        for x in range(im.width):
-            if idx[x, y] == 0:
-                px[x, y] = (0, 0, 0, 0)
-    return pdx._img_to_b64(rgba)
+    return pdx.load_type_icon_b64(t)
 
 
 def build_data():
