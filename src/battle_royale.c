@@ -4,6 +4,7 @@
 #include "battle_setup.h"
 #include "bg.h"
 #include "event_data.h"
+#include "event_object_movement.h"
 #include "gpu_regs.h"
 #include "main.h"
 #include "menu.h"
@@ -210,6 +211,8 @@ bool32 IsTrainerEligibleForBattleRoyale(u16 trainerId)
     case TRAINER_PHOEBE_2_SINGLE:
     /* Grinding NPC — always-rematchable, not a real route trainer */
     case TRAINER_GRINDING_NURSE:
+    /* Mr. Mimic — mirrors the player's team, re-fightable forever */
+    case TRAINER_BATTLE_ROYALE_MR_MIMIC:
         return FALSE;
     }
 
@@ -291,6 +294,15 @@ void NormalizeBattleRoyaleSaveState(void)
 bool32 IsBattleRoyaleModeActive(void)
 {
     return VarGet(VAR_BATTLE_ROYALE_MODE) == 1;
+}
+
+// Once the challenge is complete, the Battle Royale NPCs (the objects hidden by
+// FLAG_HIDE_BATTLE_ROYALE_TRAINERS) can be fought again forever when talked to.
+// Their trainer flags stay set, so a lost rematch never undoes the completion.
+bool32 BattleRoyale_CanRematchObject(u8 objectEventId)
+{
+    return VarGet(VAR_BATTLE_ROYALE_MODE) == 2
+        && GetObjectEventFlagIdByObjectEventId(objectEventId) == FLAG_HIDE_BATTLE_ROYALE_TRAINERS;
 }
 
 void ActivateBattleRoyaleMode(void)

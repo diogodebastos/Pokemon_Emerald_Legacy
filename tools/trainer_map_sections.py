@@ -23,7 +23,7 @@ REGION_MAP_H = os.path.join(BASE_DIR, 'include', 'constants', 'region_map_sectio
 TABLE_FILE = os.path.join(BASE_DIR, 'src', 'data', 'battle_royale', 'trainer_map_sections.h')
 
 BR_FLAG = 'FLAG_HIDE_BATTLE_ROYALE_TRAINERS'
-TRAINERBATTLE_RE = re.compile(r'trainerbattle_\w+\s+(TRAINER_\w+)')
+TRAINERBATTLE_RE = re.compile(r'trainerbattle(?:_\w+\s+|\s+TRAINER_BATTLE_CONTINUE_SCRIPT\w*\s*,\s*)(TRAINER_\w+)')
 DEFINE_TRAINER_RE = re.compile(r'#define\s+(TRAINER\w+)\s+(\d+)')
 DEFINE_MAPSEC_RE = re.compile(r'#define\s+(MAPSEC_\w+)\s+(0x[0-9A-Fa-f]+|\d+)')
 

@@ -6,6 +6,7 @@ void ActivateBattleRoyaleMode(void);
 void DeactivateBattleRoyaleMode(void);
 void NormalizeBattleRoyaleSaveState(void);
 bool32 IsBattleRoyaleModeActive(void);
+bool32 BattleRoyale_CanRematchObject(u8 objectEventId);
 void BattleRoyale_ResetAllTrainerFlags(void);
 void BattleRoyale_OnTrainerDefeated(u16 trainerIdA, u16 trainerIdB);
 void ShowBattleRoyaleHud(void);

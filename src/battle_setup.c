@@ -1293,6 +1293,8 @@ bool8 GetTrainerFlag(void)
         return GetBattlePyramidTrainerFlag(gSelectedObjectEvent);
     else if (InTrainerHill())
         return GetHillTrainerFlag(gSelectedObjectEvent);
+    else if (BattleRoyale_CanRematchObject(gSelectedObjectEvent))
+        return FALSE;
     else
         return FlagGet(GetTrainerAFlag());
 }
