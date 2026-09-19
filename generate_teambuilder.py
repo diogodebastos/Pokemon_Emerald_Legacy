@@ -234,7 +234,7 @@ GUIDE_PAGES_CSS
     <div id="sidebar">
       <div id="sidebar-header">
         <h1>Team Pages</h1>
-        <span class="volume">Vol. V · Coverage · Doubles · Specialists</span>
+        <span class="volume">Vol. VI · Coverage · Doubles · Specialists</span>
       </div>
       <div id="page-list"></div>
     </div>

@@ -39,7 +39,9 @@ CSS = r'''  :root {
   #sidebar {
     width: 300px; min-width: 260px; background: var(--paper-0);
     border-right: 1px solid var(--rule); display: flex; flex-direction: column;
-    height: 100vh; min-height: 0;
+    /* 100% not 100vh: in the Team app the sidebar sits under a tab bar, so 100vh
+       overflows by the bar's height and clips the last entry in #page-list. */
+    height: 100%; min-height: 0;
   }
   #sidebar-header { padding: 22px 20px 14px; border-bottom: 1px solid var(--rule); }
   #sidebar-header h1 {

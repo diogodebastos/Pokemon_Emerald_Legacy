@@ -226,10 +226,13 @@
     }
     #dock::before { inset: 1px 1px 50% 1px; border-radius: 21px 21px 0 0; }
     .dock-sep, .dock-spacer, .tip { display: none; }
-    .dock-btn { width: auto; flex: 1; height: 56px; transform: none !important; display: flex; flex-direction: column; gap: 2px; }
+    /* min-width: 0 or the longest label ("Trainers") floors the button at its own
+       min-content width, so the row stops sharing evenly and spills past the dock. */
+    .dock-btn { width: auto; flex: 1; min-width: 0; height: 56px; transform: none !important; display: flex; flex-direction: column; gap: 2px; align-items: center; }
     .dock-btn .tile { width: 34px; height: 34px; border-radius: 11px; }
     .dock-btn svg { width: 19px; height: 19px; }
-    .tab-label { display: block; font-family: var(--f-mono); font-size: 8px; letter-spacing: 0.06em; color: var(--ink-mut); }
+    .tab-label { display: block; font-family: var(--f-mono); font-size: clamp(7px, 1.9vw, 8px); letter-spacing: 0.02em; color: var(--ink-mut);
+                 max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .dock-btn.active .tab-label { color: var(--jade-bright); }
     .dock-btn::after { left: 50%; top: 2px; margin: 0 0 0 -2px; }
     #app-window { border-radius: 14px; }

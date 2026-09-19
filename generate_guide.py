@@ -977,7 +977,7 @@ GUIDE_PAGES_CSS
 <div id="sidebar">
   <div id="sidebar-header">
     <h1>Field Guide</h1>
-    <span class="volume">Vol. IV · Trades · Gifts · Rematches · Thief · Frontier</span>
+    <span class="volume">Vol. V · Trades · Gifts · Rematches · Thief · Frontier</span>
   </div>
   <div id="page-list"></div>
 </div>

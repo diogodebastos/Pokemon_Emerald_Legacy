@@ -336,7 +336,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
 <div id="sidebar">
   <div id="sidebar-header">
     <h1>Bag</h1>
-    <span class="volume">Vol. V · Where to find every item</span>
+    <span class="volume">Vol. IV · Where to find every item</span>
     <input type="text" id="search" placeholder="Search item or place…" oninput="render()">
     <div class="filters" id="filters"></div>
   </div>
