@@ -537,16 +537,14 @@ def build_frontier_pages(item_names):
 # ---------------------------------------------------------------------------
 # Hand-picked duos; the movesets themselves are computed, so they follow the learnsets.
 # (a, a's attacking types, b, b's attacking types, doubles-safe?)
-COVERAGE_DUOS = [
-    ('BLAZIKEN', ['FIGHTING', 'FLYING', 'ROCK', 'FIRE'], 'FLYGON', ['GROUND', 'GRASS', 'DRAGON', 'DARK'], False),
-    ('SCEPTILE', ['GRASS', 'DRAGON', 'DARK', 'FLYING'], 'BLAZIKEN', ['FIGHTING', 'GROUND', 'ROCK', 'FIRE'], False),
-    ('TYRANITAR', ['FIGHTING', 'FLYING', 'ROCK', 'DARK'], 'FLYGON', ['GROUND', 'FIRE', 'GRASS', 'DRAGON'], False),
-    ('SALAMENCE', ['FLYING', 'GROUND', 'ROCK', 'FIRE'], 'SCEPTILE', ['FIGHTING', 'GRASS', 'DRAGON', 'DARK'], False),
-]
-COVERAGE_SAFE_DUOS = [
-    ('TYRANITAR', ['FIGHTING', 'FLYING', 'GROUND', 'ROCK'], 'FLYGON', ['FIRE', 'GRASS', 'DRAGON', 'DARK'], True),
-    ('SCEPTILE', ['FIGHTING', 'GROUND', 'GRASS', 'DARK'], 'SALAMENCE', ['FLYING', 'ROCK', 'FIRE', 'DRAGON'], True),
-]
+# Featured pairs, all computed doubles-safe (no move may hit the partner).
+# Ground is the awkward type: Earthquake hits your ally too, so it can only go on a Pokémon
+# whose partner is immune. When BOTH are immune the pair is free, and the Ground slot lands on
+# whoever hits hardest with it; when only one is, the immune one has to give up its own Earthquake.
+MUTUAL_DUOS = [('DRAGONITE', 'FLYGON'), ('FLYGON', 'SALAMENCE'), ('CHARIZARD', 'FLYGON')]
+ONE_IMMUNE_DUOS = [('BLAZIKEN', 'FLYGON'), ('TYRANITAR', 'FLYGON')]
+GROUNDED_DUO = ('SCEPTILE', 'BLAZIKEN')   # neither is immune, so the pair does without Ground
+
 TYPE_LABEL = {t: t.title() for t in cov.TYPES}
 SPECIAL_LABELS = [TYPE_LABEL[t] for t in cov.TYPES if t not in cov.PHYSICAL]
 
@@ -586,10 +584,6 @@ def build_coverage_pages():
     def ability_note(sp):
         ab = D['species'][sp]['abilities']
         return next((f'{a.replace("_", " ").title()}' for a in ab if a in cov.ABILITY_BLOCKS or a == 'THICK_FAT'), '')
-
-    def duo_block(spec):
-        a, at, b, bt, safe = spec
-        return duo_view(cov.duo(a, at, b, bt, partner_safe=safe))
 
     def duo_view(d, matchups=None):
         a, b = d['a'], d['b']
@@ -654,7 +648,8 @@ def build_coverage_pages():
 
     with contextlib.redirect_stdout(io.StringIO()):
         more_safe = cov.rank_duos(True, 12)
-    featured = {(x[0], x[2]) for x in COVERAGE_DUOS + COVERAGE_SAFE_DUOS}
+    curated = MUTUAL_DUOS + ONE_IMMUNE_DUOS + [GROUNDED_DUO]
+    featured = {p for p in curated} | {tuple(reversed(p)) for p in curated}
     more_rows = []
     for d in more_safe:
         if (d['a'], d['b']) in featured or len(more_rows) >= 8:
@@ -704,15 +699,24 @@ def build_coverage_pages():
                             'can learn by level-up, TM/HM, tutor or egg move. That rules out moves with a charge turn or recharge, '
                             'self-KO moves, fixed-damage moves and Hidden Power. Every move shown has at least '
                             f'{cov.MIN_POWER} power, and <span class="stab">STAB</span> marks a same-type bonus.'),
-        dict(type='h', text='Singles picks'),
-        dict(type='duos', items=[duo_block(s) for s in COVERAGE_DUOS]),
-        dict(type='h', text='Doubles-safe picks'),
-        dict(type='p', html='<b>Earthquake hits your partner too.</b> In a double battle it hits both foes <i>and</i> your ally, and '
-                            'Hoenn rematches are doubles. Give Earthquake to the Pokémon whose partner is immune to Ground, '
-                            'either a <b>Flying</b> type or one with <b>Levitate</b>. The two duos below are the same idea as above, '
-                            'with the Ground slot moved to the other Pokémon: Tyranitar fires Earthquake over a levitating Flygon, '
-                            'and Sceptile fires it under a flying Salamence.'),
-        dict(type='duos', items=[duo_block(s) for s in COVERAGE_SAFE_DUOS]),
+        dict(type='h', text='Best picks · both immune to Ground'),
+        dict(type='p', html='<b>Earthquake hits your partner too.</b> In a double battle it hits both foes <i>and</i> your ally, and the Hoenn rematches are doubles, '
+                            'so every split on this page is doubles-safe. The best pairs are the ones where <b>both</b> Pokémon are immune to Ground, '
+                            'either a <b>Flying</b> type or one with <b>Levitate</b>: then Earthquake can go to whoever hits hardest with it, and it is free to fire on any turn. '
+                            'In all three pairs below that is <b>Flygon</b>, which gets its same-type bonus on it.'),
+        dict(type='duos', items=[duo_view(cov.best_split(a, b)) for a, b in MUTUAL_DUOS]),
+        dict(type='h', text='One immune partner'),
+        dict(type='p', html='If only one of the two is immune, the Ground slot has to sit on the <i>other</i> one, because its partner is the one that can take the hit. '
+                            'That is why <b>Flygon carries no Earthquake here</b>, even though it is the better Ground attacker: its own Earthquake would hit a grounded partner, '
+                            'so it runs coverage moves instead and the partner supplies the Ground. These pairs still hit '
+                            f'{best8_hit}/{len(hittable)}, and Blaziken + Flygon deals the most damage of any pair on this page, but a slot is spent worse than it needs to be.'),
+        dict(type='duos', items=[duo_view(cov.best_split(a, b)) for a, b in ONE_IMMUNE_DUOS]),
+        dict(type='h', text='When both are grounded'),
+        dict(type='p', html=f'If neither is immune, the pair cannot use Earthquake at all, and no other Ground move is worth a slot: '
+                            f'Dig costs a turn, Bonemerang and Bone Rush are Marowak-only, and Mud-Slap is too weak. '
+                            f'{name(GROUNDED_DUO[0])} and {name(GROUNDED_DUO[1])} are both grounded, so they give up Ground and drop from '
+                            f'{best8_hit} to {cov.best_split(*GROUNDED_DUO)["hit"]} of {len(hittable)}.'),
+        dict(type='duos', items=[duo_view(cov.best_split(*GROUNDED_DUO))]),
         dict(type='h', text='More doubles-safe duos'),
         dict(type='p', html=f'Also {best8_hit}/{len(hittable)}, ranked by damage (move power × STAB × the attacking stat). '
                             'Legendaries are left out.'),

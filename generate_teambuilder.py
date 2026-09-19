@@ -84,7 +84,9 @@ GUIDE_PAGES_CSS
                 padding: 7px 14px; border: 1px solid transparent; background: none; color: var(--ink-mut); cursor: pointer; }
   #tabbar .tb:hover { color: var(--ink); }
   #tabbar .tb.active { color: var(--jade-bright); border-color: var(--jade-bright); background: var(--jade-soft); }
-  #views { flex: 1; min-height: 0; display: flex; }
+  /* min-width: 0 everywhere, or these flex items refuse to shrink below their content width */
+  #views { flex: 1; min-height: 0; min-width: 0; display: flex; }
+  #views > div, #view-pages > #main { min-width: 0; }
   #views.builder #view-pages, #views.pages #view-builder { display: none; }
   #view-builder { flex: 1; min-height: 0; overflow-y: auto;
                   background: radial-gradient(1000px 500px at 100% -100px, rgba(46,176,112,0.05), transparent 55%), var(--paper-1); }
