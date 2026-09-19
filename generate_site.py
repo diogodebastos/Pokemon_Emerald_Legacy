@@ -51,7 +51,9 @@ def main():
     for it in items:
         index.append(dict(t='item', k=it['key'], n=it['name'], s=it['pocket']))
     for pg in pages:
-        index.append(dict(t='guide', k=pg['id'], n=pg['title'], s=pg['section']))
+        team = pg['section'] in gdx.TEAM_SECTIONS
+        index.append(dict(t='guide', k=pg['id'], n=pg['title'], s=pg['section'],
+                          **(dict(a='teambuilder') if team else {})))
     index.append(dict(t='guide', k='', n='Team Builder', s='Six Pokémon · type charts and coverage', a='teambuilder'))
 
     docs = os.path.join(BASE, 'docs')
@@ -59,7 +61,8 @@ def main():
         json.dump(index, f, ensure_ascii=False, separators=(',', ':'))
     manifest = dict(
         build=time.strftime('%Y%m%d%H%M%S'),
-        counts=dict(pokedex=len(mons), trainers=len(trainers), moves=len(moves), bag=len(items), guide=len(pages)),
+        counts=dict(pokedex=len(mons), trainers=len(trainers), moves=len(moves), bag=len(items), guide=sum(1 for p in pages if p['section'] not in gdx.TEAM_SECTIONS),
+                    teambuilder=sum(1 for p in pages if p['section'] in gdx.TEAM_SECTIONS)),
     )
     with open(os.path.join(docs, 'manifest.json'), 'w') as f:
         json.dump(manifest, f, indent=1)

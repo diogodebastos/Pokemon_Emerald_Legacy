@@ -2738,7 +2738,7 @@ function buildMoveset(ms) {
     </tr>`;
   }).join('');
   const source = ms.source
-    ? `Hand-picked set from the <a class="xl" data-app="guide" data-key="${ms.source.id}">${ms.source.team}</a> team in the Guide (${ms.role}).`
+    ? `Hand-picked set from the <a class="xl" data-app="teambuilder" data-key="${ms.source.id}">${ms.source.team}</a> team in the Teams app (${ms.role}).`
     : `${ms.role}. Picked automatically for double battles from moves this Pokémon can really learn: its strongest same-type attack, attacks chosen for type coverage, and one support slot (Protect, Fake Out, Spore, Follow Me or a setup move).`;
   const nat = ms.nature
     ? `<div class="ms-nature"><span class="ms-nature-label">Suggested nature</span>

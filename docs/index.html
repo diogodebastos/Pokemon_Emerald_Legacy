@@ -271,7 +271,7 @@
   <button class="dock-btn" data-app="moves" aria-label="Moves"><span class="tile"><svg><use href="#i-moves"/></svg></span><span class="tab-label">Moves</span><span class="tip">Moves</span></button>
   <button class="dock-btn" data-app="bag" aria-label="Bag"><span class="tile"><svg><use href="#i-bag"/></svg></span><span class="tab-label">Bag</span><span class="tip">Bag</span></button>
   <button class="dock-btn" data-app="guide" aria-label="Guide"><span class="tile"><svg><use href="#i-guide"/></svg></span><span class="tab-label">Guide</span><span class="tip">Guide</span></button>
-  <button class="dock-btn" data-app="teambuilder" aria-label="Team Builder"><span class="tile"><svg><use href="#i-team"/></svg></span><span class="tab-label">Team</span><span class="tip">Team Builder</span></button>
+  <button class="dock-btn" data-app="teambuilder" aria-label="Teams"><span class="tile"><svg><use href="#i-team"/></svg></span><span class="tab-label">Teams</span><span class="tip">Team Builder &amp; team pages</span></button>
   <div class="dock-spacer"></div>
   <div class="dock-sep"></div>
   <button class="dock-btn" id="dock-search" aria-label="Search"><span class="tile"><svg><use href="#i-search"/></svg></span><span class="tab-label">Search</span><span class="tip">Search <kbd>⌘K</kbd></span></button>
@@ -309,7 +309,7 @@
 
 <div class="scrim" id="palette" hidden>
   <div class="glass-panel" role="dialog" aria-label="Search">
-    <input id="pal-input" type="text" placeholder="Search Pokémon, trainers, moves, items, guides…" autocomplete="off" spellcheck="false">
+    <input id="pal-input" type="text" placeholder="Search Pokémon, trainers, moves, items, guides, teams…" autocomplete="off" spellcheck="false">
     <div id="pal-results"></div>
     <div class="pal-foot"><span><kbd>↑↓</kbd>navigate</span><span><kbd>↵</kbd>open</span><span><kbd>esc</kbd>close</span></div>
   </div>
@@ -403,7 +403,7 @@ const APPS = {
   moves:    { file: 'attackdex.html',  name: 'Moves',    unit: 'moves' },
   bag:      { file: 'items.html',      name: 'Bag',      unit: 'items' },
   guide:    { file: 'guide.html',      name: 'Guide',    unit: 'pages' },
-  teambuilder: { file: 'teambuilder.html', name: 'Team Builder', unit: 'slots' },
+  teambuilder: { file: 'teambuilder.html', name: 'Teams', unit: 'team pages' },
 };
 const ORDER = ['play', 'pokedex', 'trainers', 'moves', 'bag', 'guide', 'teambuilder'];
 const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },

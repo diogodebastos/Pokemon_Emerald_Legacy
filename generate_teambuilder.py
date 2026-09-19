@@ -16,7 +16,9 @@ import json
 import contextlib
 
 import coverage_data as cov
+import generate_guide as gdx
 import generate_pokedex as pdx
+import guide_pages
 import site_shared
 from site_shared import BASE
 
@@ -73,46 +75,28 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --paper-0: #0a140e; --paper-1: #0e1b14; --paper-2: #13221a;
-    --paper-3: #1a2c22; --paper-4: #233829;
-    --ink: #ece3d0; --ink-dim: #b5a98f; --ink-mut: #7b705c; --ink-fnt: #534a3b;
-    --rule: #2d3d33; --rule-2: #1e2a23;
-    --jade: #1a8d5a; --jade-bright: #2eb070; --jade-deep: #0d6b40; --jade-soft: rgba(46,176,112,0.13);
-    --ruby: #b3272b; --dusk: #e8a530; --dusk-soft: rgba(232,165,48,0.13);
-    --f-serif: 'Fraunces', 'Iowan Old Style', Georgia, serif;
-    --f-sans: 'Instrument Sans', system-ui, -apple-system, sans-serif;
-    --f-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { background: var(--paper-1); }
-  body {
-    font-family: var(--f-sans); color: var(--ink); font-size: 14px; letter-spacing: 0.005em;
-    -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; min-height: 100vh;
-    background: radial-gradient(1000px 500px at 100% -100px, rgba(46,176,112,0.05), transparent 55%), var(--paper-1);
-  }
-  #page { max-width: 1100px; margin: 0 auto; padding: 48px 56px 64px; }
-  .kicker {
-    font-family: var(--f-mono); font-size: 10px; color: var(--jade-bright);
-    letter-spacing: 0.26em; text-transform: uppercase; margin-bottom: 10px;
-    display: flex; align-items: center; gap: 10px;
-  }
-  .kicker::after { content: ""; flex: 1; height: 1px; background: var(--rule); }
-  h2 {
+GUIDE_PAGES_CSS
+  /* Team app: a tab bar over two views — the builder, and the battling pages */
+  body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+  #tabbar { flex: none; display: flex; align-items: center; gap: 6px; padding: 10px 16px; border-bottom: 1px solid var(--rule); background: var(--paper-0); }
+  #tabbar .brand { font-family: var(--f-serif); font-style: italic; font-size: 17px; color: var(--ink); margin-right: 10px; }
+  #tabbar .tb { font-family: var(--f-mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+                padding: 7px 14px; border: 1px solid transparent; background: none; color: var(--ink-mut); cursor: pointer; }
+  #tabbar .tb:hover { color: var(--ink); }
+  #tabbar .tb.active { color: var(--jade-bright); border-color: var(--jade-bright); background: var(--jade-soft); }
+  #views { flex: 1; min-height: 0; display: flex; }
+  #views.builder #view-pages, #views.pages #view-builder { display: none; }
+  #view-builder { flex: 1; min-height: 0; overflow-y: auto;
+                  background: radial-gradient(1000px 500px at 100% -100px, rgba(46,176,112,0.05), transparent 55%), var(--paper-1); }
+  #view-pages { flex: 1; min-height: 0; display: flex; }
+  #builder { max-width: 1100px; margin: 0 auto; padding: 40px 56px 64px; }
+  #builder h2 {
     font-family: var(--f-serif); font-variation-settings: "opsz" 144, "SOFT" 60, "WONK" 1;
     font-weight: 400; font-style: italic; font-size: 56px; line-height: 0.95; color: var(--ink);
     letter-spacing: -0.03em; margin-bottom: 20px;
   }
-  .p { font-size: 15px; line-height: 1.7; color: var(--ink-dim); margin: 0 0 16px; max-width: 76ch; }
-  .p b { color: var(--ink); font-weight: 600; }
-  .section-title {
-    font-family: var(--f-mono); font-size: 10px; color: var(--jade-bright); letter-spacing: 0.3em;
-    text-transform: uppercase; margin-bottom: 14px; margin-top: 36px; display: flex;
-    align-items: center; gap: 12px; font-weight: 500;
-  }
-  .section-title::before { content: "§"; color: var(--ink-mut); font-weight: 400; font-size: 13px; }
-  .section-title::after { content: ""; flex: 1; height: 1px; background: var(--rule); }
   .dim { font-family: var(--f-mono); font-size: 10px; color: var(--ink-mut); }
+  .open-builder { display: flex; justify-content: flex-end; margin: 0 0 6px; }
 
   .toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 4px 0 8px; }
   .btn { font-family: var(--f-mono); font-size: 9px; padding: 6px 12px; letter-spacing: 0.14em; text-transform: uppercase;
@@ -189,9 +173,6 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
   .monchip img { width: 36px; height: 36px; image-rendering: pixelated; }
   .empty-msg { font-size: 13px; color: var(--ink-mut); font-style: italic; }
 
-  #tip { position: fixed; z-index: 10000; display: none; pointer-events: none; max-width: 280px; padding: 6px 10px;
-         background: var(--paper-0); border: 1px solid var(--rule); color: var(--ink-dim); font-size: 12px; line-height: 1.45; }
-  #tip b { color: var(--ink); }
 
   @media (max-width: 700px) {
     #page { padding: 28px 16px 48px; }
@@ -203,7 +184,13 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
 </style>
 </head>
 <body>
-<div id="page">
+<div id="tabbar">
+  <span class="brand">Teams</span>
+  <button class="tb active" id="tb-builder" onclick="showView('builder')">Builder</button>
+  <button class="tb" id="tb-pages" onclick="showView('pages')">Team Pages</button>
+</div>
+<div id="views" class="builder">
+  <div id="view-builder"><div id="builder">
   <div class="kicker">Team Building · Six Pokémon · Twenty-four moves</div>
   <h2>Team Builder</h2>
   <p class="p">Pick six Pokémon and up to four moves each. Every move a Pokémon can learn is listed: level-up (including its pre-evolutions),
@@ -218,23 +205,37 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
   <datalist id="mon-list"></datalist>
   <div class="team" id="team"></div>
   <div id="analysis"></div>
+  </div></div>
+  <div id="view-pages">
+    <div id="sidebar">
+      <div id="sidebar-header">
+        <h1>Team Pages</h1>
+        <span class="volume">Vol. V · Coverage · Doubles · Specialists</span>
+      </div>
+      <div id="page-list"></div>
+    </div>
+    <div id="main">
+      <button id="btn-back" onclick="goBack()">← Return to Contents</button>
+      <div id="page"></div>
+    </div>
+  </div>
 </div>
-<div id="tip"></div>
 
 <script>
+const PAGES = TEAM_PAGES_PLACEHOLDER;
+const SPRITES = TEAM_SPRITES_PLACEHOLDER;
+GUIDE_PAGES_JS
 const SPECIES = SPECIES_PLACEHOLDER;
 const MOVES = MOVES_PLACEHOLDER;
 const TYPES = TYPES_PLACEHOLDER;
 const TYPE_CHART = TYPE_CHART_PLACEHOLDER;
-const TYPE_ICONS = TYPE_ICONS_PLACEHOLDER;
-const SPRITES = SPRITES_PLACEHOLDER;
+const SPR = SPRITES_PLACEHOLDER;   // species front sprites, by species index
 
 const byKey = {}; SPECIES.forEach((s, i) => byKey[s.k] = i);
 const moveByKey = {}; MOVES.forEach((m, i) => moveByKey[m.k] = i);
 const byName = {}; SPECIES.forEach((s, i) => byName[s.n.toLowerCase()] = i);
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 const tc = t => t[0] + t.slice(1).toLowerCase();
-const tyIcon = t => `<img class="tyicon" src="${TYPE_ICONS[t]}" alt="${t}" title="${tc(t)}">`;
 const eff = (atk, types) => types.reduce((n, d) => n * ((TYPE_CHART[atk] || {})[d] ?? 1), 1);
 // Abilities that change what hits a Pokémon (Gen 3).
 const ABILITY_DEFENSE = {
@@ -311,7 +312,7 @@ function renderSlot(m, i) {
   }).join('');
   return `<div class="slot">
     <button class="slot-x" data-remove="${i}" title="Remove">×</button>
-    <div class="duo-mon"><img src="${SPRITES[m.s]}" alt="${esc(s.n)}"><div>
+    <div class="duo-mon"><img src="${SPR[m.s]}" alt="${esc(s.n)}"><div>
       <div class="card-title"><a class="xl" data-app="pokedex" data-key="${s.dex}">${esc(s.n)}</a></div>
       <div class="duo-types">${s.t.map(tyIcon).join('')}</div>${abil}</div></div>
     <div class="duo-moves">${rows}</div>
@@ -383,7 +384,7 @@ function renderAnalysis() {
       `<td class="${oCls(x)}" data-tip="Team’s best hit on ${tc(TYPES[j])}: ${oWord(x)}">${lab(x)}</td>`).join('')}</tr>`;
 
   // Species coverage
-  const monChip = s => `<span class="monchip" data-tip="${esc(s.n)} · ${s.t.map(tc).join(' / ')}"><img src="${SPRITES[byKey[s.k]]}" alt=""><a class="xl" data-app="pokedex" data-key="${s.dex}">${esc(s.n)}</a></span>`;
+  const monChip = s => `<span class="monchip" data-tip="${esc(s.n)} · ${s.t.map(tc).join(' / ')}"><img src="${SPR[byKey[s.k]]}" alt=""><a class="xl" data-app="pokedex" data-key="${s.dex}">${esc(s.n)}</a></span>`;
 
   el.innerHTML = `
     <div class="section-title">Defensive Chart</div>
@@ -514,25 +515,61 @@ document.getElementById('btn-ai').onclick = async e => {
   setTimeout(() => { btn.textContent = 'Copy AI review prompt'; btn.classList.remove('done'); }, 1800);
 };
 
-const tip = document.getElementById('tip');
-document.addEventListener('mousemove', e => {
-  const t = e.target.closest('[data-tip]');
-  if (!t) { tip.style.display = 'none'; return; }
-  tip.innerHTML = t.dataset.tip;
-  tip.style.display = 'block';
-  const r = tip.getBoundingClientRect();
-  tip.style.left = Math.min(e.clientX + 14, window.innerWidth - r.width - 8) + 'px';
-  tip.style.top = Math.min(e.clientY + 14, window.innerHeight - r.height - 8) + 'px';
-});
+// The tooltip (#tip) and its mousemove handler come from the shared page renderer.
 
 finalOnly = !!store.get('el.team.final');
 team = decode(store.get('el.team'));
 render();
-registerApp('teambuilder', key => { team = decode(key); save(); render(); });
+function showView(v) {
+  document.getElementById('views').className = v;
+  document.getElementById('tb-builder').classList.toggle('active', v === 'builder');
+  document.getElementById('tb-pages').classList.toggle('active', v === 'pages');
+}
+// Species sprites already live in the builder's own list, so the pages reuse them
+// instead of baking a second copy into this file.
+function spriteFallback(ref) {
+  const m = /^mon:(\w+)$/.exec(ref || '');
+  return m && byKey[m[1]] !== undefined ? SPR[byKey[m[1]]] : '';
+}
+// "Open in Builder" on every hand-picked team: encode its members as a builder team code.
+function teamCode(members) {
+  return members.slice(0, 6).map(x => {
+    const s = SPECIES[byKey[x.sp]];
+    const ab = s ? Math.max(0, s.ab.findIndex(a => a[0] === x.abil)) : 0;
+    return `${x.sp}:${ab}:${(x.mvkeys || []).join(',')}`;
+  }).join(';');
+}
+function teamBlockExtra(b) {
+  if (!b.members || !b.members.length || !b.members[0].mvkeys) return '';
+  return `<div class="open-builder"><button class="btn" onclick="openInBuilder('${teamCode(b.members)}')">Open in Builder →</button></div>`;
+}
+function openInBuilder(code) {
+  team = decode(code);
+  save();
+  render();
+  showView('builder');
+  document.getElementById('view-builder').scrollTop = 0;
+}
+
+renderList();
+registerApp('teambuilder', key => {
+  if (PAGES.some(p => p.id === key)) { showView('pages'); selectPage(key); return; }
+  showView('builder'); team = decode(key); save(); render();
+});
 </script>
 </body>
 </html>
 '''
+
+
+def team_pages():
+    """The battling pages (Team Building, Double Battles, Stat Specialists), split off the Guide.
+    Species sprites are dropped: the builder's own sprite list already holds them (spriteFallback)."""
+    with contextlib.redirect_stdout(io.StringIO()):
+        _, (pages, sprites) = gdx.split_pages(*gdx.build_data())
+    keys = {s['k'] for s in build_data()[0]}
+    sprites = {k: v for k, v in sprites.items() if not (k.startswith('mon:') and k.split(':', 1)[1] in keys)}
+    return pages, sprites
 
 
 def generate():
@@ -542,10 +579,13 @@ def generate():
     for (a, d), m in cov.load()['chart'].items():
         chart.setdefault(a, {})[d] = m
     dump = lambda o: json.dumps(o, ensure_ascii=False, separators=(',', ':'))
-    html = site_shared.inject(HTML_TEMPLATE)
-    for ph, val in [('SPECIES_PLACEHOLDER', species), ('MOVES_PLACEHOLDER', moves), ('TYPES_PLACEHOLDER', cov.TYPES),
+    pages, page_sprites = team_pages()
+    tpl = HTML_TEMPLATE.replace('GUIDE_PAGES_CSS\n', guide_pages.CSS).replace('GUIDE_PAGES_JS', guide_pages.JS)
+    html = site_shared.inject(tpl)
+    for ph, val in [('TEAM_PAGES_PLACEHOLDER', pages), ('TEAM_SPRITES_PLACEHOLDER', page_sprites),
+                    ('SPECIES_PLACEHOLDER', species), ('MOVES_PLACEHOLDER', moves), ('TYPES_PLACEHOLDER', cov.TYPES),
                     ('TYPE_CHART_PLACEHOLDER', chart), ('SPRITES_PLACEHOLDER', sprites),
-                    ('TYPE_ICONS_PLACEHOLDER', {t: pdx.load_type_icon_b64(t) for t in cov.TYPES})]:
+                    ]:
         html = html.replace(ph, dump(val), 1)
     out = os.path.join(BASE, 'docs', 'teambuilder.html')
     with open(out, 'w', encoding='utf-8') as f:
@@ -553,7 +593,8 @@ def generate():
     missing = [s['k'] for s, sp in zip(species, sprites) if not sp]
     if missing:
         print(f'  WARNING: missing sprites for {missing}')
-    print(f'Generated: {out} ({os.path.getsize(out) / 1024:.0f} KB, {len(species)} species, {len(moves)} moves)')
+    print(f'Generated: {out} ({os.path.getsize(out) / 1024:.0f} KB, {len(species)} species, '
+          f'{len(moves)} moves, {len(pages)} team pages)')
 
 
 if __name__ == '__main__':
