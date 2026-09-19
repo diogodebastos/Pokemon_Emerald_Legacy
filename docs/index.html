@@ -228,8 +228,11 @@
     .dock-sep, .dock-spacer, .tip { display: none; }
     /* min-width: 0 or the longest label ("Trainers") floors the button at its own
        min-content width, so the row stops sharing evenly and spills past the dock. */
-    .dock-btn { width: auto; flex: 1; min-width: 0; height: 56px; transform: none !important; display: flex; flex-direction: column; gap: 2px; align-items: center; }
-    .dock-btn .tile { width: 34px; height: 34px; border-radius: 11px; }
+    /* height: 100%, not a hardcoded 56px: the dock's own height comes from --tab-h minus its
+       margin, so a fixed 56 overflows the 4px padding box and bleeds over the rounded edge. */
+    .dock-btn { width: auto; flex: 1; min-width: 0; height: 100%; transform: none !important;
+                display: flex; flex-direction: column; justify-content: center; gap: 2px; align-items: center; }
+    .dock-btn .tile { width: 32px; height: 32px; border-radius: 10px; flex: none; }
     .dock-btn svg { width: 19px; height: 19px; }
     .tab-label { display: block; font-family: var(--f-mono); font-size: clamp(7px, 1.9vw, 8px); letter-spacing: 0.02em; color: var(--ink-mut);
                  max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
