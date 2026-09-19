@@ -484,7 +484,7 @@ function buildPrompt() {
   const miss = S.missed.map(s => s.n);
   const out = [
     'Review my Pokémon team. Be concise.',
-    'Game: Pokémon Emerald, Gen 3 mechanics: no Fairy, physical/special decided by move type, Gen 3 abilities. Main format: double battles.',
+    'Game: Pokémon Emerald, Gen 3 mechanics: no Fairy, physical/special decided by move type (but here Dark is physical and Ghost is special), Gen 3 abilities. Main format: double battles.',
     '',
     'Team (Pokémon | type | ability | moves):',
     ...lines,
