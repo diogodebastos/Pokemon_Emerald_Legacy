@@ -542,7 +542,6 @@ def build_frontier_pages(item_names):
 FEATURED_DUOS = 4        # offensive cards shown before the table
 FEATURED_LEGEND_DUOS = 2
 DUO_POOL = 12            # how deep the ranking goes; what the cards don't take fills the table
-DUO_PER_SPECIES = 2      # cap for the table, so it reads as options rather than one mon's pairings
 
 TYPE_LABEL = {t: t.title() for t in cov.TYPES}
 SPECIAL_LABELS = [TYPE_LABEL[t] for t in cov.TYPES if t not in cov.PHYSICAL]
@@ -592,21 +591,10 @@ def build_coverage_pages():
         def side(sp, ms):
             return dict(mon=mon(sp), types=list(D['species'][sp]['types']), ability=' / '.join(
                 x.replace('_', ' ').title() for x in sorted(D['species'][sp]['abilities'])), moves=moves(ms))
-        if d['ally_hits']:
-            user, mv, ally = d['ally_hits'][0]
-            doubles = dict(ok=False, html=f'<b>Doubles:</b> {name(user)}’s {pdx.fmt_move("MOVE_" + mv)} also hits {name(ally)}.')
-        else:
-            spread = [(x, m) for x, ms in ((a, d['a_moves']), (b, d['b_moves'])) for m in ms if m['spread']]
-            if spread:
-                user, m = spread[0]
-                ally = b if user == a else a
-                why = 'Flying type' if 'FLYING' in D['species'][ally]['types'] else 'Levitate'
-                doubles = dict(ok=True, html=f'<b>Doubles-safe:</b> {name(user)} carries {pdx.fmt_move("MOVE_" + m["move"])}, '
-                                             f'and {name(ally)} is immune ({why}).')
-            else:
-                doubles = dict(ok=True, html='<b>Doubles-safe:</b> no move here hits the partner.')
+        # Doubles-safety is guaranteed by the search (partner_safe), so the cards don't say so.
+        assert not d['ally_hits'], f"{a}/{b}: {d['ally_hits']}"
         out = dict(a=side(a, d['a_moves']), b=side(b, d['b_moves']), hit=d['hit'], total=d['total'],
-                   missed=[mon(s) for s in d['missed']], doubles=doubles)
+                   missed=[mon(s) for s in d['missed']])
         if matchups:
             out['matchups'] = dict(types=cov.TYPES, rows=[matchups[a], matchups[b]], names=[name(a), name(b)])
         return out
@@ -644,12 +632,10 @@ def build_coverage_pages():
         return rows
 
     with contextlib.redirect_stdout(io.StringIO()):
-        # Cards: the strongest pairs outright. Table: capped per species, so one Pokémon that
-        # happens to pair well with everything doesn't fill the whole list.
-        top_cards, _ = split_featured(cov.rank_duos(True, DUO_POOL, per_species=None), FEATURED_DUOS)
-        shown = {(d['a'], d['b']) for d in top_cards}
-        top_rest = [d for d in cov.rank_duos(True, DUO_POOL, per_species=DUO_PER_SPECIES)
-                    if (d['a'], d['b']) not in shown]
+        # Straight damage ranking, no per-species cap: if one Pokémon really is the best partner
+        # over and over, the page should say so. The cards only avoid repeating a Pokémon.
+        top_duos = cov.rank_duos(True, DUO_POOL, per_species=None)
+    top_cards, top_rest = split_featured(top_duos, FEATURED_DUOS)
 
     def duo_rows(lst):
         return [[dict(sprite='mon:' + d['a'], text=name(d['a'])), dict(html=move_cell(d['a_moves'])),
@@ -702,11 +688,13 @@ def build_coverage_pages():
         dict(type='p', html='Moves are the strongest reliable ones each Pokémon can learn by level-up, TM/HM, tutor or egg move. '
                             'That rules out moves with a charge turn or recharge, self-KO moves, fixed-damage moves and Hidden Power. '
                             f'Every move shown has at least {cov.MIN_POWER} power, and <span class="stab">STAB</span> marks a same-type bonus. '
-                            'Every pair also works in a double battle: no move on one side can hit its own partner.'),
+                            'Every pair also works in a double battle: no move on one side can hit its own partner, which in practice means '
+                            '<b>Earthquake</b> only ever sits on a Pokémon whose partner is immune to Ground.'),
         dict(type='h', text='Strongest duos'),
         dict(type='duos', items=[duo_view(d) for d in top_cards]),
         dict(type='h', text='More duos'),
-        dict(type='p', html=f'Also {best8_hit}/{len(hittable)}, ranked the same way. No Pokémon appears more than {DUO_PER_SPECIES} times here, so this is a spread of options rather than one Pokémon’s pairings. Legendaries are left out.'),
+        dict(type='p', html=f'Also {best8_hit}/{len(hittable)}, ranked the same way. Legendaries are left out. '
+                            '<b>Flygon</b> turns up a lot, and that is the honest answer: <b>Levitate</b> makes it the one strong attacker that can stand next to an Earthquake, so it partners with almost anything.'),
         dict(type='table', head=['Pokémon', 'Moves', 'Partner', 'Moves'], rows=more_rows),
         dict(type='h', text='Legendary duos'),
         dict(type='p', html=f'The same search with post-game legendaries allowed (every pair includes at least one; each legendary appears at most twice). '

@@ -198,12 +198,6 @@
   .duo-meter { display: grid; grid-template-columns: 80px 1fr 64px; gap: 10px; align-items: center; }
   .duo .lbl { font-family: var(--f-mono); font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-mut); margin-right: 10px; }
   .duo-miss { display: flex; flex-wrap: wrap; align-items: center; }
-  .duo-doubles { display: flex; gap: 10px; align-items: baseline; font-size: 13px; line-height: 1.5; padding: 8px 12px; color: var(--ink-dim); }
-  .duo-doubles.ok { border: 1px solid var(--jade-bright); background: var(--jade-soft); }
-  .duo-doubles.warn { border: 1px solid var(--dusk); background: var(--dusk-soft); }
-  .duo-doubles .glyph { font-weight: 700; }
-  .duo-doubles.ok .glyph { color: var(--jade-bright); }
-  .duo-doubles.warn .glyph { color: var(--dusk); }
   .mvchip { display: inline-flex; align-items: center; gap: 4px; margin: 0 10px 2px 0; white-space: nowrap; cursor: pointer; }
   .mvchip .tyicon { width: 32px; height: 16px; }
   #tip { position: fixed; z-index: 10000; display: none; pointer-events: none; max-width: 280px; padding: 6px 10px;
@@ -449,7 +443,6 @@ function renderDuo(d) {
       <span class="lbl">Coverage</span><span class="bar-track"><span class="bar-fill" style="width:${pct.toFixed(2)}%"></span></span>
       <span class="bar-n">${d.hit}/${d.total}</span></div>
     <div class="duo-miss"><span class="lbl">Misses</span>${d.missed.slice(0, 14).map(monChip).join('')}${d.missed.length > 14 ? `<span class="dim" data-tip="${d.missed.slice(14).map(m => m.name).join(', ')}">+${d.missed.length - 14} more</span>` : ''}</div>
-    <div class="duo-doubles ${d.doubles.ok ? 'ok' : 'warn'}"><span class="glyph">${d.doubles.ok ? '✓' : '⚠'}</span><span>${d.doubles.html}</span></div>
   </div>`;
 }
 const tip = document.createElement('div');
