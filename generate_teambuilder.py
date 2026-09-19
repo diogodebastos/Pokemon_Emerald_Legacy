@@ -199,6 +199,13 @@ GUIDE_PAGES_CSS
 
 
   @media (max-width: 700px) {
+    /* The shared mobile layout hands scrolling to <body>, but this app keeps body fixed
+       (height: 100vh, overflow: hidden) so the tab bar stays put — which left Team Pages
+       clipped with no scroller at all. Give the pages view its own, the way #view-builder
+       already has one. */
+    #view-pages { min-height: 0; }
+    #sidebar { max-height: none; min-height: 0; }
+    #main { overflow-y: auto; min-height: 0; }
     #page { padding: 28px 16px 48px; }
     h2 { font-size: 40px; }
     .team { grid-template-columns: 1fr; }
