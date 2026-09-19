@@ -43,7 +43,7 @@ def build_data():
     for k in move_keys:
         m = D['moves'][k]
         moves.append(dict(k=k, n=pdx.fmt_move('MOVE_' + k), t=m['type'], p=m['power'], a=m['accuracy'],
-                          atk=m['power'] > 0 and m['effect'] not in NO_TYPE_DAMAGE))
+                          atk=m['power'] > 0 and m['effect'] not in NO_TYPE_DAMAGE, ally=m['spread']))
 
     species = []
     order = sorted(D['species'], key=lambda s: (dex.get(pdx.FORM_OF.get(s, (s,))[0], 999), s))
@@ -119,6 +119,9 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
          border: 1px solid var(--rule); background: transparent; color: var(--ink-dim); cursor: pointer; }
   .btn:hover { border-color: var(--jade-bright); color: var(--ink); }
   .btn.done { border-color: var(--jade-bright); color: var(--jade-bright); }
+  .btn-ai { border-color: var(--jade-deep); color: var(--jade-bright); }
+  #ai-out { width: 100%; height: 220px; margin: 6px 0 8px; font-family: var(--f-mono); font-size: 11px; color: var(--ink-dim);
+            background: var(--paper-0); border: 1px solid var(--rule); padding: 10px; resize: vertical; }
 
   /* Slots — same card language as the Guide's duo / team cards */
   .team { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; margin: 8px 0 8px; }
@@ -148,7 +151,7 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
   .duo-move .ty-blank { width: 40px; height: 20px; border: 1px dashed var(--rule); }
   select.mv { width: 100%; min-width: 0; padding: 4px 6px; }
   select.mv.unset { color: var(--ink-mut); font-style: italic; }
-  .mv-pow { font-family: var(--f-mono); font-size: 12px; color: var(--ink-dim); text-align: right; white-space: nowrap; min-width: 72px; }
+  .mv-pow { font-family: var(--f-mono); font-size: 12px; color: var(--ink-dim); text-align: right; white-space: nowrap; min-width: 84px; }
   .mv-how { grid-column: 2 / 4; font-family: var(--f-mono); font-size: 9px; color: var(--ink-mut); letter-spacing: 0.06em; margin-top: 2px; }
   .stab { font-family: var(--f-mono); font-size: 8px; letter-spacing: 0.12em; color: var(--dusk); border: 1px solid var(--dusk); padding: 0 3px; margin-left: 5px; vertical-align: middle; }
 
@@ -209,7 +212,9 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
   <div class="toolbar">
     <button class="btn" id="btn-share">Copy share link</button>
     <button class="btn" id="btn-clear">Clear team</button>
+    <button class="btn btn-ai" id="btn-ai" data-tip="Copies a short prompt with your team and its weak spots. Paste it into any AI chat for a quick review.">Copy AI review prompt</button>
   </div>
+  <textarea id="ai-out" readonly hidden></textarea>
   <datalist id="mon-list"></datalist>
   <div class="team" id="team"></div>
   <div id="analysis"></div>
@@ -328,6 +333,26 @@ function table(head, rows) {
   return `<div class="mu-wrap"><table class="mu"><thead><tr><th></th>${head.map(t => `<th>${tyIcon(t)}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 
+// Numbers shared by the page and the AI prompt.
+function summarize(members, final) {
+  const def = members.map(defenseRow);
+  const weakN = TYPES.map((_, j) => def.filter(r => r[j] > 1).length);
+  const resN = TYPES.map((_, j) => def.filter(r => r[j] < 1).length);
+  const off = members.map(offenseRow);
+  const teamOff = TYPES.map((_, j) => { const v = off.map(r => r[j]).filter(x => x !== null); return v.length ? Math.max(...v) : null; });
+  const atkTypes = new Set(members.flatMap(attackTypes));
+  const mask = TYPES.reduce((n, t, i) => atkTypes.has(t) ? n | (1 << i) : n, 0);
+  const pool = SPECIES.filter(s => s.se && (!final || s.f));
+  const missed = pool.filter(s => !(s.se & mask));
+  return {
+    def, weakN, resN, off, teamOff, pool, missed,
+    unresisted: TYPES.filter((t, j) => weakN[j] > 0 && resN[j] === 0),
+    stacked: TYPES.filter((t, j) => weakN[j] >= 3),
+    noSE: TYPES.filter((t, j) => !(teamOff[j] > 1)),
+    never: SPECIES.filter(s => !s.se && (!final || s.f)),
+  };
+}
+
 function renderAnalysis() {
   const members = team.filter(Boolean);
   const el = document.getElementById('analysis');
@@ -338,38 +363,26 @@ function renderAnalysis() {
   const name = m => esc(SPECIES[m.s].n);
 
   // Defense — what hits each member
-  const def = members.map(defenseRow);
+  const {def, weakN, resN, off, teamOff, pool, missed, unresisted, stacked, noSE, never} = summarize(members, finalOnly);
+  const hit = pool.length - missed.length;
   const dCls = x => x === 0 ? 'imm' : x > 1 ? 'weak' : x < 1 ? 'res' : '';
   const dWord = x => x === 0 ? 'immune' : x > 1 ? `weak (${lab(x)})` : x < 1 ? `resists (${lab(x)})` : 'neutral';
-  const weakN = TYPES.map((_, j) => def.filter(r => r[j] > 1).length);
-  const resN = TYPES.map((_, j) => def.filter(r => r[j] < 1).length);
   const defRows = members.map((m, i) => `<tr><th class="mu-name">${name(m)}</th>${def[i].map((x, j) =>
       `<td class="${dCls(x)}" data-tip="<b>${name(m)}</b> vs ${tc(TYPES[j])}: ${dWord(x)}">${lab(x)}</td>`).join('')}</tr>`).join('')
     + `<tr class="sum-first"><th class="mu-name mu-sum">Weak</th>${weakN.map((n, j) =>
       `<td class="${n ? (n > resN[j] ? 'bad' : 'weak') : 'none'}" data-tip="${n} weak to ${tc(TYPES[j])}, ${resN[j]} resist or immune">${n || ''}</td>`).join('')}</tr>`
     + `<tr><th class="mu-name mu-sum">Resist</th>${resN.map((n, j) =>
       `<td class="${n ? 'res' : 'none'}" data-tip="${n} resist or immune to ${tc(TYPES[j])}">${n || ''}</td>`).join('')}</tr>`;
-  const unresisted = TYPES.filter((t, j) => weakN[j] > 0 && resN[j] === 0);
-  const stacked = TYPES.filter((t, j) => weakN[j] >= 3);
 
   // Offense — what each member's attacks hit, per defending type
-  const off = members.map(offenseRow);
-  const teamOff = TYPES.map((_, j) => { const v = off.map(r => r[j]).filter(x => x !== null); return v.length ? Math.max(...v) : null; });
   const oCls = x => x === null ? 'none' : x === 0 ? 'bad' : x > 1 ? 'imm' : x < 1 ? 'weak' : '';
   const oWord = x => x === null ? 'no attacking moves' : x === 0 ? 'no effect' : x > 1 ? 'super effective' : x < 1 ? 'not very effective' : 'neutral';
   const offRows = members.map((m, i) => `<tr><th class="mu-name">${name(m)}</th>${off[i].map((x, j) =>
       `<td class="${oCls(x)}" data-tip="<b>${name(m)}</b>’s best hit on ${tc(TYPES[j])}: ${oWord(x)}">${lab(x)}</td>`).join('')}</tr>`).join('')
     + `<tr class="sum-first"><th class="mu-name mu-sum">Team</th>${teamOff.map((x, j) =>
       `<td class="${oCls(x)}" data-tip="Team’s best hit on ${tc(TYPES[j])}: ${oWord(x)}">${lab(x)}</td>`).join('')}</tr>`;
-  const noSE = TYPES.filter((t, j) => !(teamOff[j] > 1));
 
   // Species coverage
-  const atkTypes = new Set(members.flatMap(attackTypes));
-  const mask = TYPES.reduce((n, t, i) => atkTypes.has(t) ? n | (1 << i) : n, 0);
-  const pool = SPECIES.filter(s => s.se && (!finalOnly || s.f));
-  const missed = pool.filter(s => !(s.se & mask));
-  const hit = pool.length - missed.length;
-  const never = SPECIES.filter(s => !s.se && (!finalOnly || s.f));
   const monChip = s => `<span class="monchip" data-tip="${esc(s.n)} · ${s.t.map(tc).join(' / ')}"><img src="${SPRITES[byKey[s.k]]}" alt=""><a class="xl" data-app="pokedex" data-key="${s.dex}">${esc(s.n)}</a></span>`;
 
   el.innerHTML = `
@@ -450,6 +463,55 @@ document.getElementById('btn-share').onclick = async e => {
   catch (err) { window.prompt('Copy this link:', url); }
   btn.classList.add('done');
   setTimeout(() => { btn.textContent = 'Copy share link'; btn.classList.remove('done'); }, 1600);
+};
+
+/* ---------- AI review prompt (kept short: it costs tokens both ways) ---------- */
+function buildPrompt() {
+  const members = team.filter(Boolean);
+  const S = summarize(members, true);
+  const list = (ts, none) => ts.length ? ts.map(tc).join(', ') : none;
+  const lines = members.map((m, i) => {
+    const s = SPECIES[m.s];
+    const mv = m.mv.filter(x => x >= 0).map(x => MOVES[x].n);
+    return `${i + 1}. ${s.n} | ${s.t.map(tc).join('/')} | ${s.ab[m.ab] ? s.ab[m.ab][1] : '-'} | ${mv.length ? mv.join(', ') : 'no moves set'}`;
+  });
+  // Spread moves that also hit the partner (Earthquake, Explosion…) and who is safe from them.
+  const allyHits = members.flatMap((m, i) => m.mv.filter(x => x >= 0 && MOVES[x].ally && MOVES[x].atk).map(x => {
+    const safe = members.filter((o, j) => j !== i && S.def[j][TYPES.indexOf(MOVES[x].t)] === 0).map(o => SPECIES[o.s].n);
+    return `${SPECIES[m.s].n}'s ${MOVES[x].n} (immune partners: ${safe.join(', ') || 'none'})`;
+  }));
+  const CAP = 40;
+  const miss = S.missed.map(s => s.n);
+  const out = [
+    'Review my Pokémon team. Be concise.',
+    'Game: Pokémon Emerald, Gen 3 mechanics: no Fairy, physical/special decided by move type, Gen 3 abilities. Main format: double battles.',
+    '',
+    'Team (Pokémon | type | ability | moves):',
+    ...lines,
+    members.length < 6 ? `Empty slots: ${6 - members.length}` : null,
+    '',
+    'Computed from the game type chart (ability-aware):',
+    `- Weak with no teammate resisting: ${list(S.unresisted, 'none')}`,
+    S.stacked.length ? `- 3+ members weak to: ${list(S.stacked)}` : null,
+    `- No super-effective attack vs: ${list(S.noSE, 'none')}`,
+    `- Fully evolved species not hit super effectively (${S.missed.length}/${S.pool.length}): ${miss.slice(0, CAP).join(', ') || 'none'}${miss.length > CAP ? `, +${miss.length - CAP} more` : ''}`,
+    allyHits.length ? `- Moves that also hit my partner: ${allyHits.join('; ')}` : null,
+    '',
+    'Reply in under 150 words, no preamble, bullets only:',
+    '1) Top 3 problems, one line each.',
+    '2) Up to 3 concrete fixes (Move → Move, or Pokémon → Pokémon), one-line reason each. Gen 3 only; learnsets may differ from vanilla, so mark any move you are unsure the Pokémon can learn with (?).',
+    '3) One doubles tip for this team.',
+  ];
+  return out.filter(l => l !== null).join('\\n');
+}
+document.getElementById('btn-ai').onclick = async e => {
+  const btn = e.currentTarget, box = document.getElementById('ai-out');
+  if (!team.some(Boolean)) { btn.textContent = 'Add a Pokémon first'; setTimeout(() => btn.textContent = 'Copy AI review prompt', 1600); return; }
+  const text = buildPrompt();
+  box.value = text;
+  try { await navigator.clipboard.writeText(text); box.hidden = true; btn.textContent = 'Prompt copied'; btn.classList.add('done'); }
+  catch (err) { box.hidden = false; box.focus(); box.select(); btn.textContent = 'Copy the text below'; }
+  setTimeout(() => { btn.textContent = 'Copy AI review prompt'; btn.classList.remove('done'); }, 1800);
 };
 
 const tip = document.getElementById('tip');
