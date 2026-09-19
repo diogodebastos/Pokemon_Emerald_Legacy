@@ -739,10 +739,11 @@ function moveOptions(m, slot) {
     const mv = MOVES[i];
     return `<option value="${i}"${m.mv[slot] === i ? ' selected' : ''}${taken.has(i) ? ' disabled' : ''}>${esc(mv.n)}${mv.atk ? ' · ' + tc(mv.t) + ' ' + (mv.p > 1 ? mv.p : '—') : ''}</option>`;
   };
-  const atk = learn.filter(([i]) => MOVES[i].atk).sort((a, b) => MOVES[b[0]].p - MOVES[a[0]].p || MOVES[a[0]].n.localeCompare(MOVES[b[0]].n));
-  const other = learn.filter(([i]) => !MOVES[i].atk);
+  const byName = (a, b) => MOVES[a[0]].n.localeCompare(MOVES[b[0]].n);
+  const atk = learn.filter(([i]) => MOVES[i].atk).sort(byName);
+  const other = learn.filter(([i]) => !MOVES[i].atk).sort(byName);
   return `<option value="-1">— move ${slot + 1} —</option>
-    <optgroup label="Attacks (by power)">${atk.map(opt).join('')}</optgroup>
+    <optgroup label="Attacks">${atk.map(opt).join('')}</optgroup>
     <optgroup label="Other moves">${other.map(opt).join('')}</optgroup>`;
 }
 function renderSlot(m, i) {
