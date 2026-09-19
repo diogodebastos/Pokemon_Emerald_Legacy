@@ -280,14 +280,15 @@ def _duo_scores(partner_safe):
     return results
 
 
-def rank_duos(partner_safe=True, top=10, legendary=False):
+def rank_duos(partner_safe=True, top=10, legendary=False, per_species=2):
     """Best fully-evolved pairs over the best 8-type sets. legendary=True keeps only pairs
-    with at least one legendary; False keeps only pairs with none."""
+    with at least one legendary; False keeps only pairs with none. per_species caps how often
+    one Pokémon may appear, so the list reads as a set of options rather than one mon's pairings."""
     res = _duo_scores(partner_safe)
     keep = lambda a, b: (a in LEGENDARY or b in LEGENDARY) == legendary
     ranked, seen = [], {}
     for (a, b), v in sorted(((k, v) for k, v in res.items() if keep(*k)), key=lambda kv: -kv[1][0]):
-        if legendary and (seen.get(a, 0) >= 2 or seen.get(b, 0) >= 2):
+        if per_species and (seen.get(a, 0) >= per_species or seen.get(b, 0) >= per_species):
             continue
         seen[a] = seen.get(a, 0) + 1
         seen[b] = seen.get(b, 0) + 1

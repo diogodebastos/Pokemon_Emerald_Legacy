@@ -12,6 +12,7 @@ defender's abilities (Levitate, Flash Fire, Volt/Water Absorb, Thick Fat).
 
 import io
 import os
+import re
 import json
 import contextlib
 
@@ -27,6 +28,21 @@ from site_shared import BASE
 NO_TYPE_DAMAGE = {'EFFECT_HIDDEN_POWER', 'EFFECT_LEVEL_DAMAGE', 'EFFECT_DRAGON_RAGE', 'EFFECT_SONICBOOM',
                   'EFFECT_SUPER_FANG', 'EFFECT_PSYWAVE', 'EFFECT_COUNTER', 'EFFECT_MIRROR_COAT',
                   'EFFECT_ENDEAVOR', 'EFFECT_BIDE', 'EFFECT_OHKO'}
+
+
+def hold_items():
+    """Items with a battle hold effect (src/data/items.h) that the Bag app can source in-game,
+    as [{k, n, icon}] sorted by name."""
+    import generate_items as idx
+    with open(os.path.join(BASE, 'src/data/items.h')) as f:
+        body = f.read()
+    holds = {k for k, b in re.findall(r'\[(ITEM_\w+)\]\s*=\s*\{(.*?)\n    \},', body, re.S)
+             if re.search(r'\.holdEffect = HOLD_EFFECT_(?!NONE)\w+', b)}
+    with contextlib.redirect_stdout(io.StringIO()):
+        obtainable = idx.build_data()[0]
+    items = [dict(k=it['key'], n=it['name'], icon=site_shared.load_item_icon_b64(it['key']))
+             for it in obtainable if it['key'] in holds]
+    return sorted(items, key=lambda x: x['n'])
 
 
 def build_data():
@@ -131,6 +147,12 @@ GUIDE_PAGES_CSS
   .tyicon { width: 48px; height: 24px; image-rendering: pixelated; vertical-align: middle; flex: none; }
   .duo-types .tyicon { width: 40px; height: 20px; }
   select.abil { font-family: var(--f-mono); font-size: 10px; color: var(--ink-dim); padding: 2px 4px; background: transparent; }
+  .slot-item { display: flex; align-items: center; gap: 6px; }
+  .slot-item img { width: 24px; height: 24px; image-rendering: pixelated; flex: none; }
+  .slot-item .item-blank { width: 24px; height: 24px; border: 1px dashed var(--rule); flex: none; }
+  select.item { flex: 1; min-width: 0; font-family: var(--f-sans); font-size: 12px; color: var(--ink);
+                background: var(--paper-1); border: 1px solid var(--rule); padding: 4px 6px; outline: none; }
+  select.item.unset { color: var(--ink-mut); font-style: italic; }
   .duo-moves { display: flex; flex-direction: column; gap: 6px; }
   .duo-move { display: grid; grid-template-columns: 40px 1fr auto; column-gap: 8px; align-items: center; }
   .duo-move .tyicon { width: 40px; height: 20px; }
@@ -228,6 +250,7 @@ const PAGES = TEAM_PAGES_PLACEHOLDER;
 const SPRITES = TEAM_SPRITES_PLACEHOLDER;
 GUIDE_PAGES_JS
 const SPECIES = SPECIES_PLACEHOLDER;
+const ITEMS = ITEMS_PLACEHOLDER;
 const MOVES = MOVES_PLACEHOLDER;
 const TYPES = TYPES_PLACEHOLDER;
 const TYPE_CHART = TYPE_CHART_PLACEHOLDER;
@@ -235,6 +258,7 @@ const SPR = SPRITES_PLACEHOLDER;   // species front sprites, by species index
 
 const byKey = {}; SPECIES.forEach((s, i) => byKey[s.k] = i);
 const moveByKey = {}; MOVES.forEach((m, i) => moveByKey[m.k] = i);
+const itemByKey = {}; ITEMS.forEach((it, i) => itemByKey[it.k] = i);
 const byName = {}; SPECIES.forEach((s, i) => byName[s.n.toLowerCase()] = i);
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 const tc = t => t[0] + t.slice(1).toLowerCase();
@@ -253,21 +277,23 @@ document.getElementById('mon-list').innerHTML = SPECIES.map(s => `<option value=
 
 // team[i] = null | {s: species index, ab: ability index, mv: [move index | -1] x4}
 let team = [null, null, null, null, null, null];
-let finalOnly = false;
+let finalOnly = true;   // default: judge coverage against fully evolved species
 
 /* ---------- save / load (localStorage + share hash) ---------- */
 function encode() {
-  return team.map(m => m ? [SPECIES[m.s].k, m.ab, m.mv.filter(x => x >= 0).map(x => MOVES[x].k).join(',')].join(':') : '').join(';');
+  return team.map(m => m ? [SPECIES[m.s].k, m.ab, m.mv.filter(x => x >= 0).map(x => MOVES[x].k).join(','),
+                            m.it >= 0 ? ITEMS[m.it].k : ''].join(':') : '').join(';');
 }
 function decode(str) {
   const out = [null, null, null, null, null, null];
   String(str || '').split(';').slice(0, 6).forEach((part, i) => {
-    const [k, ab, mv] = part.split(':');
+    const [k, ab, mv, item] = part.split(':');   // item is optional: older links have three fields
     if (!(k in byKey)) return;
     const s = byKey[k], learn = new Set(SPECIES[s].m.map(x => x[0]));
     const moves = (mv || '').split(',').map(x => moveByKey[x]).filter(x => x !== undefined && learn.has(x)).slice(0, 4);
     while (moves.length < 4) moves.push(-1);
-    out[i] = {s, ab: Math.min(+ab || 0, SPECIES[s].ab.length - 1), mv: moves};
+    const it = itemByKey[item];
+    out[i] = {s, ab: Math.min(+ab || 0, SPECIES[s].ab.length - 1), mv: moves, it: it === undefined ? -1 : it};
   });
   return out;
 }
@@ -302,6 +328,12 @@ function renderSlot(m, i) {
   const abil = s.ab.length > 1
     ? `<select class="abil" data-slot="${i}" title="Ability">${s.ab.map((a, j) => `<option value="${j}"${j === m.ab ? ' selected' : ''}>${esc(a[1])}</option>`).join('')}</select>`
     : `<span class="dim">${esc(s.ab[0] ? s.ab[0][1] : '')}</span>`;
+  const item = m.it >= 0 ? ITEMS[m.it] : null;
+  const itemPick = `<div class="slot-item">${item ? `<img src="${item.icon}" alt="">` : '<span class="item-blank"></span>'}
+    <select class="item${item ? '' : ' unset'}" data-slot="${i}" title="Held item">
+      <option value="-1">— no item —</option>
+      ${ITEMS.map((it, j) => `<option value="${j}"${j === m.it ? ' selected' : ''}>${esc(it.n)}</option>`).join('')}
+    </select></div>`;
   const rows = m.mv.map((x, j) => {
     const mv = x >= 0 ? MOVES[x] : null;
     const stab = mv && mv.atk && s.t.includes(mv.t);
@@ -317,6 +349,7 @@ function renderSlot(m, i) {
     <div class="duo-mon"><img src="${SPR[m.s]}" alt="${esc(s.n)}"><div>
       <div class="card-title"><a class="xl" data-app="pokedex" data-key="${s.dex}">${esc(s.n)}</a></div>
       <div class="duo-types">${s.t.map(tyIcon).join('')}</div>${abil}</div></div>
+    ${itemPick}
     <div class="duo-moves">${rows}</div>
   </div>`;
 }
@@ -433,7 +466,7 @@ function findSpecies(value) {
 function pickSpecies(i, value) {
   const s = findSpecies(value);
   if (s === undefined) return false;
-  team[i] = {s, ab: 0, mv: [-1, -1, -1, -1]};
+  team[i] = {s, ab: 0, mv: [-1, -1, -1, -1], it: -1};
   save(); render();
   return true;
 }
@@ -442,7 +475,8 @@ document.addEventListener('change', e => {
   if (t.matches('input.pick')) pickSpecies(+t.dataset.slot, t.value);
   else if (t.matches('select.abil')) { team[+t.dataset.slot].ab = +t.value; save(); render(); }
   else if (t.matches('select.mv')) { team[+t.dataset.slot].mv[+t.dataset.j] = +t.value; save(); render(); }
-  else if (t.id === 'final-only') { finalOnly = t.checked; store.set('el.team.final', finalOnly ? '1' : ''); renderAnalysis(); }
+  else if (t.matches('select.item')) { team[+t.dataset.slot].it = +t.value; save(); render(); }
+  else if (t.id === 'final-only') { finalOnly = t.checked; store.set('el.team.final', finalOnly ? '1' : '0'); renderAnalysis(); }
 });
 // Datalist picks fire 'input' before 'change' in some browsers — accept an exact name right away.
 document.addEventListener('input', e => {
@@ -476,7 +510,8 @@ function buildPrompt() {
   const lines = members.map((m, i) => {
     const s = SPECIES[m.s];
     const mv = m.mv.filter(x => x >= 0).map(x => MOVES[x].n);
-    return `${i + 1}. ${s.n} | ${s.t.map(tc).join('/')} | ${s.ab[m.ab] ? s.ab[m.ab][1] : '-'} | ${mv.length ? mv.join(', ') : 'no moves set'}`;
+    const item = m.it >= 0 ? ITEMS[m.it].n : 'no item';
+    return `${i + 1}. ${s.n} | ${s.t.map(tc).join('/')} | ${s.ab[m.ab] ? s.ab[m.ab][1] : '-'} | ${item} | ${mv.length ? mv.join(', ') : 'no moves set'}`;
   });
   // Spread moves that also hit the partner (Earthquake, Explosion…) and who is safe from them.
   const allyHits = members.flatMap((m, i) => m.mv.filter(x => x >= 0 && MOVES[x].ally && MOVES[x].atk).map(x => {
@@ -489,7 +524,7 @@ function buildPrompt() {
     'Review my Pokémon team. Be concise.',
     'Game: Pokémon Emerald, Gen 3 mechanics: no Fairy, physical/special decided by move type (but here Dark is physical and Ghost is special), Gen 3 abilities. Main format: double battles.',
     '',
-    'Team (Pokémon | type | ability | moves):',
+    'Team (Pokémon | type | ability | held item | moves):',
     ...lines,
     members.length < 6 ? `Empty slots: ${6 - members.length}` : null,
     '',
@@ -519,7 +554,9 @@ document.getElementById('btn-ai').onclick = async e => {
 
 // The tooltip (#tip) and its mousemove handler come from the shared page renderer.
 
-finalOnly = !!store.get('el.team.final');
+// Ticked unless this viewer turned it off before ('' is the old off value).
+const savedFinal = store.get('el.team.final');
+finalOnly = savedFinal === null ? true : savedFinal === '1';
 team = decode(store.get('el.team'));
 render();
 function showView(v) {
@@ -538,7 +575,7 @@ function teamCode(members) {
   return members.slice(0, 6).map(x => {
     const s = SPECIES[byKey[x.sp]];
     const ab = s ? Math.max(0, s.ab.findIndex(a => a[0] === x.abil)) : 0;
-    return `${x.sp}:${ab}:${(x.mvkeys || []).join(',')}`;
+    return `${x.sp}:${ab}:${(x.mvkeys || []).join(',')}:${(x.item && x.item.key) || ''}`;
   }).join(';');
 }
 function teamBlockExtra(b) {
@@ -576,6 +613,7 @@ def team_pages():
 
 def generate():
     species, moves = build_data()
+    items = hold_items()
     sprites = [pdx.load_sprite_b64(pdx.FORM_FOLDER.get(s['k']) or pdx.species_folder(s['k'])) for s in species]
     chart = {}
     for (a, d), m in cov.load()['chart'].items():
@@ -585,7 +623,7 @@ def generate():
     tpl = HTML_TEMPLATE.replace('GUIDE_PAGES_CSS\n', guide_pages.CSS).replace('GUIDE_PAGES_JS', guide_pages.JS)
     html = site_shared.inject(tpl)
     for ph, val in [('TEAM_PAGES_PLACEHOLDER', pages), ('TEAM_SPRITES_PLACEHOLDER', page_sprites),
-                    ('SPECIES_PLACEHOLDER', species), ('MOVES_PLACEHOLDER', moves), ('TYPES_PLACEHOLDER', cov.TYPES),
+                    ('ITEMS_PLACEHOLDER', items), ('SPECIES_PLACEHOLDER', species), ('MOVES_PLACEHOLDER', moves), ('TYPES_PLACEHOLDER', cov.TYPES),
                     ('TYPE_CHART_PLACEHOLDER', chart), ('SPRITES_PLACEHOLDER', sprites),
                     ]:
         html = html.replace(ph, dump(val), 1)
@@ -596,7 +634,7 @@ def generate():
     if missing:
         print(f'  WARNING: missing sprites for {missing}')
     print(f'Generated: {out} ({os.path.getsize(out) / 1024:.0f} KB, {len(species)} species, '
-          f'{len(moves)} moves, {len(pages)} team pages)')
+          f'{len(moves)} moves, {len(items)} items, {len(pages)} team pages)')
 
 
 if __name__ == '__main__':

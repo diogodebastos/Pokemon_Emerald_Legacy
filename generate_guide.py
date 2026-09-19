@@ -535,15 +535,14 @@ def build_frontier_pages(item_names):
 # ---------------------------------------------------------------------------
 # Team Building — type coverage (coverage_data.py does the maths from the decomp).
 # ---------------------------------------------------------------------------
-# Hand-picked duos; the movesets themselves are computed, so they follow the learnsets.
-# (a, a's attacking types, b, b's attacking types, doubles-safe?)
-# Featured pairs, all computed doubles-safe (no move may hit the partner).
-# Ground is the awkward type: Earthquake hits your ally too, so it can only go on a Pokémon
-# whose partner is immune. When BOTH are immune the pair is free, and the Ground slot lands on
-# whoever hits hardest with it; when only one is, the immune one has to give up its own Earthquake.
-MUTUAL_DUOS = [('DRAGONITE', 'FLYGON'), ('FLYGON', 'SALAMENCE'), ('CHARIZARD', 'FLYGON')]
-ONE_IMMUNE_DUOS = [('BLAZIKEN', 'FLYGON'), ('TYRANITAR', 'FLYGON')]
-GROUNDED_DUO = ('SCEPTILE', 'BLAZIKEN')   # neither is immune, so the pair does without Ground
+# Nothing here is hand-picked: coverage_data.py ranks every fully-evolved pair over the best
+# 8-type sets and picks each Pokémon's strongest legal move per slot. Doubles-safety is a
+# constraint on that search, not a theme — a spread move (Earthquake…) is only allowed when the
+# partner is immune to it, otherwise the search takes a different move, or a different type.
+FEATURED_DUOS = 4        # offensive cards shown before the table
+FEATURED_LEGEND_DUOS = 2
+DUO_POOL = 12            # how deep the ranking goes; what the cards don't take fills the table
+DUO_PER_SPECIES = 2      # cap for the table, so it reads as options rather than one mon's pairings
 
 TYPE_LABEL = {t: t.title() for t in cov.TYPES}
 SPECIAL_LABELS = [TYPE_LABEL[t] for t in cov.TYPES if t not in cov.PHYSICAL]
@@ -621,8 +620,6 @@ def build_coverage_pages():
         legend_duos = cov.rank_duos(True, 8, legendary=True)
         def_plain = cov.rank_defensive_duos(10, legendary=False)
         def_legend = cov.rank_defensive_duos(8, legendary=True)
-    legend_rows = [[dict(sprite='mon:' + d['a'], text=name(d['a'])), dict(html=move_cell(d['a_moves'])),
-                    dict(sprite='mon:' + d['b'], text=name(d['b'])), dict(html=move_cell(d['b_moves']))] for d in legend_duos[2:]]
 
     def def_cards(lst):
         return [duo_view(cov.best_split(x['a'], x['b']), x['matchups']) for x in lst]
@@ -647,15 +644,19 @@ def build_coverage_pages():
         return rows
 
     with contextlib.redirect_stdout(io.StringIO()):
-        more_safe = cov.rank_duos(True, 12)
-    curated = MUTUAL_DUOS + ONE_IMMUNE_DUOS + [GROUNDED_DUO]
-    featured = {p for p in curated} | {tuple(reversed(p)) for p in curated}
-    more_rows = []
-    for d in more_safe:
-        if (d['a'], d['b']) in featured or len(more_rows) >= 8:
-            continue
-        more_rows.append([dict(sprite='mon:' + d['a'], text=name(d['a'])), dict(html=move_cell(d['a_moves'])),
-                          dict(sprite='mon:' + d['b'], text=name(d['b'])), dict(html=move_cell(d['b_moves']))])
+        # Cards: the strongest pairs outright. Table: capped per species, so one Pokémon that
+        # happens to pair well with everything doesn't fill the whole list.
+        top_cards, _ = split_featured(cov.rank_duos(True, DUO_POOL, per_species=None), FEATURED_DUOS)
+        shown = {(d['a'], d['b']) for d in top_cards}
+        top_rest = [d for d in cov.rank_duos(True, DUO_POOL, per_species=DUO_PER_SPECIES)
+                    if (d['a'], d['b']) not in shown]
+
+    def duo_rows(lst):
+        return [[dict(sprite='mon:' + d['a'], text=name(d['a'])), dict(html=move_cell(d['a_moves'])),
+                 dict(sprite='mon:' + d['b'], text=name(d['b'])), dict(html=move_cell(d['b_moves']))] for d in lst]
+    more_rows = duo_rows(top_rest)
+    legend_cards, legend_rest = split_featured(legend_duos, FEATURED_LEGEND_DUOS)
+    legend_rows = duo_rows(legend_rest)
 
     missed8 = sorted(hittable - cov.covered_by(best8))
     pages = []
@@ -694,37 +695,23 @@ def build_coverage_pages():
 
     pages.append(dict(id='coverage-duos', section='Team Building', title='Coverage Duos',
         kicker='Two Pokémon · eight moves', blocks=[
-        dict(type='p', html=f'Each pair below splits the best 8 attacking types, four each, so together they hit '
-                            f'<b>{best8_hit} of {len(hittable)}</b> Pokémon super effectively. Moves are the strongest reliable ones each Pokémon '
-                            'can learn by level-up, TM/HM, tutor or egg move. That rules out moves with a charge turn or recharge, '
-                            'self-KO moves, fixed-damage moves and Hidden Power. Every move shown has at least '
-                            f'{cov.MIN_POWER} power, and <span class="stab">STAB</span> marks a same-type bonus.'),
-        dict(type='h', text='Best picks · both immune to Ground'),
-        dict(type='p', html='<b>Earthquake hits your partner too.</b> In a double battle it hits both foes <i>and</i> your ally, and the Hoenn rematches are doubles, '
-                            'so every split on this page is doubles-safe. The best pairs are the ones where <b>both</b> Pokémon are immune to Ground, '
-                            'either a <b>Flying</b> type or one with <b>Levitate</b>: then Earthquake can go to whoever hits hardest with it, and it is free to fire on any turn. '
-                            'In all three pairs below that is <b>Flygon</b>, which gets its same-type bonus on it.'),
-        dict(type='duos', items=[duo_view(cov.best_split(a, b)) for a, b in MUTUAL_DUOS]),
-        dict(type='h', text='One immune partner'),
-        dict(type='p', html='If only one of the two is immune, the Ground slot has to sit on the <i>other</i> one, because its partner is the one that can take the hit. '
-                            'That is why <b>Flygon carries no Earthquake here</b>, even though it is the better Ground attacker: its own Earthquake would hit a grounded partner, '
-                            'so it runs coverage moves instead and the partner supplies the Ground. These pairs still hit '
-                            f'{best8_hit}/{len(hittable)}, and Blaziken + Flygon deals the most damage of any pair on this page, but a slot is spent worse than it needs to be.'),
-        dict(type='duos', items=[duo_view(cov.best_split(a, b)) for a, b in ONE_IMMUNE_DUOS]),
-        dict(type='h', text='When both are grounded'),
-        dict(type='p', html=f'If neither is immune, the pair cannot use Earthquake at all, and no other Ground move is worth a slot: '
-                            f'Dig costs a turn, Bonemerang and Bone Rush are Marowak-only, and Mud-Slap is too weak. '
-                            f'{name(GROUNDED_DUO[0])} and {name(GROUNDED_DUO[1])} are both grounded, so they give up Ground and drop from '
-                            f'{best8_hit} to {cov.best_split(*GROUNDED_DUO)["hit"]} of {len(hittable)}.'),
-        dict(type='duos', items=[duo_view(cov.best_split(*GROUNDED_DUO))]),
-        dict(type='h', text='More doubles-safe duos'),
-        dict(type='p', html=f'Also {best8_hit}/{len(hittable)}, ranked by damage (move power × STAB × the attacking stat). '
-                            'Legendaries are left out.'),
+        dict(type='p', html=f'The strongest two-Pokémon cores in the game. Each pair below splits the best 8 attacking types, '
+                            f'four moves each, so together they hit <b>{best8_hit} of {len(hittable)}</b> Pokémon super effectively — '
+                            'the most any two Pokémon can reach. Nothing is hand-picked: every fully-evolved pair was scored, and '
+                            'the ones here hit the hardest, ranked by move power × same-type bonus × the attacking stat.'),
+        dict(type='p', html='Moves are the strongest reliable ones each Pokémon can learn by level-up, TM/HM, tutor or egg move. '
+                            'That rules out moves with a charge turn or recharge, self-KO moves, fixed-damage moves and Hidden Power. '
+                            f'Every move shown has at least {cov.MIN_POWER} power, and <span class="stab">STAB</span> marks a same-type bonus. '
+                            'Every pair also works in a double battle: no move on one side can hit its own partner.'),
+        dict(type='h', text='Strongest duos'),
+        dict(type='duos', items=[duo_view(d) for d in top_cards]),
+        dict(type='h', text='More duos'),
+        dict(type='p', html=f'Also {best8_hit}/{len(hittable)}, ranked the same way. No Pokémon appears more than {DUO_PER_SPECIES} times here, so this is a spread of options rather than one Pokémon’s pairings. Legendaries are left out.'),
         dict(type='table', head=['Pokémon', 'Moves', 'Partner', 'Moves'], rows=more_rows),
         dict(type='h', text='Legendary duos'),
         dict(type='p', html=f'The same search with post-game legendaries allowed (every pair includes at least one; each legendary appears at most twice). '
-                            f'It still tops out at {best8_hit}/{len(hittable)}, because no Pokémon beats the type chart, but the moves hit much harder. Every pair is still doubles-safe.'),
-        dict(type='duos', items=[duo_view(d) for d in legend_duos[:2]]),
+                            f'It still tops out at {best8_hit}/{len(hittable)}, because no Pokémon beats the type chart, but the moves hit much harder.'),
+        dict(type='duos', items=[duo_view(d) for d in legend_cards]),
         dict(type='table', head=['Pokémon', 'Moves', 'Partner', 'Moves'], rows=legend_rows),
         dict(type='h', text='Defensive duos'),
         dict(type='p', html='Pairs that are hard to hit together. In doubles, spread moves such as Rock Slide, Surf, Heat Wave and Earthquake strike both Pokémon at once, so a defensive pair should have '
@@ -842,7 +829,7 @@ def build_doubles_pages():
         dict(type='table', head=['Move', 'Learned by'], rows=[
             [dict(html=move_chips([mv])), dict(mons=[dict(sprite=x['sprite'], sp=x['sp'], name=x['name'], nature='', moves=[], item='') for x in learners(mv)])]
             for mv in ['FAKE_OUT', 'FOLLOW_ME', 'HELPING_HAND', 'ENCORE']]),
-        dict(type='p', html='See also <a onclick="selectPage(\'coverage-duos\')">Coverage Duos</a>, which pairs movesets so Earthquake never hits the partner.'),
+        dict(type='p', html='See also <a onclick="selectPage(\'coverage-duos\')">Coverage Duos</a>, the strongest two-Pokémon cores, all of them safe to fire on any turn.'),
     ])]
 
     # Region-locked teams: prove every member really is from that region's dex range.

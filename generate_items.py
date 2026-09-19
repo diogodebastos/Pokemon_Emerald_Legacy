@@ -15,6 +15,7 @@ Sources (all parsed from the decomp):
 
 import os
 import re
+from functools import lru_cache
 import io
 import json
 import glob
@@ -232,6 +233,7 @@ def merge_pickup(items):
         it['src']['pickup'] = [dict(lv=lv, pct=pct) for lv, pct in by_pct.items()]
 
 
+@lru_cache(maxsize=1)
 def build_data():
     items = parse_items()
     collect(items)
