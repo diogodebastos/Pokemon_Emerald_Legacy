@@ -110,7 +110,10 @@
   #divider:hover::after { background: var(--jade-bright); }
 
   /* Play */
-  #app-play { display: grid; place-items: center; container-type: size; }
+  /* overflow: hidden contains .bezel::after, the glow that sits at inset: -40px. On a narrow
+     screen the bezel is nearly full width, so that glow spilled 40px off the right edge and
+     widened the document — which then pushed the fixed .scrim (Search / About) out of view. */
+  #app-play { display: grid; place-items: center; container-type: size; overflow: hidden; }
   .bezel {
     position: relative; width: min(100cqw, calc((100cqh - 44px) * 1.5 + 24px));
     padding: 12px 12px 0; border-radius: 10px;
