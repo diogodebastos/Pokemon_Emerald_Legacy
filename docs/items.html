@@ -100,7 +100,7 @@
 </div>
 <script>
 // ---- cross-app links (site_shared.py) ----
-const APP_FILES = {"pokedex": "pokedex.html", "trainers": "trainerdex.html", "moves": "attackdex.html", "bag": "items.html", "guide": "guide.html"};
+const APP_FILES = {"pokedex": "pokedex.html", "trainers": "trainerdex.html", "moves": "attackdex.html", "bag": "items.html", "guide": "guide.html", "teambuilder": "teambuilder.html"};
 const EMBEDDED = (() => { try { return window.parent !== window && typeof window.parent.openApp === 'function'; } catch (e) { return false; } })();
 function openLink(app, key) {
   if (EMBEDDED) { window.parent.openApp(app, key); return; }

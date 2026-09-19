@@ -21,6 +21,7 @@ APP_FILES = {
     'moves': 'attackdex.html',
     'bag': 'items.html',
     'guide': 'guide.html',
+    'teambuilder': 'teambuilder.html',
 }
 
 

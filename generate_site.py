@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Regenerates the whole website (docs/):
-  pokedex.html, trainerdex.html, attackdex.html, items.html, guide.html
+  pokedex.html, trainerdex.html, attackdex.html, items.html, guide.html, teambuilder.html
   manifest.json      counts per app + build id (cache-busting for the dock shell)
   search-index.json  the Spotlight search index used by docs/index.html
 """
@@ -16,6 +16,7 @@ import generate_trainerdex as tdx
 import generate_attackdex as adx
 import generate_items as idx
 import generate_guide as gdx
+import generate_teambuilder as tbx
 from site_shared import BASE
 
 
@@ -26,7 +27,7 @@ def quiet(fn, *a):
 
 def main():
     t0 = time.time()
-    for name, mod in [('Pokédex', pdx), ('Trainers', tdx), ('Moves', adx), ('Bag', idx), ('Guide', gdx)]:
+    for name, mod in [('Pokédex', pdx), ('Trainers', tdx), ('Moves', adx), ('Bag', idx), ('Guide', gdx), ('Team', tbx)]:
         print(f'== {name}')
         quiet(mod.generate)
 
@@ -51,6 +52,7 @@ def main():
         index.append(dict(t='item', k=it['key'], n=it['name'], s=it['pocket']))
     for pg in pages:
         index.append(dict(t='guide', k=pg['id'], n=pg['title'], s=pg['section']))
+    index.append(dict(t='guide', k='', n='Team Builder', s='Six Pokémon · type charts and coverage', a='teambuilder'))
 
     docs = os.path.join(BASE, 'docs')
     with open(os.path.join(docs, 'search-index.json'), 'w', encoding='utf-8') as f:

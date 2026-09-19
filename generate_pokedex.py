@@ -901,6 +901,16 @@ def build_data():
     raw_evos = parse_evolution(os.path.join(BASE, 'src/data/pokemon/evolution.h'))
     print(f"  {len(raw_evos)} species with evolutions")
 
+    # Egg moves are listed on the base form only; evolutions keep them (Manectric still knows
+    # Electrike's Overheat), so every species inherits its pre-evolutions' egg moves.
+    pre_evo = {evo['target']: src for src, evos in raw_evos.items() for evo in evos}
+    def inherited_egg(k, seen=()):
+        if k in seen:
+            return []
+        moves = (inherited_egg(pre_evo[k], seen + (k,)) if k in pre_evo else []) + egg.get(k, [])
+        return list(dict.fromkeys(moves))
+    egg = {k: inherited_egg(k) for k in set(egg) | set(pre_evo)}
+
     print("Parsing base stats...")
     base_stats = parse_base_stats(os.path.join(BASE, 'src/data/pokemon/species_info.h'))
     print(f"  {len(base_stats)} species")
