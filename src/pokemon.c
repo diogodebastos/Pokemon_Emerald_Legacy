@@ -5544,6 +5544,27 @@ u8 *UseStatIncreaseItem(u16 itemId)
     return gDisplayedStringBattle;
 }
 
+// Hidden Power's type comes from the low bit of each IV. Shared by the battle
+// engine, the summary screen and the battle move-select window so they can't drift.
+u8 GetHiddenPowerType(u8 hpIV, u8 atkIV, u8 defIV, u8 speedIV, u8 spAtkIV, u8 spDefIV)
+{
+    u8 typeBits = ((hpIV    & 1) << 0)
+                | ((atkIV   & 1) << 1)
+                | ((defIV   & 1) << 2)
+                | ((speedIV & 1) << 3)
+                | ((spAtkIV & 1) << 4)
+                | ((spDefIV & 1) << 5);
+
+    // Subtract 3 because 2 types are excluded (TYPE_NORMAL and TYPE_MYSTERY);
+    // the + 1 skips past Normal and the conditional skips TYPE_MYSTERY.
+    u8 type = ((NUMBER_OF_MON_TYPES - 3) * typeBits) / 63 + 1;
+
+    if (type >= TYPE_MYSTERY)
+        type++;
+
+    return type;
+}
+
 u8 GetNature(struct Pokemon *mon)
 {
     return GetMonData(mon, MON_DATA_PERSONALITY, 0) % NUM_NATURES;
