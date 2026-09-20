@@ -184,6 +184,12 @@ bool32 IsTrainerEligibleForBattleRoyale(u16 trainerId)
     case TRAINER_GABBY_AND_TY_6:
     case TRAINER_AMY_AND_LIV_6:
     case TRAINER_CINDY_6:
+    /* Mt. Pyre Summit grunts 3 and 4: fully defined (class, pic, party) and
+     * their battle scripts exist in MtPyre_Summit/scripts.inc, but no object
+     * event ever references those scripts, so they cannot be fought. Counting
+     * them left VAR_BATTLE_ROYALE_REMAINING stuck at 2. */
+    case TRAINER_GRUNT_MT_PYRE_3:
+    case TRAINER_GRUNT_MT_PYRE_4:
     /* Gym Leaders */
     case TRAINER_ROXANNE_1:
     case TRAINER_BRAWLY_1:
