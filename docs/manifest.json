@@ -1,11 +1,11 @@
 {
- "build": "20260920012724",
+ "build": "20260920015420",
  "counts": {
   "pokedex": 386,
   "trainers": 79,
   "moves": 354,
   "bag": 288,
-  "guide": 16,
+  "guide": 17,
   "teambuilder": 28
  }
 }

@@ -94,6 +94,8 @@ CSS = r'''  :root {
   }
   .p { font-size: 15px; line-height: 1.7; color: var(--ink-dim); margin: 0 0 16px; max-width: 76ch; }
   .p b, .callout b, td b, .note b, li b { color: var(--ink); font-weight: 600; }
+  code { font-family: var(--f-mono); font-size: 0.92em; color: var(--ink);
+    background: var(--dusk-soft); border: 1px solid var(--dusk); padding: 1px 5px; white-space: nowrap; }
   ul.list { margin: 0 0 16px 18px; color: var(--ink-dim); line-height: 1.7; font-size: 14px; max-width: 76ch; }
   ul.list li { margin-bottom: 4px; }
   .callout {
@@ -137,6 +139,11 @@ CSS = r'''  :root {
   tr:last-child td { border-bottom: 0; }
   td .ent { display: flex; align-items: center; gap: 8px; white-space: nowrap; font-family: var(--f-serif); font-style: italic; font-size: 15px; color: var(--ink); }
   td .ent img { width: 40px; height: 40px; image-rendering: pixelated; }
+  td .ent img.tyicon { width: 48px; height: 24px; }
+  /* Label column + six equal numeric columns, so every gap between stats matches. */
+  table.stat-grid { table-layout: fixed; min-width: 620px; }
+  table.stat-grid th:not(:first-child), table.stat-grid td:not(:first-child) { text-align: center; }
+  table.stat-grid th:first-child, table.stat-grid td:first-child { width: 26%; }
   td .dim { color: var(--ink-mut); font-size: 12px; }
   .mons { display: flex; flex-wrap: wrap; gap: 4px 14px; }
   .mon { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; line-height: 1.25; }
@@ -399,7 +406,7 @@ function renderBlock(b) {
     case 'callout': return `<div class="callout">${b.html}</div>`;
     case 'list': return `<ul class="list">${b.items.map(i => `<li>${i}</li>`).join('')}</ul>`;
     case 'table':
-      return `<div class="tbl-wrap"><table><thead><tr>${b.head.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+      return `<div class="tbl-wrap"><table${b.cls ? ` class="${b.cls}"` : ''}><thead><tr>${b.head.map(h => `<th>${h}</th>`).join('')}</tr></thead>
         <tbody>${b.rows.map(r => `<tr>${r.map(c => `<td>${cell(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
     case 'itemfinder': return renderFinder(b);
     case 'stats':

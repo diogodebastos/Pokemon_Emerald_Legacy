@@ -533,6 +533,101 @@ def build_frontier_pages(item_names):
 
 
 # ---------------------------------------------------------------------------
+# Hidden Power — src/battle_script_commands.c (Cmd_hiddenpowercalc) and
+# src/pokemon_summary_screen.c (SetMoveTypeIcons). The IV table below is computed
+# from that formula; it matches psypokes.com/dex/hp.php ("Highest IVs per Type").
+# ---------------------------------------------------------------------------
+# Bit order the game reads the IVs in — HP, Atk, Def, Speed, SpAtk, SpDef.
+HP_STATS = ['HP', 'Atk', 'Def', 'Spd', 'Sp. Atk', 'Sp. Def']
+# ((NUMBER_OF_MON_TYPES - 3) * typeBits) / 63 + 1, skipping Normal and Mystery.
+HP_TYPE_ORDER = ['FIGHTING', 'FLYING', 'POISON', 'GROUND', 'ROCK', 'BUG', 'GHOST', 'STEEL',
+                 'FIRE', 'WATER', 'GRASS', 'ELECTRIC', 'PSYCHIC', 'ICE', 'DRAGON', 'DARK']
+
+
+def hidden_power_rows():
+    """Highest IVs that still give each type at the full 70 base power.
+
+    An IV of 31 sets both read bits, 30 sets only the power bit, so a spread of
+    31s and 30s always lands on 70 power and the 31/30 pattern picks the type.
+    Four or five patterns hit each type; the one with the most 31s wins, and a tie
+    goes to the pattern that keeps the 31s furthest to the right (highest typeBits),
+    which is the spread psypokes.com lists.
+    """
+    best = {}
+    for bits in range(64):
+        ty = HP_TYPE_ORDER[(15 * bits) // 63]
+        ivs = [31 if (bits >> i) & 1 else 30 for i in range(6)]
+        key = (bin(bits).count('1'), bits)
+        if ty not in best or key > best[ty][0]:
+            best[ty] = (key, ivs)
+    return {t: v[1] for t, v in best.items()}
+
+
+def build_hidden_power_pages():
+    S = 'Hidden Power'
+    best = hidden_power_rows()
+    ty_icon = lambda t: (f'<span class="ent"><img class="tyicon" src="TYPEICON:{t}" '
+                         f'alt="{TYPE_LABEL[t]}">{TYPE_LABEL[t]}</span>')
+    rows = []
+    for t in sorted(HP_TYPE_ORDER, key=lambda x: TYPE_LABEL[x]):
+        rows.append([dict(html=ty_icon(t))]
+                    + [dict(html=('<b>31</b>' if v == 31 else '30')) for v in best[t]])
+
+    pages = [dict(id='hp-ivs', section=S, title='Hidden Power by IVs',
+        kicker='Type & power table', blocks=[
+        dict(type='p', html='<b>Hidden Power</b> (TM10) has no fixed type or power: both are read off the '
+                            'Pokémon’s <b>IVs</b>, which are set the moment it is generated and never change. '
+                            'The same Pokémon therefore has the same Hidden Power forever — the only way to change it '
+                            'is to breed or catch another one.'),
+        dict(type='callout', html='Catch <b>all 28 Unown</b> and the summary screen starts showing Hidden Power’s '
+                                  'real type on the move list, so you can read a Pokémon’s type straight off the '
+                                  'party menu instead of working it out.'),
+        dict(type='h', text='Where to get TM10'),
+        dict(type='list', items=[
+            'Free from the man in a <b>Fortree City treehouse</b> — guess which hand three times in a row.',
+            'Sold by the <b>TM clerk in Slateport City</b> (the stall by the market) for ₽3,000.',
+            'Sold at the <b>Lilycove Department Store</b> (4F).',
+        ]),
+        dict(type='h', text='How the game works it out'),
+        dict(type='p', html='Each stat carries a weight, and the game adds those weights up twice — once for the type, '
+                            'once for the power. A stat only pays into a total if its IV passes that total’s test.'),
+        dict(type='table', cls='stat-grid', head=['Stat'] + HP_STATS, rows=[
+            [dict(html='<b>Weight</b>')] + [dict(text=str(1 << i)) for i in range(6)],
+        ]),
+        dict(type='list', items=[
+            '<b>Type total</b> adds the weight of every stat whose IV is <b>odd</b>. '
+            'Type = <code>15 × total ÷ 63</code>, rounded down → a number from 0 to 15, read as '
+            'Fighting, Flying, Poison, Ground, Rock, Bug, Ghost, Steel, Fire, Water, Grass, Electric, '
+            'Psychic, Ice, Dragon, Dark. Normal is not possible.',
+            '<b>Power total</b> adds the weight of every stat whose IV falls in <b>2–3, 6–7, 10–11, … 30–31</b> '
+            '(the IVs whose second bit is set). '
+            'Power = <code>40 × total ÷ 63</code>, rounded down, <b>+ 30</b> → from <b>30</b> when no stat qualifies '
+            'to <b>70</b> when all six do.',
+        ]),
+        dict(type='h', text='Highest IVs per type'),
+        dict(type='p', html='Every row below is a <b>70 base power</b> Hidden Power of that type, using the highest '
+                            'IVs that can produce it. A <b>31</b> is odd and a <b>30</b> is even, so the 31/30 pattern '
+                            'is what picks the type; both keep the power bit, so the power stays at 70.'),
+        dict(type='table', cls='stat-grid', head=['Type'] + HP_STATS, rows=rows),
+        dict(type='p', html='Breeding for one of these means chasing a specific <b>odd/even pattern</b>, not specific '
+                            'numbers: swap any 31 for another odd IV and any 30 for another even IV and the type holds. '
+                            'The power is what suffers — drop an IV out of the 2–3, 6–7, … 30–31 groups and it falls below 70.'),
+        dict(type='h', text='In battle'),
+        dict(type='list', items=[
+            'Hidden Power is <b>physical or special according to the type it rolls</b>, like every other move in Gen 3. '
+            'This hack swaps Dark and Ghost, so <b>Hidden Power Dark is physical</b> and <b>Hidden Power Ghost is special</b> here.',
+            'It still counts as a <b>Normal</b> move for Counter and Mirror Coat, so it only ever triggers <b>Counter</b> — '
+            'whatever type it rolled.',
+            'For the same reason, Hidden Power Fire <b>cannot thaw</b> a frozen target.',
+            'Its rolled type does get <b>STAB</b>, type matchups and the matching type-boosting item (Charcoal, Mystic Water…).',
+        ]),
+        dict(type='p', html='<span class="dim">Table checked against psypokes.com’s Hidden Power calculator and '
+                            'recomputed from this ROM’s <code>Cmd_hiddenpowercalc</code>.</span>'),
+    ])]
+    return pages
+
+
+# ---------------------------------------------------------------------------
 # Team Building — type coverage (coverage_data.py does the maths from the decomp).
 # ---------------------------------------------------------------------------
 # Nothing here is hand-picked: coverage_data.py ranks every fully-evolved pair over the best
@@ -925,7 +1020,7 @@ def build_data():
     with contextlib.redirect_stdout(io.StringIO()):
         trainers, _, trainer_pics, _, _ = tdx.build_data()
     item_names = tdx.parse_item_names(os.path.join(BASE, 'src/data/items.h'))
-    pages = build_pages(trainers) + build_thief_pages(trainers) + build_frontier_pages(item_names) + build_coverage_pages() + build_doubles_pages()
+    pages = build_pages(trainers) + build_thief_pages(trainers) + build_frontier_pages(item_names) + build_hidden_power_pages() + build_coverage_pages() + build_doubles_pages()
 
     refs = page_refs(pages)
 
@@ -977,7 +1072,7 @@ GUIDE_PAGES_CSS
 <div id="sidebar">
   <div id="sidebar-header">
     <h1>Field Guide</h1>
-    <span class="volume">Vol. V · Trades · Gifts · Rematches · Thief · Frontier</span>
+    <span class="volume">Vol. V · Trades · Gifts · Rematches · Thief · Frontier · Hidden Power</span>
   </div>
   <div id="page-list"></div>
 </div>
