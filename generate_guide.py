@@ -404,6 +404,282 @@ def parse_trainer_hill():
     return out
 
 
+# ---------------------------------------------------------------------------
+# Safari Zone — src/safari_zone.c (30 balls, 500 steps, Pokéblock feeders),
+# src/battle_util.c (catch / escape factors), src/battle_script_commands.c
+# (Cmd_handleballthrow), src/wild_encounter.c (PickWildMonNature),
+# data/scripts/safari_zone.inc and data/maps/SafariZone_*/map.json.
+# Which areas need which bike was checked by flood-filling the six 40×40
+# layouts in data/layouts/SafariZone_* against their collision bits.
+# ---------------------------------------------------------------------------
+SAFARI_AREAS = ['South', 'Southwest', 'Northwest', 'North', 'Northeast', 'Southeast']
+SAFARI_METHODS = [('land_mons', 'Grass'), ('water_mons', 'Surfing'),
+                  ('rock_smash_mons', 'Rock Smash'), ('fishing_mons', None)]
+ROD_LABELS = {'old_rod': 'Old Rod', 'good_rod': 'Good Rod', 'super_rod': 'Super Rod'}
+# Pokémon the Legacy tables put in the Safari Zone that vanilla Emerald never did.
+SAFARI_NEW = {'BULBASAUR', 'CHARMANDER', 'SQUIRTLE', 'CHIKORITA', 'CYNDAQUIL', 'TOTODILE', 'MURKROW'}
+# Pokéblock feeder tiles (MB_POKEBLOCK_FEEDER) counted per layout.
+SAFARI_FEEDERS = {'South': 1, 'Southwest': 1, 'Northwest': 3, 'North': 2, 'Northeast': 1, 'Southeast': 3}
+# Item Balls and Itemfinder spots from data/maps/SafariZone_*/map.json.
+SAFARI_ITEMS = {
+    'South': ([], []),
+    'Southwest': (['ITEM_MAX_REVIVE'], []),
+    'Northwest': (['ITEM_TM_SOLAR_BEAM'], []),
+    'North': (['ITEM_CALCIUM'], []),
+    'Northeast': (['ITEM_NUGGET'], ['ITEM_RARE_CANDY', 'ITEM_ZINC']),
+    'Southeast': (['ITEM_BIG_PEARL'], ['ITEM_PP_UP', 'ITEM_FULL_RESTORE']),
+}
+SAFARI_ACCESS = {
+    'South': ('Walk in', 'The entrance area, and the only way out. Acro Bike rails run along its north edge; '
+                         'the east gate is walled off by two construction workers until the Hall of Fame.'),
+    'Southwest': ('Walk west from South', 'Holds the <b>Rest House</b> and the first water. A muddy slope climbs '
+                                          'out of its north-west corner.'),
+    'Northwest': ('<b>Mach Bike</b> up the muddy slope in Southwest', 'The only area you cannot reach on foot '
+                  'or with the Acro Bike — the slope is the single way in.'),
+    'North': ('<b>Acro Bike</b> over the rails at the top of South', 'Rock Smash rocks and a bumpy slope inside '
+              'that also needs the Acro Bike.'),
+    'Northeast': ('Walk north from Southeast, or east from North', 'Part of the expansion. No bike needed if you '
+                  'come up through Southeast.'),
+    'Southeast': ('Walk east from South once the expansion opens', 'Part of the expansion. No bike needed.'),
+}
+SAFARI_POSTGAME = {'Northeast', 'Southeast'}
+
+
+def parse_catch_rates(path):
+    """SPECIES_X -> catchRate, from src/data/pokemon/species_info.h."""
+    import re
+    with open(path) as f:
+        content = f.read()
+    out = {}
+    blocks = re.split(r'\[SPECIES_(\w+)\]\s*=\s*\{', content)
+    i = 1
+    while i < len(blocks) - 1:
+        m = re.search(r'\.catchRate\s*=\s*(\d+)', blocks[i + 1])
+        if m:
+            out[blocks[i].strip()] = int(m.group(1))
+        i += 2
+    return out
+
+
+def safari_encounters():
+    """{area: [(method label, [(species, chance %, min lvl, max lvl), …]), …]}."""
+    with open(os.path.join(BASE, 'src/data/wild_encounters.json')) as f:
+        group = json.load(f)['wild_encounter_groups'][0]
+    rates = {f['type']: f['encounter_rates'] for f in group['fields']}
+    rods = next(f for f in group['fields'] if f['type'] == 'fishing_mons')['groups']
+
+    def agg(mons, kind, idxs):
+        total = sum(rates[kind][i] for i in idxs)
+        acc = {}
+        for i in idxs:
+            m = mons[i]
+            sp = m['species'].replace('SPECIES_', '')
+            n, lo, hi = acc.get(sp, (0, 999, 0))
+            acc[sp] = (n + rates[kind][i], min(lo, m['min_level']), max(hi, m['max_level']))
+        rows = [(sp, 100.0 * n / total, lo, hi) for sp, (n, lo, hi) in acc.items()]
+        return sorted(rows, key=lambda r: (-r[1], r[0]))
+
+    out = {}
+    for enc in group['encounters']:
+        if not enc['map'].startswith('MAP_SAFARI_ZONE_'):
+            continue
+        area = enc['map'].replace('MAP_SAFARI_ZONE_', '').title()
+        if area not in SAFARI_AREAS:
+            continue
+        tables = []
+        for kind, label in SAFARI_METHODS:
+            if kind not in enc:
+                continue
+            mons = enc[kind]['mons']
+            if label:
+                tables.append((label, agg(mons, kind, range(len(mons)))))
+            else:
+                for rod, idxs in rods.items():
+                    tables.append((ROD_LABELS[rod], agg(mons, kind, idxs)))
+        out[area] = tables
+    return out
+
+
+def build_safari_pages(item_names):
+    S = 'Safari Zone'
+    catch_rates = parse_catch_rates(os.path.join(BASE, 'src/data/pokemon/species_info.h'))
+    enc = safari_encounters()
+
+    def item(c):
+        return dict(name=tdx.item_display(c, item_names), n=1, icon='item:' + c)
+
+    def mon_cell(sp):
+        return dict(sprite='mon:' + sp, text=pdx.species_display_name(sp))
+
+    def pct(p):
+        return f'{p:g}%'
+
+    def lvl(lo, hi):
+        return f'Lv.{lo}' if lo == hi else f'Lv.{lo}–{hi}'
+
+    def factor(sp):
+        return catch_rates.get(sp, 0) * 100 // 1275
+
+    pages = []
+
+    # --- Basics ---
+    pages.append(dict(id='safari-basics', section=S, title='How the Safari Game Works',
+        kicker='Route 121 · ¥500', blocks=[
+        dict(type='p', html='The Safari Zone sits on <b>Route 121</b>, between Lilycove and Mt. Pyre. '
+                            'You cannot send out your own Pokémon inside: every encounter is a catching puzzle '
+                            'solved with Safari Balls, Pokéblocks and patience.'),
+        dict(type='h', text='Admission'),
+        dict(type='list', items=[
+            '<b>¥500</b> per game, and you must be carrying the <b>Pokéblock Case</b> — the attendant turns you away '
+            'without one. It comes from the Lilycove Contest Hall.',
+            'You are handed <b>30 Safari Balls</b>. The game ends when they run out, when you have walked '
+            '<b>500 steps</b>, or when you retire at the entrance. Unused balls are taken back; the admission is not refunded.',
+            'Steps only tick on the field, so battles, fishing and Pokéblock menus are free.',
+            'Everything you catch is yours. A full party and a full PC stop you at the counter.',
+        ]),
+        dict(type='h', text='Your four options in a Safari encounter'),
+        dict(type='table', head=['Option', 'What it does'], rows=[
+            [dict(html='<b>Safari Ball</b>'),
+             dict(html='Throws at the Pokémon’s <b>catch factor</b> — a 0–20 number the game builds from the species’ '
+                       'catch rate as <b>rate × 100 ÷ 1275</b>, then converts back at 12.75 per point. '
+                       'A catch rate of 255 gives 20, 190 gives 14, and anything from 39 to 50 gives 3 — which the ball then reads back as a catch rate of 38. '
+                       'The Safari Ball itself is worth 1.5×, the same as a Great Ball.')],
+            [dict(html='<b>Go near</b>'),
+             dict(html='Adds <b>+4, then +3, +2, +1</b> to the catch factor on successive uses (it stops at 20) — '
+                       'but <b>+4 to the escape factor every single time</b>. Two creeps make most Pokémon more likely '
+                       'to bolt than to be caught.')],
+            [dict(html='<b>Pokéblock</b>'),
+             dict(html='Only ever <b>lowers the escape factor</b>; it never helps you catch. The drop depends on how '
+                       'many blocks you have already thrown and on how the Pokémon reacts (see below).')],
+            [dict(html='<b>Run</b>'), dict(html='Always works. Costs nothing but the steps you spent walking there.')],
+        ]),
+        dict(type='h', text='The escape factor'),
+        dict(type='p', html='Every turn, the Pokémon rolls to flee at <b>escape factor × 5%</b>. A fresh encounter '
+                            'starts at <b>3</b>, so 15% per turn — which is why a long fight usually ends with an empty patch of grass.'),
+        dict(type='table', head=['Pokéblock throw', 'Enthralled', 'Curious', 'Ignored'], rows=[
+            [dict(text='1st'), dict(text='−5'), dict(text='−3'), dict(text='no effect')],
+            [dict(text='2nd'), dict(text='−3'), dict(text='−2'), dict(text='no effect')],
+            [dict(text='3rd and later'), dict(text='−2'), dict(text='−1'), dict(text='no effect')],
+        ]),
+        dict(type='list', items=[
+            '<b>Enthralled</b> — the block’s flavour is one the Pokémon’s nature likes.',
+            '<b>Curious</b> — the nature is neutral about every flavour in the block.',
+            '<b>Ignored</b> — the nature dislikes it. The throw is wasted.',
+        ]),
+        dict(type='callout', html='<b>The flee lock.</b> A throw that would take the escape factor below 1 clamps to 1, '
+                                  'but a throw that lands on <b>exactly 0</b> is allowed — and 0 × 5% means the Pokémon '
+                                  '<b>can never run away</b>. A fresh encounter sits at 3, and a <b>curious</b> first block is −3. '
+                                  'So a block the Pokémon is <i>neutral</i> about locks it in place for good, while an '
+                                  '<b>enthralled</b> −5 only clamps to 1 (5% a turn). Lock it down first, then throw balls '
+                                  'until it gives in — never “go near” afterwards, since that adds 4 back.'),
+        dict(type='h', text='Pokéblock feeders'),
+        dict(type='p', html='The square boxes scattered through the zone take a Pokéblock and keep it for <b>100 steps</b>. '
+                            'While it sits there, any wild Pokémon you meet within <b>5 tiles</b> of the feeder has an '
+                            '<b>80% chance</b> to be rolled with a nature that <i>likes</i> that block’s flavour. '
+                            'The game tracks up to 10 baited feeders at once; the zone has 11 of them.'),
+        dict(type='list', items=[
+            'That is the cleanest nature farm in the game: bait a feeder, then catch what walks up to it.',
+            'It also works against you for the flee lock — a baited Pokémon is <i>enthralled</i> (−5), not curious (−3). '
+            'Bait for natures, or throw for a lock, not both at once.',
+            'If your lead Pokémon has <b>Synchronize</b> and no feeder is in range, wild natures match it half the time.',
+        ]),
+        dict(type='h', text='Overworld spawns'),
+        dict(type='p', html='With the <b>Overworld Spawns</b> option on, the Pokémon wandering the grass can be walked into '
+                            'on purpose, so you pick your target instead of burning steps on random encounters. '
+                            'Those bumps start an <b>ordinary wild battle</b>, not a Safari one: your own Pokémon, your own '
+                            'Poké Balls, and EXP. Only the grass itself follows Safari rules.'),
+    ]))
+
+    # --- Starters ---
+    starter_cards = []
+    for sp, area, method, needs, note in [
+        ('BULBASAUR', 'South', 'grass', 'Nothing — it is the entrance area',
+         'You can walk to it the first time you pay in. Your rival also gives one away in the post-game, '
+         'after all ten hidden Kecleon (see <a onclick="selectPage(\'gifts-post\')">Post-Game Gifts</a>).'),
+        ('CHARMANDER', 'North', 'grass', 'Acro Bike',
+         'Behind the rails at the top of the entrance area. The rival’s Charmander wants all three Flutes; '
+         'this one only wants a bike.'),
+        ('SQUIRTLE', 'Southwest', 'surfing', 'Surf',
+         'The pond west of the entrance. The rival’s Squirtle is gated behind all 16 hidden Heart Scales.'),
+        ('CHIKORITA', 'Southeast', 'grass', 'Hall of Fame',
+         'Expansion area, so post-game — but far cheaper than Birch’s lab, which wants the whole Hoenn Dex caught.'),
+        ('CYNDAQUIL', 'Northeast', 'grass', 'Hall of Fame',
+         'Expansion area. Walk up from Southeast; no bike needed.'),
+        ('TOTODILE', 'Southeast', 'surfing', 'Hall of Fame · Surf',
+         'Expansion area, on the water. Birch’s lab hands out one Johto starter per Hall of Fame entry; the Safari '
+         'Zone hands out as many as you can catch.'),
+    ]:
+        chance = next(p for (label, rows) in enc[area] for (s, p, lo, hi) in rows
+                      if s == sp and label.lower().startswith(method[:4]))
+        starter_cards.append(dict(
+            sprite='mon:' + sp, title=pdx.species_display_name(sp), sub=f'Lv.30 · {pct(chance)} of {method} encounters',
+            place=f'Safari Zone — {area}' + (' (post-game)' if area in SAFARI_POSTGAME else ''),
+            rows=[['Needs', needs], ['Catch factor', f'{factor(sp)} / 20']],
+            note=note))
+    pages.append(dict(id='safari-starters', section=S, title='The Six Starters',
+        kicker='Kanto & Johto, in the grass', blocks=[
+        dict(type='p', html='Emerald Legacy hides all six Kanto and Johto starters in the Safari Zone. They are ordinary '
+                            'wild Pokémon: random IVs, random natures, and as many attempts as you can pay for — which makes '
+                            'them a far shorter road than the gift versions in Littleroot.'),
+        dict(type='callout', html='Every one of them is <b>Lv.30</b> with a catch factor of <b>3 / 20</b>, the worst tier in the zone. '
+                                  'Lock the escape factor to 0 with a curious Pokéblock before you spend a single ball — '
+                                  'see <a onclick="selectPage(\'safari-basics\')">How the Safari Game Works</a>.'),
+        dict(type='cards', items=starter_cards),
+        dict(type='p', html='Bulbasaur, Charmander and Squirtle are all reachable <b>before</b> the Hall of Fame — '
+                            'Charmander wants the Acro Bike, Squirtle wants Surf. The Johto three live in the expansion '
+                            'areas, which open once you are Champion.'),
+    ]))
+
+    # --- Areas ---
+    area_rows = []
+    for a in SAFARI_AREAS:
+        balls, hidden = SAFARI_ITEMS[a]
+        found = [item(c) for c in balls] + [dict(item(c), name=tdx.item_display(c, item_names) + ' (hidden)') for c in hidden]
+        how, note = SAFARI_ACCESS[a]
+        area_rows.append([
+            dict(html=f'<b>{a}</b>' + ('<span class="pg">POST</span>' if a in SAFARI_POSTGAME else '')),
+            dict(html=f'{how}<br><span class="dim">{note}</span>'),
+            dict(html=f'{SAFARI_FEEDERS[a]}'),
+            dict(items=found) if found else dict(text='—'),
+        ])
+    pages.append(dict(id='safari-areas', section=S, title='The Six Areas',
+        kicker='Bikes · feeders · items', blocks=[
+        dict(type='p', html='The zone is a 3 × 2 grid of 40 × 40 maps. You always start in <b>South</b>, and South is '
+                            'the only way out — the attendant by the door retires your game.'),
+        dict(type='table', head=['Area', 'How to get in', 'Feeders', 'Items'], rows=area_rows),
+        dict(type='list', items=[
+            '<b>Northwest is Mach Bike only.</b> Nothing else reaches it: the muddy slope out of Southwest is the single entrance.',
+            '<b>North is Acro Bike only.</b> The rails along the top of South are the only way up, and a bumpy slope '
+            'inside the area needs the Acro Bike too.',
+            'The <b>expansion</b> — Southeast and Northeast — opens the moment you enter the Hall of Fame. '
+            'Before that, two construction workers block the east gate of South. Neither area needs a bike.',
+            'The hidden items need the <b>Itemfinder</b>. Surf reaches water in Southwest, Northwest and Southeast; '
+            'Rock Smash rocks stand in North and Northeast.',
+            'The <b>Rest House</b> in Southwest is just conversation — there is no healing inside the zone.',
+        ]),
+    ]))
+
+    # --- Encounters ---
+    blocks = [
+        dict(type='p', html='Chance is the odds <i>within</i> that method. Land slots each hold one fixed level, so a '
+                            'range there means the species sits in more than one slot; surfing and fishing roll a real range. '
+                            '<b>Catch factor</b> is the 0–20 number your Safari Balls actually throw against — 20 is a '
+                            'Magikarp, 3 is a starter.'),
+    ]
+    for a in SAFARI_AREAS:
+        blocks.append(dict(type='h', text=a + (' — expansion, post-game' if a in SAFARI_POSTGAME else '')))
+        rows = []
+        for label, mons in enc[a]:
+            for sp, p, lo, hi in mons:
+                new = ' <span class="pg br">NEW</span>' if sp in SAFARI_NEW else ''
+                rows.append([dict(text=label), mon_cell(sp), dict(text=pct(p)),
+                             dict(html=lvl(lo, hi) + new), dict(text=f'{factor(sp)}')])
+        blocks.append(dict(type='table', head=['Method', 'Pokémon', 'Chance', 'Level', 'Catch'], rows=rows))
+    pages.append(dict(id='safari-encounters', section=S, title='Every Encounter',
+        kicker='Grass · surf · fishing · rocks', blocks=blocks))
+    return pages
+
+
 def build_frontier_pages(item_names):
     def item(c):
         return dict(name=tdx.item_display(c, item_names), n=1, icon='item:' + c)
@@ -1020,7 +1296,9 @@ def build_data():
     with contextlib.redirect_stdout(io.StringIO()):
         trainers, _, trainer_pics, _, _ = tdx.build_data()
     item_names = tdx.parse_item_names(os.path.join(BASE, 'src/data/items.h'))
-    pages = build_pages(trainers) + build_thief_pages(trainers) + build_frontier_pages(item_names) + build_hidden_power_pages() + build_coverage_pages() + build_doubles_pages()
+    pages = (build_pages(trainers) + build_thief_pages(trainers) + build_safari_pages(item_names)
+             + build_frontier_pages(item_names) + build_hidden_power_pages()
+             + build_coverage_pages() + build_doubles_pages())
 
     refs = page_refs(pages)
 
@@ -1072,7 +1350,7 @@ GUIDE_PAGES_CSS
 <div id="sidebar">
   <div id="sidebar-header">
     <h1>Field Guide</h1>
-    <span class="volume">Vol. V · Trades · Gifts · Rematches · Thief · Frontier · Hidden Power</span>
+    <span class="volume">Vol. V · Trades · Gifts · Rematches · Thief · Safari · Frontier · Hidden Power</span>
   </div>
   <div id="page-list"></div>
 </div>
