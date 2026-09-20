@@ -76,6 +76,12 @@ def build_data():
             ab=[[a, abil.get(a, {}).get('name', a.replace('_', ' ').title())] for a in base_stats.get(s, {}).get('abilities') or sorted(d['abilities'])],
             f=s in final,
             se=sum(1 << i for i, t in enumerate(cov.TYPES) if s in se[t]),
+            # b: base HP + Def + Sp. Def, so suggestions can tell a wall from a Magikarp.
+            # at: attacking types this species can learn a real damaging move of — the
+            # offensive counterpart to `se`, used to suggest answers for uncovered types.
+            b=d['bulk'], o=max(d['atk'], d['spa']), lg=s in cov.LEGENDARY,
+            at=sum(1 << i for i, t in enumerate(cov.TYPES)
+                   if any(moves[j]['atk'] and moves[j]['t'] == t for j, _ in learn)),
             m=learn,
         ))
     return species, moves
@@ -122,6 +128,15 @@ GUIDE_PAGES_CSS
   .btn:hover { border-color: var(--jade-bright); color: var(--ink); }
   .btn.done { border-color: var(--jade-bright); color: var(--jade-bright); }
   .btn-ai { border-color: var(--jade-deep); color: var(--jade-bright); }
+  .sugs { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 2px 0 14px; }
+  .sug-lbl { width: 100%; font-family: var(--f-mono); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase;
+             color: var(--ink-mut); margin-bottom: 2px; }
+  .sugchip { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px 3px 3px; border: 1px solid var(--rule);
+             border-radius: 999px; background: var(--paper-2); cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+  .sugchip:hover { border-color: var(--jade-bright); background: var(--jade-soft); }
+  .sugchip img { width: 28px; height: 28px; image-rendering: pixelated; }
+  .sugchip .sn { font-family: var(--f-serif); font-style: italic; font-size: 14px; color: var(--ink); }
+  .sugchip .sa { font-family: var(--f-mono); font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-mut); }
   #ai-out { width: 100%; height: 220px; margin: 6px 0 8px; font-family: var(--f-mono); font-size: 11px; color: var(--ink-dim);
             background: var(--paper-0); border: 1px solid var(--rule); padding: 10px; resize: vertical; }
 
@@ -260,6 +275,9 @@ const SPECIES = SPECIES_PLACEHOLDER;
 const ITEMS = ITEMS_PLACEHOLDER;
 const MOVES = MOVES_PLACEHOLDER;
 const TYPES = TYPES_PLACEHOLDER;
+// Gen 3 has no per-move category: physical vs special follows the move's TYPE.
+// This hack swaps two of them — Dark is physical, Ghost is special.
+const PHYSICAL = new Set(PHYSICAL_PLACEHOLDER);
 const TYPE_CHART = TYPE_CHART_PLACEHOLDER;
 const SPR = SPRITES_PLACEHOLDER;   // species front sprites, by species index
 
@@ -268,7 +286,8 @@ const moveByKey = {}; MOVES.forEach((m, i) => moveByKey[m.k] = i);
 const itemByKey = {}; ITEMS.forEach((it, i) => itemByKey[it.k] = i);
 const byName = {}; SPECIES.forEach((s, i) => byName[s.n.toLowerCase()] = i);
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
-const tc = t => t[0] + t.slice(1).toLowerCase();
+// MYSTERY is the decomp's name for Gen 3's ??? type. Curse is the only move that has it.
+const tc = t => t === 'MYSTERY' ? '???' : t[0] + t.slice(1).toLowerCase();
 const eff = (atk, types) => types.reduce((n, d) => n * ((TYPE_CHART[atk] || {})[d] ?? 1), 1);
 // Abilities that change what hits a Pokémon (Gen 3).
 const ABILITY_DEFENSE = {
@@ -319,14 +338,17 @@ function moveOptions(m, slot) {
   const taken = new Set(m.mv.filter((x, j) => j !== slot && x >= 0));
   const opt = ([i]) => {
     const mv = MOVES[i];
-    return `<option value="${i}"${m.mv[slot] === i ? ' selected' : ''}${taken.has(i) ? ' disabled' : ''}>${esc(mv.n)}${mv.atk ? ' · ' + tc(mv.t) + ' ' + (mv.p > 1 ? mv.p : '—') : ''}</option>`;
+    return `<option value="${i}"${m.mv[slot] === i ? ' selected' : ''}${taken.has(i) ? ' disabled' : ''}>${esc(mv.n)} · ${tc(mv.t)}${mv.p === 0 ? '' : ' ' + (mv.atk && mv.p > 1 ? mv.p : '—')}</option>`;
   };
   const byName = (a, b) => MOVES[a[0]].n.localeCompare(MOVES[b[0]].n);
-  const atk = learn.filter(([i]) => MOVES[i].atk).sort(byName);
-  const other = learn.filter(([i]) => !MOVES[i].atk).sort(byName);
+  // Official Gen 3 categories. Status is "deals no damage"; everything else splits on type,
+  // so Seismic Toss is Physical (Fighting) and Night Shade is Special (Ghost, per the swap).
+  // Hidden Power follows its listed Normal type like any other move.
+  const cat = i => MOVES[i].p === 0 ? 2 : PHYSICAL.has(MOVES[i].t) ? 0 : 1;
+  const g = k => learn.filter(([i]) => cat(i) === k).sort(byName).map(opt).join('');
+  const group = (label, k) => { const h = g(k); return h ? `<optgroup label="${label}">${h}</optgroup>` : ''; };
   return `<option value="-1">— move ${slot + 1} —</option>
-    <optgroup label="Attacks">${atk.map(opt).join('')}</optgroup>
-    <optgroup label="Other moves">${other.map(opt).join('')}</optgroup>`;
+    ${group('Physical', 0)}${group('Special', 1)}${group('Status', 2)}`;
 }
 function renderSlot(m, i) {
   if (!m) return `<div class="slot empty"><div><div class="slot-n">Slot ${i + 1}</div>
@@ -397,6 +419,61 @@ function summarize(members, final) {
   };
 }
 
+/* ---------- suggestions: who plugs the gaps ----------
+   Shown only once there are 2+ members (with one, every weakness is unresisted, so the
+   list is noise) and a free slot to put them in. These rank on the type chart alone —
+   they know nothing about Speed, movepool quality or role. */
+const SUGGEST_MIN = 2, SUGGEST_MAX = 6;
+
+// Same maths as defenseRow, but for a species + ability we are considering rather than a member.
+function defRowFor(s, abIdx) {
+  const ab = s.ab[abIdx] && ABILITY_DEFENSE[s.ab[abIdx][0]];
+  return TYPES.map(t => { const x = eff(t, s.t); return ab ? ab(t, x) : x; });
+}
+function suggestPool(members) {
+  // Legendaries are left out: they top both lists on raw stats and are not a real answer to
+  // a type gap. They stay pickable in the builder itself, they are just not suggested.
+  const onTeam = new Set(members.map(m => m.s));
+  return SPECIES.map((s, si) => ({s, si})).filter(({s, si}) => !onTeam.has(si) && !s.lg && (!finalOnly || s.f));
+}
+function suggestDefense(S, members, n) {
+  const gaps = S.unresisted.map(t => TYPES.indexOf(t));
+  if (!gaps.length) return [];
+  const out = [];
+  for (const {s, si} of suggestPool(members)) {
+    let best = null;
+    s.ab.forEach((a, ai) => {
+      // Wonder Guard "resists" almost everything on 1 HP. It would top every list and mean nothing.
+      if (a[0] === 'WONDER_GUARD') return;
+      const row = defRowFor(s, ai);
+      const gain = gaps.reduce((t, j) => t + (row[j] === 0 ? 2 : row[j] < 1 ? 1 : 0), 0);
+      if (!gain) return;
+      // A weakness the team neither resists nor already has is a brand-new hole; charge for it.
+      const cost = TYPES.reduce((t, _, j) => t + (row[j] > 1 && S.resN[j] === 0 && S.weakN[j] === 0 ? 1 : 0), 0);
+      if (!best || gain - cost > best.score) best = {score: gain - cost, gain, cost, ai, row};
+    });
+    if (best && best.score > 0) out.push({s, si, ...best});
+  }
+  out.sort((a, b) => b.score - a.score || b.s.b - a.s.b || a.s.n.localeCompare(b.s.n));
+  return out.slice(0, n);
+}
+function suggestOffense(S, members, n) {
+  const gaps = S.noSE.map(t => TYPES.indexOf(t));
+  // With no attacking move chosen anywhere, all 17 types read as gaps — that is the team being
+  // blank, not a coverage hole, and ranking against it just lists the game's bulkiest species.
+  if (!gaps.length || !members.some(m => attackTypes(m).length)) return [];
+  const out = [];
+  for (const {s, si} of suggestPool(members)) {
+    const atk = TYPES.filter((t, i) => s.at >> i & 1);
+    if (!atk.length) continue;
+    const covers = gaps.filter(j => atk.some(a => eff(a, [TYPES[j]]) > 1));
+    if (covers.length) out.push({s, si, gain: covers.length, covers});
+  }
+  out.sort((a, b) => b.gain - a.gain || b.s.o - a.s.o || a.s.n.localeCompare(b.s.n));
+  return out.slice(0, n);
+}
+function firstEmptySlot() { return team.indexOf(null); }
+
 function renderAnalysis() {
   const members = team.filter(Boolean);
   const el = document.getElementById('analysis');
@@ -407,7 +484,8 @@ function renderAnalysis() {
   const name = m => esc(SPECIES[m.s].n);
 
   // Defense — what hits each member
-  const {def, weakN, resN, off, teamOff, pool, missed, unresisted, stacked, noSE, never} = summarize(members, finalOnly);
+  const S = summarize(members, finalOnly);
+  const {def, weakN, resN, off, teamOff, pool, missed, unresisted, stacked, noSE, never} = S;
   const hit = pool.length - missed.length;
   const dCls = x => x === 0 ? 'imm' : x > 1 ? 'weak' : x < 1 ? 'res' : '';
   const dWord = x => x === 0 ? 'immune' : x > 1 ? `weak (${lab(x)})` : x < 1 ? `resists (${lab(x)})` : 'neutral';
@@ -426,6 +504,21 @@ function renderAnalysis() {
     + `<tr class="sum-first"><th class="mu-name mu-sum">Team</th>${teamOff.map((x, j) =>
       `<td class="${oCls(x)}" data-tip="Team’s best hit on ${tc(TYPES[j])}: ${oWord(x)}">${lab(x)}</td>`).join('')}</tr>`;
 
+  // Suggestions — only with 2+ members (one member makes every weakness a "gap") and a free slot.
+  const canSuggest = members.length >= SUGGEST_MIN && firstEmptySlot() >= 0;
+  const sugChip = (x, tip, sub) => `<span class="sugchip" data-tip="${tip}" data-add="${x.si}" data-ab="${x.ai || 0}">
+      <img src="${SPR[x.si]}" alt=""><span class="sn">${esc(x.s.n)}</span>${sub ? `<span class="sa">${esc(sub)}</span>` : ''}</span>`;
+  const defSug = canSuggest ? suggestDefense(S, members, SUGGEST_MAX) : [];
+  const offSug = canSuggest ? suggestOffense(S, members, SUGGEST_MAX) : [];
+  const plugs = x => x.row.map((v, j) => unresisted.includes(TYPES[j]) && v < 1 ? tc(TYPES[j]) + (v === 0 ? ' (immune)' : '') : null).filter(Boolean);
+  const defSugHtml = defSug.length ? `<div class="sugs">
+      <div class="sug-lbl">Resists what your team doesn\u2019t \u00b7 click to add</div>
+      ${defSug.map(x => sugChip(x, `<b>${esc(x.s.n)}</b> handles ${plugs(x).join(', ')}${x.cost ? `<br>Adds a new weakness nothing else resists` : ''}`,
+                                ABILITY_DEFENSE[x.s.ab[x.ai][0]] ? x.s.ab[x.ai][1] : '')).join('')}</div>` : '';
+  const offSugHtml = offSug.length ? `<div class="sugs">
+      <div class="sug-lbl">Can learn moves for the gaps \u00b7 click to add</div>
+      ${offSug.map(x => sugChip(x, `<b>${esc(x.s.n)}</b> can learn moves that hit ${x.covers.map(j => tc(TYPES[j])).join(', ')}`, '')).join('')}</div>` : '';
+
   // Species coverage
   const monChip = s => `<span class="monchip" data-tip="${esc(s.n)} · ${s.t.map(tc).join(' / ')}"><img src="${SPR[byKey[s.k]]}" alt=""><a class="xl" data-app="pokedex" data-key="${s.dex}">${esc(s.n)}</a></span>`;
 
@@ -437,6 +530,7 @@ function renderAnalysis() {
       <div class="flag"><span class="lbl">No resist</span>${unresisted.length ? unresisted.map(tyIcon).join('') : '<span class="ok">Every weakness is covered by a teammate.</span>'}</div>
       ${stacked.length ? `<div class="flag"><span class="lbl">3+ weak</span>${stacked.map(tyIcon).join('')}</div>` : ''}
     </div>
+    ${defSugHtml}
 
     <div class="section-title">Offensive Coverage</div>
     <p class="p">The best hit each member’s attacks land on every single type. Status moves and moves that ignore the type chart
@@ -445,6 +539,7 @@ function renderAnalysis() {
     <div class="flags">
       <div class="flag"><span class="lbl">No 2× hit on</span>${noSE.length ? noSE.map(tyIcon).join('') : '<span class="ok">Every type is hit super effectively.</span>'}</div>
     </div>
+    ${offSugHtml}
 
     <div class="section-title">Pokémon You Can’t Hit Super Effectively</div>
     <div class="opts"><label><input type="checkbox" id="final-only"${finalOnly ? ' checked' : ''}> Fully evolved only</label></div>
@@ -495,7 +590,14 @@ document.addEventListener('keydown', e => {
 });
 document.addEventListener('click', e => {
   const x = e.target.closest('[data-remove]');
-  if (x) { team[+x.dataset.remove] = null; save(); render(); }
+  if (x) { team[+x.dataset.remove] = null; save(); render(); return; }
+  const add = e.target.closest('[data-add]');
+  if (add) {
+    const slot = firstEmptySlot();
+    if (slot < 0) return;
+    team[slot] = {s: +add.dataset.add, ab: +add.dataset.ab || 0, mv: [-1, -1, -1, -1], it: -1};
+    save(); render();
+  }
 });
 document.getElementById('btn-clear').onclick = () => { team = [null, null, null, null, null, null]; save(); render(); };
 document.getElementById('btn-share').onclick = async e => {
@@ -530,7 +632,7 @@ function buildPrompt() {
   const miss = S.missed.map(s => s.n);
   const out = [
     'Review my Pokémon team. Be concise.',
-    'Game: a modded Pokémon Emerald, Gen 3 mechanics: no Fairy, physical/special decided by move type, Gen 3 abilities. This mod swaps two of those: Dark is physical, Ghost is special. Rosters and learnsets differ from vanilla. Main format: double battles.',
+    'Game: a modded Pokémon Emerald, Gen 3 mechanics: physical/special is decided by move type, and this mod swaps two of them — Dark is physical, Ghost is special. No Fairy type. Gen 3 abilities. Rosters and learnsets differ from vanilla. Main format: double battles.',
     '',
     'Team (Pokémon | type | ability | held item | moves):',
     ...lines,
@@ -543,7 +645,7 @@ function buildPrompt() {
     `- Fully evolved species not hit super effectively (${S.missed.length}/${S.pool.length}): ${miss.slice(0, CAP).join(', ') || 'none'}${miss.length > CAP ? `, +${miss.length - CAP} more` : ''}`,
     allyHits.length ? `- Moves that also hit my partner: ${allyHits.join('; ')}` : null,
     '',
-    'Reply in under 150 words, no preamble, bullets only:',
+    'Reply in under 300 words, no preamble, bullets only:',
     '1) Top 3 problems, one line each.',
     '2) Up to 3 concrete fixes (Move → Move, or Pokémon → Pokémon), one-line reason each. Gen 3 only; mark any move you are unsure the Pokémon can learn with (?).',
     '3) One doubles tip for this team.',
@@ -633,6 +735,7 @@ def generate():
     for ph, val in [('TEAM_PAGES_PLACEHOLDER', pages), ('TEAM_SPRITES_PLACEHOLDER', page_sprites),
                     ('ITEMS_PLACEHOLDER', items), ('SPECIES_PLACEHOLDER', species), ('MOVES_PLACEHOLDER', moves), ('TYPES_PLACEHOLDER', cov.TYPES),
                     ('TYPE_CHART_PLACEHOLDER', chart), ('SPRITES_PLACEHOLDER', sprites),
+                    ('PHYSICAL_PLACEHOLDER', sorted(cov.PHYSICAL)),
                     ]:
         html = html.replace(ph, dump(val), 1)
     out = os.path.join(BASE, 'docs', 'teambuilder.html')
