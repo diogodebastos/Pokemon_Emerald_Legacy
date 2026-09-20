@@ -176,6 +176,27 @@ GUIDE_PAGES_CSS
   select.mv.unset { color: var(--ink-mut); font-style: italic; }
   .mv-pow { font-family: var(--f-mono); font-size: 12px; color: var(--ink-dim); text-align: right; white-space: nowrap; min-width: 84px; }
   .mv-how { grid-column: 2 / 4; font-family: var(--f-mono); font-size: 9px; color: var(--ink-mut); letter-spacing: 0.06em; margin-top: 2px; }
+  /* Hidden Power — the move's type icon is a button that opens a 16-type picker */
+  .hp-pick { position: relative; }
+  .hp-btn { display: block; padding: 0; line-height: 0; cursor: pointer; background: none;
+            border: 1px dashed var(--rule); }
+  .hp-btn.set { border-style: solid; border-color: var(--jade-deep); }
+  .hp-btn:hover { border-color: var(--jade-bright); }
+  .hp-btn .tyicon { width: 38px; height: 19px; display: block; }
+  .hp-menu { position: absolute; z-index: 60; top: calc(100% + 4px); left: 0; width: 240px; padding: 8px;
+             background: var(--paper-0); border: 1px solid var(--rule); box-shadow: 0 12px 28px rgba(0,0,0,0.35); }
+  .hp-menu .hp-lbl { font-family: var(--f-mono); font-size: 8px; letter-spacing: 0.16em; text-transform: uppercase;
+                     color: var(--ink-mut); margin-bottom: 6px; }
+  .hp-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; }
+  .hp-grid button { padding: 0; line-height: 0; cursor: pointer; background: none; border: 1px solid transparent; }
+  .hp-grid button:hover { border-color: var(--jade-bright); }
+  .hp-grid button.on { border-color: var(--jade-bright); background: var(--jade-soft); }
+  .hp-grid .tyicon { width: 100%; height: auto; display: block; }
+  .hp-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 8px;
+             font-family: var(--f-mono); font-size: 9px; color: var(--ink-mut); white-space: nowrap; }
+  .hp-clear { font-family: var(--f-mono); font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+              padding: 2px 6px; background: none; border: 1px solid var(--rule); color: var(--ink-dim); cursor: pointer; }
+  .hp-clear:hover { border-color: var(--jade-bright); color: var(--ink); }
   .stab { font-family: var(--f-mono); font-size: 8px; letter-spacing: 0.12em; color: var(--dusk); border: 1px solid var(--dusk); padding: 0 3px; margin-left: 5px; vertical-align: middle; }
 
   /* Matchup grids — the Guide's Defensive Duos table */
@@ -278,11 +299,17 @@ const TYPES = TYPES_PLACEHOLDER;
 // Gen 3 has no per-move category: physical vs special follows the move's TYPE.
 // This hack swaps two of them — Dark is physical, Ghost is special.
 const PHYSICAL = new Set(PHYSICAL_PLACEHOLDER);
+// Hidden Power: the 16 types it can roll (never Normal), and per type the highest IVs that
+// roll it at 70 power — the Guide's "Hidden Power by IVs" table, from Cmd_hiddenpowercalc.
+const HP_TYPES = HP_TYPES_PLACEHOLDER;
+const HP_IVS = HP_IVS_PLACEHOLDER;
+const HP_STATS = HP_STATS_PLACEHOLDER;
 const TYPE_CHART = TYPE_CHART_PLACEHOLDER;
 const SPR = SPRITES_PLACEHOLDER;   // species front sprites, by species index
 
 const byKey = {}; SPECIES.forEach((s, i) => byKey[s.k] = i);
 const moveByKey = {}; MOVES.forEach((m, i) => moveByKey[m.k] = i);
+const HP_IDX = moveByKey['HIDDEN_POWER'];
 const itemByKey = {}; ITEMS.forEach((it, i) => itemByKey[it.k] = i);
 const byName = {}; SPECIES.forEach((s, i) => byName[s.n.toLowerCase()] = i);
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
@@ -301,25 +328,45 @@ const ABILITY_DEFENSE = {
 
 document.getElementById('mon-list').innerHTML = SPECIES.map(s => `<option value="${esc(s.n)}">`).join('');
 
-// team[i] = null | {s: species index, ab: ability index, mv: [move index | -1] x4}
+// team[i] = null | {s: species index, ab: ability index, mv: [move index | -1] x4,
+//                    it: item index | -1, hp: Hidden Power's rolled type | ''}
 let team = [null, null, null, null, null, null];
 let finalOnly = true;   // default: judge coverage against fully evolved species
+let hpOpen = null;      // slot whose Hidden Power type picker is open
+const HP_SET = new Set(HP_TYPES);
+const blankMon = (s, ab) => ({s, ab: ab || 0, mv: [-1, -1, -1, -1], it: -1, hp: ''});
+
+/* ---------- Hidden Power ----------
+   Its type is a property of the Pokémon's IVs, not of the move, so it is stored on the
+   member and picked by hand. Until it is picked the move stays Normal and counts for
+   nothing on the coverage grids, the same as any move that ignores the type chart. */
+function mvType(m, x) { return x === HP_IDX && m.hp ? m.hp : MOVES[x].t; }
+function mvAtk(m, x) { return x === HP_IDX ? !!m.hp : MOVES[x].atk; }
+function mvName(m, x) { return x === HP_IDX && m.hp ? MOVES[x].n + ' ' + tc(m.hp) : MOVES[x].n; }
+function hpTip(t) {
+  const iv = HP_IVS[t] || [];
+  return `<b>Hidden Power ${tc(t)}</b> · 70 power · ${PHYSICAL.has(t) ? 'Physical' : 'Special'}<br>`
+       + `Highest IVs · ${HP_STATS.map((n, i) => `${n} <b>${iv[i]}</b>`).join(' · ')}<br>`
+       + `<span class='dim'>Odd/even picks the type; the 30s and 31s are what hold the power at 70.</span>`;
+}
 
 /* ---------- save / load (localStorage + share hash) ---------- */
 function encode() {
+  // The Hidden Power field is only written when it is set, so codes without one read as they always did.
   return team.map(m => m ? [SPECIES[m.s].k, m.ab, m.mv.filter(x => x >= 0).map(x => MOVES[x].k).join(','),
-                            m.it >= 0 ? ITEMS[m.it].k : ''].join(':') : '').join(';');
+                            m.it >= 0 ? ITEMS[m.it].k : ''].concat(m.hp ? [m.hp] : []).join(':') : '').join(';');
 }
 function decode(str) {
   const out = [null, null, null, null, null, null];
   String(str || '').split(';').slice(0, 6).forEach((part, i) => {
-    const [k, ab, mv, item] = part.split(':');   // item is optional: older links have three fields
+    const [k, ab, mv, item, hp] = part.split(':');   // item and hp are optional: older links are shorter
     if (!(k in byKey)) return;
     const s = byKey[k], learn = new Set(SPECIES[s].m.map(x => x[0]));
     const moves = (mv || '').split(',').map(x => moveByKey[x]).filter(x => x !== undefined && learn.has(x)).slice(0, 4);
     while (moves.length < 4) moves.push(-1);
     const it = itemByKey[item];
-    out[i] = {s, ab: Math.min(+ab || 0, SPECIES[s].ab.length - 1), mv: moves, it: it === undefined ? -1 : it};
+    out[i] = {s, ab: Math.min(+ab || 0, SPECIES[s].ab.length - 1), mv: moves, it: it === undefined ? -1 : it,
+              hp: HP_SET.has(hp) ? hp : ''};
   });
   return out;
 }
@@ -338,13 +385,14 @@ function moveOptions(m, slot) {
   const taken = new Set(m.mv.filter((x, j) => j !== slot && x >= 0));
   const opt = ([i]) => {
     const mv = MOVES[i];
-    return `<option value="${i}"${m.mv[slot] === i ? ' selected' : ''}${taken.has(i) ? ' disabled' : ''}>${esc(mv.n)} · ${tc(mv.t)}${mv.p === 0 ? '' : ' ' + (mv.atk && mv.p > 1 ? mv.p : '—')}</option>`;
+    const pow = i === HP_IDX ? (m.hp ? ' 70' : ' —') : mv.p === 0 ? '' : ' ' + (mv.atk && mv.p > 1 ? mv.p : '—');
+    return `<option value="${i}"${m.mv[slot] === i ? ' selected' : ''}${taken.has(i) ? ' disabled' : ''}>${esc(mv.n)} · ${tc(mvType(m, i))}${pow}</option>`;
   };
   const byName = (a, b) => MOVES[a[0]].n.localeCompare(MOVES[b[0]].n);
   // Official Gen 3 categories. Status is "deals no damage"; everything else splits on type,
   // so Seismic Toss is Physical (Fighting) and Night Shade is Special (Ghost, per the swap).
-  // Hidden Power follows its listed Normal type like any other move.
-  const cat = i => MOVES[i].p === 0 ? 2 : PHYSICAL.has(MOVES[i].t) ? 0 : 1;
+  // Hidden Power splits on the type it rolled, so it changes group once that is picked.
+  const cat = i => MOVES[i].p === 0 ? 2 : PHYSICAL.has(mvType(m, i)) ? 0 : 1;
   const g = k => learn.filter(([i]) => cat(i) === k).sort(byName).map(opt).join('');
   const group = (label, k) => { const h = g(k); return h ? `<optgroup label="${label}">${h}</optgroup>` : ''; };
   return `<option value="-1">— move ${slot + 1} —</option>
@@ -366,11 +414,13 @@ function renderSlot(m, i) {
     </select></div>`;
   const rows = m.mv.map((x, j) => {
     const mv = x >= 0 ? MOVES[x] : null;
-    const stab = mv && mv.atk && s.t.includes(mv.t);
+    const t = mv ? mvType(m, x) : null;
+    const stab = mv && mvAtk(m, x) && s.t.includes(t);
+    const pow = !mv ? '' : x === HP_IDX ? (m.hp ? 70 : 'varies') : mv.p > 0 ? (mv.p > 1 ? mv.p : 'varies') : '';
     return `<div class="duo-move">
-      ${mv ? tyIcon(mv.t) : '<span class="ty-blank"></span>'}
+      ${!mv ? '<span class="ty-blank"></span>' : x === HP_IDX ? hpPicker(m, i) : tyIcon(t)}
       <select class="mv${mv ? '' : ' unset'}" data-slot="${i}" data-j="${j}">${moveOptions(m, j)}</select>
-      <span class="mv-pow">${mv && mv.p > 0 ? (mv.p > 1 ? mv.p : 'varies') : ''}${stab ? '<span class="stab">STAB</span>' : ''}</span>
+      <span class="mv-pow">${pow}${stab ? '<span class="stab">STAB</span>' : ''}</span>
       ${mv ? `<span class="mv-how">${esc(how[x] || '')}</span>` : ''}
     </div>`;
   }).join('');
@@ -384,12 +434,29 @@ function renderSlot(m, i) {
   </div>`;
 }
 
+// The Hidden Power type icon doubles as its picker: click it for the 16 types, hover any of
+// them for the IV spread that rolls it (the Guide's table, recomputed here).
+function hpPicker(m, i) {
+  const tip = m.hp ? hpTip(m.hp)
+    : `<b>Hidden Power</b> reads its type off the Pokémon's IVs, so it shows as Normal until you say `
+      + `which one you have.<br>Click to pick it — it then counts on the coverage grids.`;
+  const menu = hpOpen !== i ? '' : `<div class="hp-menu">
+      <div class="hp-lbl">Hidden Power type · hover for IVs</div>
+      <div class="hp-grid">${HP_TYPES.map(t =>
+        `<button class="${m.hp === t ? 'on' : ''}" data-hp-set="${i}" data-hp-t="${t}" data-tip="${hpTip(t)}">${tyIcon(t)}</button>`).join('')}</div>
+      <div class="hp-foot"><a class="xl" data-app="guide" data-key="hp-ivs">The full IV table</a>
+        ${m.hp ? `<button class="hp-clear" data-hp-set="${i}" data-hp-t="">Clear</button>` : '<span>Never Normal</span>'}</div>
+    </div>`;
+  return `<span class="hp-pick"><button class="hp-btn${m.hp ? ' set' : ''}" data-hp-open="${i}"
+    data-tip="${tip}">${tyIcon(mvType(m, HP_IDX))}</button>${menu}</span>`;
+}
+
 /* ---------- analysis ---------- */
 function defenseRow(m) {
   const s = SPECIES[m.s], ab = s.ab[m.ab] && ABILITY_DEFENSE[s.ab[m.ab][0]];
   return TYPES.map(t => { const x = eff(t, s.t); return ab ? ab(t, x) : x; });
 }
-function attackTypes(m) { return [...new Set(m.mv.filter(x => x >= 0 && MOVES[x].atk).map(x => MOVES[x].t))]; }
+function attackTypes(m) { return [...new Set(m.mv.filter(x => x >= 0 && mvAtk(m, x)).map(x => mvType(m, x)))]; }
 function offenseRow(m) {
   const ts = attackTypes(m);
   return TYPES.map(d => ts.length ? Math.max(...ts.map(a => eff(a, [d]))) : null);
@@ -534,7 +601,8 @@ function renderAnalysis() {
 
     <div class="section-title">Offensive Coverage</div>
     <p class="p">The best hit each member’s attacks land on every single type. Status moves and moves that ignore the type chart
-      (Seismic Toss, Night Shade, Hidden Power, fixed-damage moves) don’t count.</p>
+      (Seismic Toss, Night Shade, fixed-damage moves) don’t count. <b>Hidden Power</b> counts as soon as you click its
+      type icon and say what it rolled — hover the types there for the IVs that get you each one.</p>
     ${table(TYPES, offRows)}
     <div class="flags">
       <div class="flag"><span class="lbl">No 2× hit on</span>${noSE.length ? noSE.map(tyIcon).join('') : '<span class="ok">Every type is hit super effectively.</span>'}</div>
@@ -569,12 +637,13 @@ function findSpecies(value) {
 function pickSpecies(i, value) {
   const s = findSpecies(value);
   if (s === undefined) return false;
-  team[i] = {s, ab: 0, mv: [-1, -1, -1, -1], it: -1};
+  team[i] = blankMon(s);
   save(); render();
   return true;
 }
 document.addEventListener('change', e => {
   const t = e.target;
+  hpOpen = null;
   if (t.matches('input.pick')) pickSpecies(+t.dataset.slot, t.value);
   else if (t.matches('select.abil')) { team[+t.dataset.slot].ab = +t.value; save(); render(); }
   else if (t.matches('select.mv')) { team[+t.dataset.slot].mv[+t.dataset.j] = +t.value; save(); render(); }
@@ -587,15 +656,21 @@ document.addEventListener('input', e => {
 });
 document.addEventListener('keydown', e => {
   if (e.key === 'Enter' && e.target.matches('input.pick')) pickSpecies(+e.target.dataset.slot, e.target.value);
+  else if (e.key === 'Escape' && hpOpen !== null) { hpOpen = null; render(); }
 });
 document.addEventListener('click', e => {
   const x = e.target.closest('[data-remove]');
-  if (x) { team[+x.dataset.remove] = null; save(); render(); return; }
+  if (x) { team[+x.dataset.remove] = null; hpOpen = null; save(); render(); return; }
+  const hset = e.target.closest('[data-hp-set]');
+  if (hset) { team[+hset.dataset.hpSet].hp = hset.dataset.hpT; hpOpen = null; save(); render(); return; }
+  const hopen = e.target.closest('[data-hp-open]');
+  if (hopen) { hpOpen = hpOpen === +hopen.dataset.hpOpen ? null : +hopen.dataset.hpOpen; render(); return; }
+  if (hpOpen !== null && !e.target.closest('.hp-menu')) { hpOpen = null; render(); }
   const add = e.target.closest('[data-add]');
   if (add) {
     const slot = firstEmptySlot();
     if (slot < 0) return;
-    team[slot] = {s: +add.dataset.add, ab: +add.dataset.ab || 0, mv: [-1, -1, -1, -1], it: -1};
+    team[slot] = blankMon(+add.dataset.add, +add.dataset.ab || 0);
     save(); render();
   }
 });
@@ -619,7 +694,7 @@ function buildPrompt() {
   const list = (ts, none) => ts.length ? ts.map(tc).join(', ') : none;
   const lines = members.map((m, i) => {
     const s = SPECIES[m.s];
-    const mv = m.mv.filter(x => x >= 0).map(x => MOVES[x].n);
+    const mv = m.mv.filter(x => x >= 0).map(x => mvName(m, x));
     const item = m.it >= 0 ? ITEMS[m.it].n : 'no item';
     return `${i + 1}. ${s.n} | ${s.t.map(tc).join('/')} | ${s.ab[m.ab] ? s.ab[m.ab][1] : '-'} | ${item} | ${mv.length ? mv.join(', ') : 'no moves set'}`;
   });
@@ -736,6 +811,9 @@ def generate():
                     ('ITEMS_PLACEHOLDER', items), ('SPECIES_PLACEHOLDER', species), ('MOVES_PLACEHOLDER', moves), ('TYPES_PLACEHOLDER', cov.TYPES),
                     ('TYPE_CHART_PLACEHOLDER', chart), ('SPRITES_PLACEHOLDER', sprites),
                     ('PHYSICAL_PLACEHOLDER', sorted(cov.PHYSICAL)),
+                    ('HP_TYPES_PLACEHOLDER', gdx.HP_TYPE_ORDER),
+                    ('HP_IVS_PLACEHOLDER', gdx.hidden_power_rows()),
+                    ('HP_STATS_PLACEHOLDER', gdx.HP_STATS),
                     ]:
         html = html.replace(ph, dump(val), 1)
     out = os.path.join(BASE, 'docs', 'teambuilder.html')
