@@ -636,7 +636,7 @@ EVENT_ENCOUNTERS = {
     'DEOXYS':    [{'map': 'Birth Island',       'method': 'Event', 'minLvl': 30, 'maxLvl': 30, 'postgame': True}],
     # Feebas lives on hidden Route 119 fishing tiles (src/wild_encounter.c), not in wild_encounters.json
     'SUDOWOODO': [{'map': 'Battle Frontier',    'method': 'Event', 'minLvl': 40, 'maxLvl': 40, 'postgame': True}],
-    'FEEBAS':    [{'map': 'Route 119',          'method': 'Fishing', 'minLvl': 20, 'maxLvl': 25, 'postgame': False}],
+    'FEEBAS':    [{'map': 'Route 119',          'method': 'Fishing', 'rod': 'Any Rod', 'minLvl': 20, 'maxLvl': 25, 'postgame': False}],
 }
 
 # Hand-written "How to Obtain" notes (HTML) shown under Where Observed.
@@ -707,6 +707,10 @@ SPECIES_NOTES = {
 # data/scripts/hall_of_fame.inc (FLAG_HIDE_SAFARI_ZONE_SOUTH_EAST_EXPANSION), so it is post-game.
 POSTGAME_MAPS = {'Safari Zone Northeast', 'Safari Zone Southeast'}
 
+# Fishing slots are split between the three rods; see the "groups" field of fishing_mons
+# in src/data/wild_encounters.json.
+ROD_LABELS = {'old_rod': 'Old Rod', 'good_rod': 'Good Rod', 'super_rod': 'Super Rod'}
+
 
 def parse_encounters(path):
     with open(path) as f:
@@ -716,7 +720,8 @@ def parse_encounters(path):
     partial = partial.rstrip().rstrip(',')
     partial += '\n  ]\n}'
     data = json.loads(partial)
-    encounters = data['wild_encounter_groups'][0]['encounters']
+    group = data['wild_encounter_groups'][0]
+    encounters = group['encounters']
 
     ENC_METHODS = {
         'land_mons': 'Land',
@@ -724,6 +729,16 @@ def parse_encounters(path):
         'rock_smash_mons': 'Rock Smash',
         'fishing_mons': 'Fishing',
     }
+
+    # Which fishing slot belongs to which rod (see ChooseWildMonIndex_Fishing in
+    # src/wild_encounter.c): slot -> 'Old Rod' / 'Good Rod' / 'Super Rod'.
+    rod_of_slot = {}
+    for field in group.get('fields', []):
+        if field['type'] != 'fishing_mons':
+            continue
+        for rod, slots in field.get('groups', {}).items():
+            for slot in slots:
+                rod_of_slot[slot] = ROD_LABELS.get(rod, rod.replace('_', ' ').title())
 
     species_locs = {}
 
@@ -733,11 +748,35 @@ def parse_encounters(path):
         # Insert space between letters and digits: ROUTE101 -> Route 101
         name_part = re.sub(r'([A-Za-z])(\d)', r'\1 \2', name_part)
         pretty_map = name_part.title()
+        postgame = enc.get('base_label', '').endswith('_2') or pretty_map in POSTGAME_MAPS
 
         for enc_type, method in ENC_METHODS.items():
             if enc_type not in enc:
                 continue
             mons = enc[enc_type].get('mons', [])
+            # Fishing: one entry per rod instead of one per slot, since a rod rolls all of
+            # its slots at once. Levels are merged across the rod's slots.
+            if enc_type == 'fishing_mons':
+                merged = {}  # (species, rod) -> [minLvl, maxLvl], in slot order
+                for slot, mon in enumerate(mons):
+                    key = (mon['species'].replace('SPECIES_', ''), rod_of_slot.get(slot, 'Any Rod'))
+                    if key in merged:
+                        merged[key][0] = min(merged[key][0], mon['min_level'])
+                        merged[key][1] = max(merged[key][1], mon['max_level'])
+                    else:
+                        merged[key] = [mon['min_level'], mon['max_level']]
+                for (sp, rod), (lo, hi) in merged.items():
+                    entry = {
+                        'map': pretty_map,
+                        'method': method,
+                        'rod': rod,
+                        'minLvl': lo,
+                        'maxLvl': hi,
+                        'postgame': postgame,
+                    }
+                    if entry not in species_locs.setdefault(sp, []):
+                        species_locs[sp].append(entry)
+                continue
             for mon in mons:
                 sp = mon['species'].replace('SPECIES_', '')
                 if sp not in species_locs:
@@ -747,7 +786,7 @@ def parse_encounters(path):
                     'method': method,
                     'minLvl': mon['min_level'],
                     'maxLvl': mon['max_level'],
-                    'postgame': enc.get('base_label', '').endswith('_2') or pretty_map in POSTGAME_MAPS,
+                    'postgame': postgame,
                 }
                 if entry not in species_locs[sp]:
                     species_locs[sp].append(entry)
@@ -2383,6 +2422,11 @@ function renderList(items) {
 
 const normSearch = s => s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 
+// Fishing entries carry the rod that reaches their slots: "Fishing · Super Rod".
+function methodLabel(l) {
+  return l.rod ? `${l.method} · ${l.rod}` : l.method;
+}
+
 function filterList(query) {
   const q = normSearch(query);
   const filtered = DATA
@@ -2392,7 +2436,7 @@ function filterList(query) {
       // Location search: "granite" lists every mon found in Granite Cave
       const hits = [...new Set(p.locations
         .filter(l => normSearch(l.map).includes(q))
-        .map(l => `${l.map} · ${l.method}`))];
+        .map(l => `${l.map} · ${methodLabel(l)}`))];
       return hits.length ? {...p, _origIdx: i, _locHits: hits} : null;
     })
     .filter(Boolean);
@@ -2442,7 +2486,7 @@ function renderDetail(p, formIdx, shiny) {
     : '<div class="location-list">' + p.locations.map(l => {
         const lvl = l.minLvl === l.maxLvl ? `Lv.${l.minLvl}` : `Lv.${l.minLvl}–${l.maxLvl}`;
         const pg = l.postgame ? `<span class="postgame-badge">Post</span>` : '';
-        return `<span class="location-tag"><span>${l.map}</span><span class="method">${l.method}</span><span class="lvl">${lvl}</span>${pg}</span>`;
+        return `<span class="location-tag"><span>${l.map}</span><span class="method">${methodLabel(l)}</span><span class="lvl">${lvl}</span>${pg}</span>`;
       }).join('') + '</div>';
 
   const STAT_META = [
