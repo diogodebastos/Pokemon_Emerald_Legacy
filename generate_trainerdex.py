@@ -67,6 +67,11 @@ JOHTO_GAUNTLET_IDS = {
     'TRAINER_BATTLE_ROYALE_PRYCE', 'TRAINER_BATTLE_ROYALE_CLAIR',
 }
 
+# Cave of Origin B1F trio (Craig -> Weebra -> Smith). They wear the ordinary
+# PKMN_TRAINER_1 class in-game, so force-include them by ID and give them their own group.
+CAVE_OF_ORIGIN_CAT = ('Cave of Origin', 12)
+CAVE_OF_ORIGIN_IDS = {'TRAINER_CRAIG', 'TRAINER_WEEBRA', 'TRAINER_SMITH'}
+
 # Special rebattleable utility trainers (shown as their own group, force-included even
 # though their in-game class isn't "notable"). BRYON is the Mr. Mimic mirror-match slot.
 SPECIAL_CAT = ('Special Trainers', 14)
@@ -80,6 +85,8 @@ GROUP_ORDER = {
     'Kanto Gauntlet': ['Brock', 'Misty', 'Lt.Surge', 'Erika', 'Koga', 'Sabrina', 'Blaine', 'Giovanni'],
     # Kanto Elite Four in challenge order, Champion Blue last.
     'Kanto Elite Four': ['Lorelei', 'Bruno', 'Agatha', 'Lance', 'Blue'],
+    # The three appear one at a time, in the order you beat them.
+    'Cave of Origin': ['Craig', 'Weebra', 'Smith'],
 }
 
 # Rival starter / location ordering (Brendan & May). This mod pairs each Hoenn
@@ -133,6 +140,15 @@ TRAINER_NOTES = {
     'BATTLE_ROYALE_MR_MIMIC': 'Ever Grande City. Rebattle him as often as you like. He copies your current team.',
     'GRINDING_NURSE': 'Ever Grande City. Rebattle her as often as you like.',
 }
+_COO_COMMON = (' Cave of Origin B1F, deep past the Sootopolis entrance. Double battle against a full team of six at '
+               'Lv. 70, so bring at least two healthy Pokémon. Beating them leaves behind a decoration for your '
+               'Secret Base, and each one only battles you once.')
+_COO_UNLOCK = ('Clear the Battle Frontier’s <b>Trainer Hill on Expert mode</b>. That reopens the Cave of Origin '
+               'and puts Craig inside.')
+TRAINER_NOTES['CRAIG'] = _COO_UNLOCK + ' He is the first of the three.' + _COO_COMMON + ' Reward: <b>Registeel Doll</b>.'
+TRAINER_NOTES['WEEBRA'] = 'Appears in Craig’s place once you beat him.' + _COO_COMMON + ' Reward: <b>Regice Doll</b>.'
+TRAINER_NOTES['SMITH'] = ('Appears once you beat Weebra — the last of the three.' + _COO_COMMON +
+                          ' Reward: <b>Regirock Doll</b>, after which he leaves the cave for good.')
 for _vr in (3, 4, 5):
     TRAINER_NOTES[f'WALLY_VR_{_vr}'] = (
         'Rematch at the Victory Road exit. Beat Team 2 while you have the PokéNav so Wally is registered in Match Call. '
@@ -376,7 +392,8 @@ def parse_trainers(path):
         if not cls:
             continue
         is_br = tid.startswith('TRAINER_FRONTIER_')
-        if cls.group(1) not in NOTABLE_CLASSES and not is_br and tid not in SPECIAL_TRAINER_IDS:
+        if (cls.group(1) not in NOTABLE_CLASSES and not is_br
+                and tid not in SPECIAL_TRAINER_IDS and tid not in CAVE_OF_ORIGIN_IDS):
             continue
         name = re.search(r'\.trainerName\s*=\s*_\("([^"]*)"\)', body)
         pic = re.search(r'\.trainerPic\s*=\s*TRAINER_PIC_(\w+)', body)
@@ -402,7 +419,7 @@ def parse_trainers(path):
 def prettify_map(folder):
     s = re.sub(r'(?<=[a-z])(?=[A-Z])', ' ', folder)   # CamelCase -> spaced
     s = s.replace('_', ' ')
-    s = re.sub(r'(?<=[A-Za-z])(?=\d)', ' ', s)         # Route103 -> Route 103
+    s = re.sub(r'(?<=[a-z])(?=\d)', ' ', s)           # Route103 -> Route 103 (but keep B1F/B2F)
     return re.sub(r'\s+', ' ', s).strip()
 
 def parse_trainer_locations(maps_dir):
@@ -503,6 +520,8 @@ def build_data():
     for t in raw_trainers:
         if t['id'] in SPECIAL_TRAINER_IDS:
             cat, order = SPECIAL_CAT
+        elif t['id'] in CAVE_OF_ORIGIN_IDS:
+            cat, order = CAVE_OF_ORIGIN_CAT
         elif t['id'] in KANTO_GAUNTLET_IDS:
             cat, order = KANTO_GAUNTLET_CAT
         elif t['id'] in KANTO_ELITE_IDS:
