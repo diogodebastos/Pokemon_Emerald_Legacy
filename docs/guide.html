@@ -617,11 +617,12 @@ function selectPage(id) {
   if (anchor) {
     const el = document.getElementById('anc-' + anchor);
     if (el) {
-      // Webfonts land after the first paint and move everything below them, so aim twice.
+      // Webfonts and sprite decoding land after the first paint and move everything below
+      // them, so keep re-aiming for a moment instead of trusting the first scroll.
       const go = () => el.scrollIntoView({ block: 'center' });
       go();
       if (document.fonts && document.fonts.ready) document.fonts.ready.then(go);
-      setTimeout(go, 300);
+      [150, 400, 900, 1600].forEach(ms => setTimeout(go, ms));
       el.classList.add('flash');
       setTimeout(() => el.classList.remove('flash'), 2000);
     }
