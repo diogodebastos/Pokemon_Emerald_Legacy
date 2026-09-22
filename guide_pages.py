@@ -165,6 +165,29 @@ CSS = r'''  :root {
   .pg.br { color: var(--jade-bright); border-color: var(--jade-bright); }
   .pg { font-family: var(--f-mono); font-size: 8px; letter-spacing: 0.14em; color: var(--dusk); border: 1px solid var(--dusk); padding: 0 4px; margin-left: 4px; vertical-align: middle; }
 
+  /* Abilities (generate_guide.py build_ability_pages) */
+  .ab-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 4px 0 14px; }
+  .ab-bar input {
+    flex: 1; min-width: 200px; font-family: var(--f-sans); font-size: 14px; color: var(--ink);
+    background: var(--paper-2); border: 1px solid var(--rule); padding: 9px 12px; outline: none;
+  }
+  .ab-bar input:focus { border-color: var(--jade-bright); }
+  .ab-bar input::placeholder { color: var(--ink-fnt); }
+  .ab-bar .ab-shown { font-family: var(--f-mono); font-size: 9px; color: var(--ink-mut); letter-spacing: 0.18em; text-transform: uppercase; }
+  .ab-list { display: flex; flex-direction: column; gap: 12px; }
+  .ab-card { border: 1px solid var(--rule); background: var(--paper-2); padding: 14px 16px; scroll-margin-top: 24px; }
+  .ab-card.off { display: none; }
+  .ab-card.flash { border-color: var(--jade-bright); background: var(--jade-soft); }
+  .ab-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; margin-bottom: 8px; }
+  .ab-title { font-family: var(--f-serif); font-style: italic; font-size: 22px; color: var(--ink); line-height: 1; }
+  .ab-desc { font-family: var(--f-mono); font-size: 11px; color: var(--jade-bright); }
+  .ab-n { font-family: var(--f-mono); font-size: 9px; color: var(--ink-mut); letter-spacing: 0.16em; text-transform: uppercase; margin-left: auto; }
+  .ab-note { font-size: 13.5px; line-height: 1.65; color: var(--ink-dim); margin-bottom: 10px; max-width: 80ch; }
+  .ab-mons { display: flex; flex-wrap: wrap; gap: 0 2px; align-items: center; }
+  .ab-mons .monchip.mute { opacity: 0.28; }
+  .ab-none { font-size: 13px; color: var(--ink-mut); font-style: italic; }
+  .slot2 { font-family: var(--f-mono); font-size: 8px; color: var(--ink-mut); border: 1px solid var(--rule); padding: 0 3px; margin-left: 3px; }
+
   /* Team Building — coverage */
   .tyicon { width: 48px; height: 24px; image-rendering: pixelated; vertical-align: middle; flex: none; }
   .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin: 8px 0 16px; }
@@ -399,6 +422,55 @@ document.addEventListener('mousemove', e => {
   tip.style.top = (e.clientY + 18 + r.height > window.innerHeight ? e.clientY - r.height - 10 : e.clientY + 18) + 'px';
 });
 
+let abSort = 'az';
+function abCards() { return Array.from(document.querySelectorAll('#ab-list > .ab-card')); }
+function setAbSort(mode) {
+  abSort = mode;
+  const list = document.getElementById('ab-list');
+  const by = mode === 'az'
+    ? (a, b) => a.dataset.name.localeCompare(b.dataset.name)
+    : (a, b) => b.dataset.n - a.dataset.n || a.dataset.name.localeCompare(b.dataset.name);
+  abCards().sort(by).forEach(c => list.appendChild(c));
+  document.querySelectorAll('.ab-bar .sort-btn').forEach(b => b.classList.toggle('active', b.dataset.sort === mode));
+}
+// One search box for both halves of the page: a query can match the ability (name, description
+// or note) or a holder's name, and when it only matches holders the other holders are dimmed.
+function abFilter(q) {
+  q = (q || '').trim().toLowerCase();
+  let shown = 0;
+  abCards().forEach(card => {
+    const hit = !q || card.dataset.hay.includes(q);
+    let monHit = 0;
+    card.querySelectorAll('.monchip').forEach(m => {
+      const mine = !!q && m.dataset.n.includes(q);
+      if (mine) monHit++;
+      m.classList.toggle('mute', !!q && !hit && !mine);
+    });
+    card.classList.toggle('off', !(hit || monHit));
+    if (hit || monHit) shown++;
+  });
+  const n = document.getElementById('ab-shown');
+  if (n) n.textContent = q ? `${shown} of ${abCards().length}` : `${shown} abilities`;
+}
+function renderAbilities(b) {
+  const btn = (m, label) => `<button class="sort-btn${abSort === m ? ' active' : ''}" data-sort="${m}" onclick="setAbSort('${m}')">${label}</button>`;
+  return `<div class="ab-bar">
+      <input type="search" placeholder="Search an ability, an effect or a Pokémon…" oninput="abFilter(this.value)" aria-label="Search abilities">
+      ${btn('az', 'A–Z')}${btn('count', 'Most Pokémon')}
+      <span class="ab-shown" id="ab-shown">${b.items.length} abilities</span>
+    </div>
+    <div class="ab-list" id="ab-list">${b.items.map(a => `<div class="ab-card" id="anc-${a.key}" data-name="${a.name}" data-n="${a.mons.length}"
+        data-hay="${[a.name, a.desc, a.plain].join(' ').toLowerCase().replace(/"/g, '&quot;')}">
+      <div class="ab-head"><span class="ab-title">${a.name}</span><span class="ab-desc">${a.desc}</span>
+        ${a.tag ? `<span class="pg">${a.tag}</span>` : ''}
+        <span class="ab-n">${a.mons.length ? a.mons.length + ' Pokémon' : 'unused'}</span></div>
+      ${a.note ? `<div class="ab-note">${a.note}</div>` : ''}
+      ${a.mons.length
+        ? `<div class="ab-mons">${a.mons.map(m => `<span class="monchip" data-n="${m.name.toLowerCase()}" data-tip="${m.name}${m.slot ? ' · second ability' : ''}">${img(m.sprite, m.name)}${xlink('pokedex', m.sp, m.name)}${m.slot ? '<span class="slot2">2</span>' : ''}</span>`).join('')}</div>`
+        : `<div class="ab-none">No Pokémon in this game has it.</div>`}
+    </div>`).join('')}</div>`;
+}
+
 function renderBlock(b) {
   switch (b.type) {
     case 'p': return `<p class="p">${b.html}</p>`;
@@ -409,6 +481,7 @@ function renderBlock(b) {
       return `<div class="tbl-wrap"><table${b.cls ? ` class="${b.cls}"` : ''}><thead><tr>${b.head.map(h => `<th>${h}</th>`).join('')}</tr></thead>
         <tbody>${b.rows.map(r => `<tr>${r.map(c => `<td>${cell(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
     case 'itemfinder': return renderFinder(b);
+    case 'abilities': return renderAbilities(b);
     case 'stats':
       return `<div class="stats">${b.items.map(it => `<div class="stat">
         <div class="stat-v">${it.value}</div><div class="stat-l">${it.label}</div>
@@ -455,6 +528,11 @@ function renderBlock(b) {
 }
 
 function selectPage(id) {
+  // A deep link may name a spot inside the page ("abilities/LEVITATE"); the page's blocks give
+  // those spots an id of "anc-<key>".
+  let anchor = null;
+  const cut = id ? id.indexOf('/') : -1;
+  if (cut > 0) { anchor = id.slice(cut + 1); id = id.slice(0, cut); }
   const p = PAGES.find(x => x.id === id);
   if (!p) return;
   currentPage = id;
@@ -468,5 +546,17 @@ function selectPage(id) {
   }
   document.getElementById('main').scrollTop = 0;
   window.scrollTo(0, 0);
+  if (anchor) {
+    const el = document.getElementById('anc-' + anchor);
+    if (el) {
+      // Webfonts land after the first paint and move everything below them, so aim twice.
+      const go = () => el.scrollIntoView({ block: 'center' });
+      go();
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(go);
+      setTimeout(go, 300);
+      el.classList.add('flash');
+      setTimeout(() => el.classList.remove('flash'), 2000);
+    }
+  }
 }
 '''

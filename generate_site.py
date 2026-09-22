@@ -55,6 +55,8 @@ def main():
         index.append(dict(t='guide', k=pg['id'], n=pg['title'], s=pg['section'],
                           **(dict(a='teambuilder') if team else {})))
     index.append(dict(t='guide', k='', n='Team Builder', s='Six Pokémon · type charts and coverage', a='teambuilder'))
+    for ab in quiet(gdx.ability_index):
+        index.append(dict(t='ability', k=ab['key'], n=ab['name'], s=ab['sub']))
 
     docs = os.path.join(BASE, 'docs')
     with open(os.path.join(docs, 'search-index.json'), 'w', encoding='utf-8') as f:

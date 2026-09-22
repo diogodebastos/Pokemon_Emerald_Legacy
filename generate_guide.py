@@ -8,6 +8,7 @@ every fact was checked against the decomp source; file refs sit next to each blo
 
 import os
 import io
+import re
 import json
 import contextlib
 from functools import lru_cache
@@ -903,6 +904,259 @@ def build_hidden_power_pages():
     return pages
 
 
+
+# ---------------------------------------------------------------------------
+# Abilities — one page listing every ability, its holders and what it really does.
+# Every note below was checked against this ROM's code, not against the Gen 3 canon:
+# src/battle_util.c (AbilityBattleEffects), src/battle_script_commands.c (accuracy, stat
+# drops, secondary effects), src/pokemon.c (CalculateBaseDamage), data/battle_scripts_1.s,
+# src/wild_encounter.c, src/egg_hatch.c, src/field_player_avatar.c, src/fldeff_cut.c,
+# src/match_call.c and src/overworld.c.
+# ---------------------------------------------------------------------------
+
+# Abilities this hack changed from stock Emerald (git log -S on the lines involved).
+LEGACY_CHANGED = {'STENCH', 'ILLUMINATE', 'MAGMA_ARMOR', 'SAND_VEIL'}
+
+ABILITY_NOTES = {
+    'STENCH': 'Out in the field it <b>halves the wild encounter rate</b> while it leads the party '
+              '(only a quarter off inside the Battle Pyramid). In battle it borrows the hold-effect '
+              'number of whatever item the Pokémon is carrying and takes that many percent off the '
+              'attacker’s accuracy — so with no item, that number is 0 and the ability does nothing.',
+    'DRIZZLE': 'Rain starts the moment it comes in and <b>never runs out</b>: Gen 3 ability weather has '
+               'no five-turn clock. Only another weather ability or a weather move replaces it.',
+    'SPEED_BOOST': '+1 Speed at the end of every turn, starting with the turn <i>after</i> it switched in, '
+                   'up to +6.',
+    'BATTLE_ARMOR': 'Critical hits can never land on it. Same effect as Shell Armor.',
+    'STURDY': 'Only blocks the one-hit KO moves — Fissure, Horn Drill and Guillotine. It does nothing '
+              'against ordinary damage, so it will not survive a hit at full HP the way it does in later games.',
+    'DAMP': 'Explosion and Self-Destruct fail while <b>any</b> Pokémon on the field has it — including '
+            'your own, which means a Damp partner shuts off your own Explosion in a double battle.',
+    'LIMBER': 'Paralysis can’t stick, and an existing paralysis is cured the moment the ability applies.',
+    'SAND_VEIL': 'In a sandstorm, attacks aimed at it are multiplied by <b>0.8 accuracy</b> and its '
+                 '<b>Sp. Def is raised by 50%</b> — the same bonus Rock types get. Leading the party, it '
+                 'halves the wild encounter rate while the overworld weather is a sandstorm.',
+    'STATIC': 'A contact move has a <b>1 in 3</b> chance of paralysing the attacker. Leading the party, it '
+              'has a 50% chance of pulling an <b>Electric type</b> out of the encounter table.',
+    'VOLT_ABSORB': 'A damaging Electric move heals <b>¼ of max HP</b> instead of hitting. At full HP the move '
+                   'still does nothing, it simply heals nothing. Status Electric moves (Thunder Wave) are not absorbed.',
+    'WATER_ABSORB': 'A damaging Water move heals <b>¼ of max HP</b> instead of hitting. At full HP it still '
+                    'blocks the move.',
+    'OBLIVIOUS': 'Attraction can’t stick, and it also stops the foe’s <b>Cute Charm</b> from infatuating it.',
+    'CLOUD_NINE': 'While it is on the field, <b>nobody’s weather does anything</b> — no chip damage, no '
+                  'Solar Beam shortcut, no Swift Swim, no Synthesis boost. The weather itself stays up, so '
+                  'it comes straight back when this Pokémon leaves. Same effect as Air Lock.',
+    'COMPOUND_EYES': 'Multiplies its own accuracy by <b>1.3</b>. Leading the party it also improves wild '
+                     'held items: the odds of a wild Pokémon carrying nothing drop from 45% to 20%, and its '
+                     'rare item shows up 20% of the time instead of 5%.',
+    'INSOMNIA': 'Sleep can’t stick, and an existing sleep is cured. Rest fails outright. Same effect as Vital Spirit.',
+    'COLOR_CHANGE': 'After it takes a damaging move it becomes that move’s type, which usually leaves it weak '
+                    'to whatever comes next. It doesn’t trigger on status moves or on a move it is immune to.',
+    'IMMUNITY': 'Poison — regular or Toxic — can’t stick, and an existing poison is cured.',
+    'FLASH_FIRE': 'Fire moves miss it entirely and its own Fire moves get stronger for the rest of the battle. '
+                  'It does <b>not</b> work while the Pokémon is frozen, and the boost is lost on switching out.',
+    'SHIELD_DUST': 'Blocks the <i>added</i> effect of a move (Flamethrower’s burn, Rock Slide’s flinch), '
+                   'never the damage, and never a move whose only job is the status (Thunder Wave still works).',
+    'OWN_TEMPO': 'Confusion can’t stick, and existing confusion is cured — including self-confusion from '
+                 'Outrage or Petal Dance.',
+    'SUCTION_CUPS': 'Roar and Whirlwind can’t drag it out. Leading the party it also makes fishing bite '
+                    '<b>85% of the time</b> instead of the usual roll, the same as Sticky Hold.',
+    'INTIMIDATE': 'On switch-in it drops the Attack of <b>every</b> opponent by one stage — both of them in a '
+                  'double battle. A Substitute, Clear Body, Hyper Cutter or White Smoke blocks it. Leading the '
+                  'party it also skips half of the wild encounters that are 5 or more levels below it, same as Keen Eye.',
+    'SHADOW_TAG': 'No opponent can switch out or run — there is no Flying or Levitate exemption, unlike Arena Trap.',
+    'ROUGH_SKIN': 'A contact move costs the attacker <b>1/16 of its max HP</b>, every time.',
+    'WONDER_GUARD': 'Only <b>super-effective damaging moves</b> land. Status moves, weather, poison, Leech Seed '
+                    'and Spikes all still work, and a move that is super effective against one of its types but '
+                    'not very effective against the other is blocked too.',
+    'LEVITATE': 'Ground moves miss it, Spikes don’t hurt it, and it can walk away from <b>Arena Trap</b>. '
+                'Magnet Pull still traps it if it is a Steel type.',
+    'EFFECT_SPORE': 'A contact move has a <b>1 in 10</b> chance of leaving the attacker asleep, poisoned or '
+                    'paralysed, split evenly between the three.',
+    'SYNCHRONIZE': 'When something poisons, burns or paralyses it, the same status is passed straight back. '
+                   'Toxic comes back as <b>ordinary poison</b>. Leading the party, wild Pokémon have a 50% '
+                   'chance of sharing its <b>nature</b> — the cheapest nature breeding trick in the game.',
+    'CLEAR_BODY': 'No opponent can lower any of its stats: Intimidate, Growl, String Shot, Sand-Attack, '
+                  'all refused. Its own Overheat or Belly Drum still works. Same effect as White Smoke.',
+    'NATURAL_CURE': 'Switching out cures poison, burn, paralysis, sleep and freeze. Resting and switching is '
+                    'a full heal for two turns of work.',
+    'LIGHTNING_ROD': 'Draws in the <b>opponents’</b> single-target Electric moves — and takes the damage: this '
+                     'is Gen 3, so there is no immunity and no Sp. Atk boost. It does not redirect an ally’s '
+                     'move. Leading the party it doubles the chance a trainer rings you on the <b>Match Call</b>, '
+                     'from 30% to 60%.',
+    'SERENE_GRACE': 'Doubles the chance of a move’s added effect — a 10% flinch becomes 20%, a 30% freeze becomes 60%.',
+    'SWIFT_SWIM': 'Doubles Speed in rain. Cloud Nine or Air Lock turns it off.',
+    'CHLOROPHYLL': 'Doubles Speed in harsh sunlight. Cloud Nine or Air Lock turns it off.',
+    'ILLUMINATE': 'In this hack it is a real battle ability: its moves <b>ignore the target’s evasion</b> '
+                  '(Double Team, Sand Veil, BrightPowder) and nothing can lower its accuracy. Leading the party '
+                  'it also <b>doubles the wild encounter rate</b>.',
+    'TRACE': 'On switch-in it copies an opponent’s ability — a random one of the two in a double battle, unless '
+             'only one of them has anything to copy. Wonder Guard is fair game. The copy lasts until it switches out.',
+    'HUGE_POWER': 'Doubles Attack, before any other boost. Same effect as Pure Power.',
+    'POISON_POINT': 'A contact move has a <b>1 in 3</b> chance of poisoning the attacker.',
+    'INNER_FOCUS': 'It can never be made to flinch. Intimidate still works on it.',
+    'MAGMA_ARMOR': 'Freeze can’t stick. In this hack it is also a serious defensive ability: <b>Water moves do '
+                   'an eighth of their damage</b> to it. In the party it halves the steps an Egg needs to hatch, '
+                   'the same as Flame Body.',
+    'WATER_VEIL': 'Burn can’t stick, and an existing burn is cured.',
+    'MAGNET_PULL': 'Steel types can’t switch out or run. It checks the <b>whole field</b>, so it pins your own '
+                   'Steel partner in a double battle as well. Leading the party, it has a 50% chance of pulling '
+                   'a <b>Steel type</b> out of the encounter table.',
+    'SOUNDPROOF': 'Blocks exactly ten moves: Growl, Roar, Sing, Supersonic, Screech, Snore, Uproar, Metal Sound, '
+                  'Grass Whistle and Hyper Voice. Perish Song is not in the list in Gen 3 — this is the one '
+                  'ability that stops Roar <i>and</i> shrugs off Hyper Voice.',
+    'RAIN_DISH': 'Heals <b>1/16 of max HP</b> at the end of each turn while it is raining.',
+    'SAND_STREAM': 'A sandstorm starts on switch-in and <b>never runs out</b>. It chips every Pokémon that isn’t '
+                   'Rock, Ground or Steel, and raises the Sp. Def of Rock types (and Sand Veil holders) by 50%.',
+    'PRESSURE': 'Every move aimed at it costs the attacker <b>one extra PP</b>; a spread move pays once per '
+                'Pressure Pokémon it hits. Leading the party it also gives wild Pokémon a 50% chance of rolling '
+                'the <b>top of their level range</b>.',
+    'THICK_FAT': 'Halves the damage of every Fire and Ice move. Both types are special in Gen 3, so nothing '
+                 'slips past it.',
+    'EARLY_BIRD': 'Sleep runs out twice as fast — it wakes after half as many turns, Rest included.',
+    'FLAME_BODY': 'A contact move has a <b>1 in 3</b> chance of burning the attacker. In the party it halves '
+                  'the steps an Egg needs to hatch, the same as Magma Armor.',
+    'RUN_AWAY': 'Running from a wild battle <b>always works</b>, whatever the Speed difference and whatever is '
+                'trapping you. The Battle Pyramid is the exception: there it only improves the odds.',
+    'KEEN_EYE': 'No opponent can lower its accuracy. Leading the party it also skips half of the wild encounters '
+                'that are 5 or more levels below it, same as Intimidate.',
+    'HYPER_CUTTER': 'No opponent can lower its Attack — Intimidate included. Out in the field, using <b>Cut</b> '
+                    'with this Pokémon clears a <b>5×5 patch</b> of grass instead of 3×3.',
+    'PICKUP': 'After each battle, a Pokémon holding nothing has a <b>1 in 10</b> chance of turning up with an '
+              'item. It works from anywhere in the party, and the table gets better as the game goes on.',
+    'TRUANT': 'It moves the turn it comes in, then loafs every other turn. A switch resets the counter, so '
+              'switching out and back in buys another free turn.',
+    'HUSTLE': 'Attack is raised by 50%, and its <b>physical</b> moves are multiplied by 0.8 accuracy. Special '
+              'moves keep full accuracy. Leading the party it gives wild Pokémon a 50% chance of rolling the '
+              'top of their level range.',
+    'CUTE_CHARM': 'A contact move has a <b>1 in 3</b> chance of infatuating an attacker of the opposite gender; '
+                  'Oblivious blocks it. Leading the party, two thirds of wild Pokémon come out the <b>opposite '
+                  'gender</b> to it.',
+    'PLUS': 'Sp. Atk is raised by 50% while a <b>Minus</b> Pokémon is anywhere on the field — including on the '
+            'opposing side, which is a rare way to get a boost handed to you.',
+    'MINUS': 'Sp. Atk is raised by 50% while a <b>Plus</b> Pokémon is anywhere on the field, the opposing side '
+             'included.',
+    'FORECAST': 'Castform re-types with the weather: Fire in sun, Water in rain, Ice in hail, Normal otherwise. '
+                'Its sprite changes with it, and Cloud Nine or Air Lock puts it back to Normal.',
+    'STICKY_HOLD': 'Thief, Covet and Knock Off all fail against its item. Leading the party it also makes '
+                   'fishing bite <b>85% of the time</b>, the same as Suction Cups.',
+    'SHED_SKIN': 'At the end of each turn there is a <b>1 in 3</b> chance it shakes off poison, burn, paralysis, '
+                 'sleep or freeze.',
+    'GUTS': 'Attack is raised by 50% while it has any status — and a burn no longer halves its Attack, so a '
+            'burned Guts attacker hits <i>harder</i> than a healthy one.',
+    'MARVEL_SCALE': 'Defense is raised by 50% while it has any status. A self-inflicted Toxic or a Rest works fine.',
+    'LIQUID_OOZE': 'Absorb, Mega Drain, Giga Drain, Leech Life and Leech Seed all <b>damage</b> the drainer '
+                   'instead of healing them. <b>Dream Eater</b> is the exception — its script never checks '
+                   'the ability, so it heals as normal.',
+    'OVERGROW': 'Grass moves are 50% stronger once its HP is at or below a third of its maximum.',
+    'BLAZE': 'Fire moves are 50% stronger once its HP is at or below a third of its maximum.',
+    'TORRENT': 'Water moves are 50% stronger once its HP is at or below a third of its maximum.',
+    'SWARM': 'Bug moves are 50% stronger once its HP is at or below a third of its maximum. With one in the '
+             'party the overworld’s ambient Pokémon cries come twice as often.',
+    'ROCK_HEAD': 'No recoil from Double-Edge, Take Down, Submission or Volt Tackle. <b>Struggle still hurts</b> — '
+                 'the game checks for it before it checks the ability.',
+    'DROUGHT': 'Harsh sunlight starts on switch-in and <b>never runs out</b>: Fire moves +50%, Water moves −50%, '
+               'Solar Beam in one turn, Thunder and Blizzard down to 50% accuracy.',
+    'ARENA_TRAP': 'No opponent can switch out or run — <b>except</b> Flying types and anything with Levitate. '
+                  'Leading the party it doubles the wild encounter rate.',
+    'VITAL_SPIRIT': 'Sleep can’t stick, and an existing sleep is cured. Leading the party it gives wild Pokémon '
+                    'a 50% chance of rolling the top of their level range.',
+    'WHITE_SMOKE': 'No opponent can lower any of its stats, Intimidate included. Leading the party it halves the '
+                   'wild encounter rate.',
+    'PURE_POWER': 'Doubles Attack, before any other boost. Same effect as Huge Power.',
+    'SHELL_ARMOR': 'Critical hits can never land on it. Same effect as Battle Armor.',
+    'CACOPHONY': 'A leftover slot in the ability table. Nothing in the game has it and nothing in the code reads it.',
+    'AIR_LOCK': 'While it is on the field, <b>nobody’s weather does anything</b>, though the weather itself stays '
+                'up and returns when this Pokémon leaves. Same effect as Cloud Nine.',
+}
+
+# Lead-slot effects, for the table at the top of the page. (species → wild_encounter.c,
+# egg_hatch.c, field_player_avatar.c, fldeff_cut.c, match_call.c, overworld.c, pokemon.c)
+LEAD_EFFECTS = [
+    ('Illuminate, Arena Trap', 'Twice as many wild encounters.'),
+    ('Stench, White Smoke', 'Half as many wild encounters (Stench only takes a quarter off in the Battle Pyramid).'),
+    ('Sand Veil', 'Half as many wild encounters while the overworld weather is a sandstorm.'),
+    ('Keen Eye, Intimidate', 'Skips half of the encounters 5 or more levels below the lead.'),
+    ('Hustle, Vital Spirit, Pressure', '50% chance the wild Pokémon rolls the top of its level range.'),
+    ('Static', '50% chance the encounter is pulled from the <b>Electric</b> types in the table.'),
+    ('Magnet Pull', '50% chance the encounter is pulled from the <b>Steel</b> types in the table.'),
+    ('Synchronize', '50% chance the wild Pokémon has the <b>lead’s nature</b>.'),
+    ('Cute Charm', 'Two thirds of wild Pokémon come out the opposite gender to the lead.'),
+    ('Compound Eyes', 'Wild held items: 20% chance of nothing instead of 45%, and the rare item at 20% instead of 5%.'),
+    ('Suction Cups, Sticky Hold', 'Fishing bites 85% of the time.'),
+    ('Lightning Rod', 'Match Call rings twice as often (60% instead of 30%).'),
+    ('Magma Armor, Flame Body', 'Eggs need half as many steps to hatch — from anywhere in the party.'),
+    ('Hyper Cutter', 'Cut clears a 5×5 patch of grass instead of 3×3 (the Pokémon you pick to use Cut).'),
+    ('Pickup', '1 in 10 chance of an item after each battle — from anywhere in the party.'),
+    ('Swarm', 'Ambient overworld cries come twice as often.'),
+]
+
+
+def pretty_ability_desc(desc):
+    """In-game description → prose: 'Not hit by GROUND attacks.' -> 'Not hit by Ground attacks.'"""
+    def fix(m):
+        w = m.group(0)
+        return 'Pokémon' if w.upper().startswith('POK') else w.title()
+    return re.sub(r'\b[A-Zé]{3,}\b', fix, desc).replace('“Super effective” hits.', 'Only “super effective” hits land.')
+
+
+def build_ability_pages():
+    S = 'Abilities'
+    info = pdx.parse_ability_info(os.path.join(BASE, 'src/data/text/abilities.h'))
+    stats = pdx.parse_base_stats(os.path.join(BASE, 'src/data/pokemon/species_info.h'))
+    dex = pdx.parse_national_dex_order(os.path.join(BASE, 'include/constants/pokedex.h'))
+
+    holders = {k: [] for k in info}
+    for sp, d in stats.items():
+        base = pdx.FORM_OF.get(sp, (sp,))[0]
+        # Alternate forms only earn their own chip when their abilities differ from the base form's.
+        if base != sp and stats.get(base, {}).get('abilities') == d.get('abilities'):
+            continue
+        abilities = d.get('abilities', [])
+        for slot, a in enumerate(abilities):
+            # Four species (Granbull, Vibrava, Flygon, Snorunt) list the same ability in both
+            # slots, so there is nothing to choose and nothing to badge.
+            if slot and a == abilities[0]:
+                continue
+            if a in holders:
+                holders[a].append(dict(sp=sp, name=pdx.species_display_name(sp), sprite='mon:' + sp,
+                                       slot=slot, dex=dex.get(base, 999)))
+    for v in holders.values():
+        v.sort(key=lambda m: (m['dex'], m['name']))
+
+    items = []
+    for key in sorted(info, key=lambda k: info[k]['name']):
+        note = ABILITY_NOTES.get(key, '')
+        items.append(dict(
+            key=key, name=info[key]['name'], desc=pretty_ability_desc(info[key]['desc']),
+            note=note, plain=re.sub(r'<[^>]+>', '', note),
+            tag='Changed in Legacy' if key in LEGACY_CHANGED else '',
+            mons=[{k: v for k, v in m.items() if k != 'dex'} for m in holders[key]],
+        ))
+
+    two_slots = sum(1 for it in items for m in it['mons'] if m['slot'])
+    return [dict(id='abilities', section=S, title='Abilities', kicker=f'{len(items)} · who has what', blocks=[
+        dict(type='p', html=f'Every Pokémon carries one of the game’s <b>{len(items)} abilities</b>, and '
+                            f'<b>{two_slots}</b> species have a second one they might get instead. '
+                            'Which one a Pokémon gets is decided the instant it is generated — caught, hatched '
+                            'or handed over — and <b>nothing in the game can change it afterwards</b>: there is '
+                            'no ability capsule here, and breeding does not pass an ability down. If you want '
+                            'the other one, you catch or hatch another.'),
+        dict(type='callout', html='The slot travels through evolution. A Ralts that rolled the second slot is a '
+                                  'Gardevoir with the second slot, so a species whose two abilities are worth '
+                                  'different amounts is worth checking <i>before</i> you invest levels in it.'),
+        dict(type='h', text='What the lead Pokémon changes'),
+        dict(type='p', html='Some abilities do their best work outside battle, from the <b>first slot in the '
+                            'party</b> — an egg in slot one switches all of this off. The two hatching '
+                            'abilities and Pickup are the exceptions: they work from anywhere in the party.'),
+        dict(type='table', rows=[[dict(html=f'<b>{a}</b>'), dict(html=w)] for a, w in LEAD_EFFECTS],
+             head=['Ability', 'What it does in the field']),
+        dict(type='h', text='Every ability'),
+        dict(type='p', html='Search by ability, by what it does, or by a Pokémon’s name — searching a Pokémon '
+                            'leaves only the abilities it can have, with its own chip picked out. A <span '
+                            'class="slot2">2</span> marks the species’ second slot.'),
+        dict(type='abilities', items=items),
+    ])]
+
 # ---------------------------------------------------------------------------
 # Team Building — type coverage (coverage_data.py does the maths from the decomp).
 # ---------------------------------------------------------------------------
@@ -1263,6 +1517,22 @@ def load_type_icon_b64(t):
 TEAM_SECTIONS = ('Team Building', 'Double Battles', 'Stat Specialists')
 
 
+def ability_index():
+    """Spotlight entries for every ability: [{key: 'abilities/LEVITATE', name, sub}].
+
+    The key is a page id plus an anchor, which selectPage() (guide_pages.py) splits.
+    """
+    pages, _ = build_data()
+    for p in pages:
+        for b in p['blocks']:
+            if b['type'] == 'abilities':
+                return [dict(key=f"{p['id']}/{it['key']}", name=it['name'],
+                             sub=f"{it['desc']} · {len(it['mons'])} Pokémon" if it['mons'] else it['desc'])
+                        for it in b['items']]
+    return []
+
+
+
 def page_refs(pages):
     """Every sprite reference ('mon:MARILL', 'item:ITEM_LEFTOVERS', …) used by these pages."""
     refs = set()
@@ -1298,6 +1568,7 @@ def build_data():
     item_names = tdx.parse_item_names(os.path.join(BASE, 'src/data/items.h'))
     pages = (build_pages(trainers) + build_thief_pages(trainers) + build_safari_pages(item_names)
              + build_frontier_pages(item_names) + build_hidden_power_pages()
+             + build_ability_pages()
              + build_coverage_pages() + build_doubles_pages())
 
     refs = page_refs(pages)
@@ -1350,7 +1621,7 @@ GUIDE_PAGES_CSS
 <div id="sidebar">
   <div id="sidebar-header">
     <h1>Field Guide</h1>
-    <span class="volume">Vol. V · Trades · Gifts · Rematches · Thief · Safari · Frontier · Hidden Power</span>
+    <span class="volume">Vol. V · Trades · Gifts · Rematches · Thief · Safari · Frontier · Hidden Power · Abilities</span>
   </div>
   <div id="page-list"></div>
 </div>
