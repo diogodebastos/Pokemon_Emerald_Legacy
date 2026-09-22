@@ -514,6 +514,19 @@ def build_data():
             return None
         return {'key': akey, 'name': ability_info.get(akey, {}).get('name', akey.replace('_', ' ').title())}
 
+    def mon_builder_code(skey, mon):
+        """One member as a Team Builder slot: species:abilityIdx:move,move,...:item
+        (same grammar as generate_teambuilder.encode). '' for slots the builder can't take."""
+        if skey == 'MR_MIMIC':
+            return ''  # not a real species; keeps sibling slots positioned
+        abils = base_stats.get(skey, {}).get('abilities', [])
+        # The builder's ability picker is indexed into this same list (base_stats order).
+        # HIDDEN maps to 0: the builder has no hidden abilities.
+        ai = 1 if mon['abilitySlot'] == 'SLOT_2' and len(abils) >= 2 else 0
+        mvkeys = ','.join(mv[len('MOVE_'):] for mv in mon['moves'])
+        item = mon['heldItem'] if mon['heldItem'] and mon['heldItem'] != 'ITEM_NONE' else ''
+        return f'{skey}:{ai}:{mvkeys}:{item}'
+
     from collections import OrderedDict
     groups = OrderedDict()   # (category, name) -> group dict
     missing_pics = set()
@@ -550,9 +563,11 @@ def build_data():
                      'heldItem': 'ITEM_NONE', 'abilitySlot': None, 'nature': None,
                      'iv': None, 'evs': [], 'moves': []}]
         party = []
+        party_codes = []
         for mon in mons:
             skey = mon['speciesKey']
             get_species_sprite(skey, mon['shiny'])
+            party_codes.append(mon_builder_code(skey, mon))
             party.append({
                 'speciesKey': skey,
                 'name': '?' if skey == 'MR_MIMIC' else species_display(skey),
@@ -599,6 +614,7 @@ def build_data():
             'location': locations.get(t['id'], []),
             'note': trainer_note(t['id'].replace('TRAINER_', ''), cat),
             'party': party,
+            'builderCode': ';'.join(party_codes) if any(party_codes) else '',
         })
 
     if missing_pics:
@@ -812,6 +828,15 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
   }
   .variant-btn:hover { border-color: var(--jade-bright); color: var(--ink); }
   .variant-btn.active { background: var(--jade-soft); border-color: var(--jade-bright); color: var(--jade-bright); }
+
+  .open-builder { margin: 4px 0 2px; }
+  .open-builder .obl {
+    display: inline-flex; align-items: center; gap: 8px; text-decoration: none;
+    font-family: var(--f-mono); font-size: 10px; font-weight: 500; letter-spacing: 0.18em;
+    text-transform: uppercase; padding: 8px 16px; border: 1px solid var(--jade-bright);
+    background: var(--jade-soft); color: var(--jade-bright); cursor: pointer; transition: all 0.2s;
+  }
+  .open-builder .obl:hover { background: var(--jade-bright); color: var(--paper-0); }
 
   .obtain-note { font-size: 14px; line-height: 1.65; color: var(--ink-dim); margin: 4px 0 8px; padding: 2px 0 2px 16px; border-left: 2px solid var(--jade-bright); max-width: 72ch; }
   .obtain-note b { color: var(--ink); font-weight: 600; }
@@ -1121,6 +1146,7 @@ function renderDetail(t, vIdx) {
     ${locRow}
     ${v.note ? `<div class="section-title">How to Unlock</div><div class="obtain-note">${v.note}</div>` : ''}
     <div class="section-title">Team · ${v.party.length} Pokémon</div>
+    ${v.builderCode ? `<div class="open-builder"><a class="xl obl" data-app="teambuilder" data-key="${v.builderCode}">Open in Team Builder →</a></div>` : ''}
     <div class="party-grid">${cards}</div>
   `;
 }
