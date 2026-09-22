@@ -457,44 +457,49 @@ TEAMS = [
                       'Steel/Psychic support. Wish heals half of the partner’s max HP next turn, and it resists Dragon and Ice.'),
                  ]),
          ]),
-    dict(id='groudon-sun', name='Groudon Sun', tag='Post-game · Drought · Chlorophyll',
+    dict(id='groudon-sun', name='Groudon Sun', tag='Post-game · Drought · Chlorophyll · one-turn Solar Beam',
          blurb='<b>Drought</b> sets sun the moment Groudon enters, and ability weather in Gen 3 lasts until another weather replaces it, so no one spends a turn on Sunny Day. '
                'Sun doubles Chlorophyll users’ Speed, lets <b>Solar Beam</b> fire in one turn, boosts Fire moves by 50% and halves Water moves, Groudon’s weakness. '
-               'Only Exeggutor is grounded, so Groudon can Earthquake freely next to anyone else.',
-         leads=[('GROUDON', 'HO_OH'), ('TROPIUS', 'JUMPLUFF')],
+               'A sun team is Grass and Fire by nature, which is exactly why Ice and Rock are the moves aimed at it, so the roster is picked to blunt both. '
+               'No Grass/Flying: that typing is <b>4× Ice and 2× Rock</b>, the worst pair of weaknesses a Chlorophyll user can have. Grass/Psychic and Grass/Poison instead, which take Rock neutrally. '
+               'And two Fire attackers, because <b>every Fire type resists Ice</b> and the sun halves the Water moves they normally fear. Ho-Oh is the only member Rock hits for super-effective damage. '
+               'Groudon’s Earthquake is only safe next to Ho-Oh (Flying) or Latios (Levitate).',
+         leads=[('GROUDON', 'HO_OH'), ('EXEGGUTOR', 'BLAZIKEN')],
          members=[
-            m('GROUDON', 'DROUGHT', 'LEFTOVERS', 'Naive', ['EARTHQUAKE', 'FIRE_BLAST', 'SOLAR_BEAM', 'PROTECT'],
-              'Post-game (Terra Cave). Earthquake uses its 150 Attack; sun-boosted Fire Blast and one-turn Solar Beam are special, so Naive keeps both sides.'),
+            m('GROUDON', 'DROUGHT', 'SOFT_SAND', 'Naive', ['EARTHQUAKE', 'FIRE_BLAST', 'SOLAR_BEAM', 'PROTECT'],
+              'Post-game (Terra Cave). Earthquake uses its 150 Attack; sun-boosted Fire Blast and one-turn Solar Beam are special, so Naive keeps both sides. Only Earthquake next to Ho-Oh or Latios.'),
             m('HO_OH', 'PRESSURE', 'LEFTOVERS', 'Modest', ['SACRED_FIRE', 'THUNDERBOLT', 'RECOVER', 'PROTECT'],
-              'Post-game (Navel Rock). Sacred Fire is special here and hits very hard in sun. Flying, so Groudon’s Earthquake never hits it.'),
-            m('LATIOS', 'LEVITATE', 'LEFTOVERS', 'Timid', ['DRAGON_CLAW', 'PSYCHIC', 'THUNDERBOLT', 'PROTECT'],
-              'Post-game. Dragon resists Water, Grass, Fire and Electric, and Levitate keeps it safe from Earthquake.'),
-            m('TROPIUS', 'CHLOROPHYLL', 'LEFTOVERS', 'Modest', ['SOLAR_BEAM', 'SYNTHESIS', 'SUNNY_DAY', 'PROTECT'],
-              'A Flying Chlorophyll sweeper, so Earthquake can’t hit it. Synthesis heals ⅔ of its HP in sun, and Sunny Day brings the sun back if Groudon faints.'),
-            m('EXEGGUTOR', 'CHLOROPHYLL', 'LEFTOVERS', 'Modest', ['SLEEP_POWDER', 'SOLAR_BEAM', 'PSYCHIC', 'PROTECT'],
-              'The strongest Solar Beam on the team. The only grounded member: Groudon must not Earthquake while it’s out.'),
-            m('JUMPLUFF', 'CHLOROPHYLL', 'LEFTOVERS', 'Jolly', ['SLEEP_POWDER', 'LEECH_SEED', 'ENCORE', 'PROTECT'],
-              'Grass/Flying support, immune to Earthquake. In sun it outspeeds everything, so Sleep Powder lands first.'),
+              'Post-game (Navel Rock). Sacred Fire is special here and hits very hard in sun. Flying, so Groudon’s Earthquake never hits it. It is the one Rock weakness left on the team and it is 4× — but spread moves are halved in doubles, and 106 HP behind Recover absorbs a shared Rock Slide.'),
+            m('LATIOS', 'LEVITATE', 'DRAGON_FANG', 'Timid', ['DRAGON_CLAW', 'PSYCHIC', 'THUNDERBOLT', 'PROTECT'],
+              'Post-game (Southern Island). Dragon resists Water, Grass, Fire and Electric, and Levitate keeps it safe from Earthquake. Thunderbolt answers the Water types the Grass members invite in.'),
+            m('EXEGGUTOR', 'CHLOROPHYLL', 'TWISTED_SPOON', 'Modest', ['SLEEP_POWDER', 'SOLAR_BEAM', 'PSYCHIC', 'PROTECT'],
+              'Smogon’s sun sweeper and the strongest Solar Beam here, off 125 Sp. Atk at doubled Speed. Sleep Powder first, then one-turn Solar Beams. Grass/Psychic takes Rock neutrally.'),
+            m('VICTREEBEL', 'CHLOROPHYLL', 'MIRACLE_SEED', 'Mild', ['SLEEP_POWDER', 'SOLAR_BEAM', 'SLUDGE_BOMB', 'SUNNY_DAY'],
+              'The second Chlorophyll sweeper, at 140 Speed in sun, and a second Sleep Powder. Grass/Poison is neutral to Rock <i>and</i> to Bug, which Exeggutor takes 4×. Sludge Bomb is physical in this hack, off its 105 Attack, and Sunny Day brings the sun back if Groudon faints.'),
+            m('BLAZIKEN', 'BLAZE', 'CHARCOAL', 'Naive', ['SKY_UPPERCUT', 'FLAMETHROWER', 'ROCK_SLIDE', 'PROTECT'],
+              'Torchic is wild on Route 102 in this hack. The best defensive Fire type for this team: Fighting resists Rock, so Fire/Fighting takes it neutrally, and it halves Ice. Sky Uppercut and Rock Slide are physical and Flamethrower special, so Naive keeps both sides. Rock Slide hits both foes and answers the Fire and Flying types the Grass members fear.'),
          ]),
-    dict(id='rayquaza-air', name='Rayquaza Air Lock', tag='Weather denial · Air Lock · every member immune to Earthquake',
+    dict(id='rayquaza-air', name='Rayquaza Air Lock', tag='Weather denial · Air Lock · Steel and Thick Fat backbone',
          blurb='<b>Air Lock</b> switches the weather off while Rayquaza is on the field. Rain stops boosting Water and halving Fire, sun stops boosting Fire, Swift Swim and Chlorophyll stop doubling Speed, '
-               'Thunder and Blizzard lose their perfect accuracy, Solar Beam has to charge again, and sandstorm and hail stop chipping everyone. It <i>suspends</i> the weather rather than clearing it, so the rain or sun is back the moment Rayquaza leaves the field. '
-               'That is the answer to the Kyogre, Groudon, Tyranitar and Rain Dance teams — and it is why nothing here uses a weather move. '
-               'Every member is Flying or has Levitate, so <b>Earthquake never hits your own side</b>.',
-         leads=[('RAYQUAZA', 'ZAPDOS'), ('SALAMENCE', 'TOGETIC')],
+               'Thunder and Blizzard lose their perfect accuracy, Solar Beam has to charge again, and sandstorm and hail stop chipping everyone. It <i>suspends</i> the weather rather than clearing it, '
+               'so the rain or sun is back the moment Rayquaza leaves the field. That blanks the engine of five other teams on this page. '
+               'The other five slots exist to keep Rayquaza on the field, because Dragon/Flying is <b>4× weak to Ice and 2× to Rock</b> and Rock Slide is the most common move in the format. '
+               '<b>Metagross</b> and <b>Jirachi</b> are Steel, which resists both; <b>Hariyama</b> is Fighting, which resists Rock, with <b>Thick Fat</b> to halve Ice; <b>Suicune</b> is Water, which resists Ice; '
+               '<b>Gengar</b> takes neutral damage from each. Rayquaza is the only member weak to either type.',
+         leads=[('RAYQUAZA', 'METAGROSS'), ('HARIYAMA', 'GENGAR')],
          members=[
-            m('RAYQUAZA', 'AIR_LOCK', 'LEFTOVERS', 'Naive', ['DRAGON_CLAW', 'EARTHQUAKE', 'EXTREME_SPEED', 'PROTECT'],
-              'Sky Pillar summit — the only box legend you can catch during the story, and one chance only. Dragon Claw is special in Gen 3 and Earthquake physical, both off base 150, so Naive keeps each side. Extreme Speed (Lv.60) moves first.'),
-            m('SALAMENCE', 'INTIMIDATE', 'DRAGON_FANG', 'Naive', ['DRAGON_CLAW', 'EARTHQUAKE', 'FIRE_BLAST', 'PROTECT'],
-              'Intimidate lowers both foes’ Attack on entry. Flying, so it and Rayquaza can stand together and both use Earthquake. Fire Blast lands at full power against a rain team while Air Lock is up.'),
-            m('ZAPDOS', 'PRESSURE', 'MAGNET', 'Mild', ['THUNDERBOLT', 'DRILL_PECK', 'LIGHT_SCREEN', 'PROTECT'],
-              'Post-game (New Mauville). <b>Thunderbolt, not Thunder</b>: this team never has rain to make Thunder never miss, so the 100% accurate move is the right one. Electric is what answers the opposing Water types.'),
-            m('MOLTRES', 'PRESSURE', 'CHARCOAL', 'Modest', ['HEAT_WAVE', 'FLAMETHROWER', 'EXTRASENSORY', 'PROTECT'],
-              'Post-game (Magma Hideout). Heat Wave hits both foes and never your ally; Flamethrower hits one of them harder. Rain would halve both — Air Lock is what keeps them at full power against Kyogre.'),
-            m('FLYGON', 'LEVITATE', 'SOFT_SAND', 'Naive', ['EARTHQUAKE', 'DRAGON_CLAW', 'ROCK_SLIDE', 'PROTECT'],
-              'The second Earthquake user. Levitate, so it can stand beside Rayquaza and both use it. With Air Lock up it also takes no sandstorm damage from an opposing Tyranitar.'),
-            m('TOGETIC', 'SERENE_GRACE', 'SITRUS_BERRY', 'Bold', ['FOLLOW_ME', 'HELPING_HAND', 'ENCORE', 'PROTECT'],
-              'The support, and Flying, so the Earthquakes miss it too. Follow Me draws the foes’ single-target attacks away from Rayquaza, Helping Hand makes a Dragon Claw ×1.5, and Encore locks a foe into the weather move Air Lock just made useless.'),
+            m('RAYQUAZA', 'AIR_LOCK', 'DRAGON_FANG', 'Naive', ['DRAGON_CLAW', 'ROCK_SLIDE', 'EXTREME_SPEED', 'PROTECT'],
+              'Sky Pillar summit, during the story — the only box legend you can catch before the Hall of Fame, and one chance only. Dragon Claw is special in Gen 3 while Rock Slide and Extreme Speed are physical, all off base 150, so Naive keeps both sides. Rock Slide hits both foes and can flinch them; Extreme Speed moves first.'),
+            m('METAGROSS', 'CLEAR_BODY', 'LEFTOVERS', 'Adamant', ['METEOR_MASH', 'EARTHQUAKE', 'EXPLOSION', 'PROTECT'],
+              'Smogon’s best doubles lead, and here also the insurance: Steel resists both Rock and Ice, so it switches into the moves that would take Rayquaza out. Clear Body ignores Intimidate. Earthquake only next to Rayquaza (Flying) or Gengar (Levitate).'),
+            m('GENGAR', 'LEVITATE', 'MAGNET', 'Timid', ['THUNDERBOLT', 'ICE_PUNCH', 'WILL_O_WISP', 'PROTECT'],
+              'The fast special attacker, and the Levitate partner that lets Metagross use Earthquake. Ghost/Poison is immune to Normal, Fighting and Ground and takes neutral damage from Rock and Ice. Will-O-Wisp halves a physical attacker’s damage, which is the cleanest answer to an opposing Rock Slide user.'),
+            m('HARIYAMA', 'THICK_FAT', 'BLACK_BELT', 'Adamant', ['FAKE_OUT', ('CROSS_CHOP', 'BRICK_BREAK'), 'KNOCK_OFF', 'HELPING_HAND'],
+              'The sponge for both problem types at once: Fighting resists Rock, and <b>Thick Fat</b> halves Ice. 144 base HP on top of that. Fake Out buys the turn Rayquaza needs, Helping Hand makes a Dragon Claw ×1.5, and Knock Off (Dark, physical in this hack) strips a foe’s Leftovers or berry.'),
+            m('SUICUNE', 'PRESSURE', 'MYSTIC_WATER', 'Bold', ['CALM_MIND', 'SURF', 'ICE_BEAM', 'PROTECT'],
+              'Post-game (Abandoned Ship, at the end of the Weather Institute trail). Water resists Ice, and 100/115/115 bulk behind a Calm Mind is very hard to break. Surf hits both foes and never your ally.'),
+            m('JIRACHI', 'SERENE_GRACE', 'SITRUS_BERRY', 'Careful', ['BODY_SLAM', 'WISH', 'HELPING_HAND', 'PROTECT'],
+              'Post-game (Mossdeep). The second Steel, so the team keeps a Rock and Ice resist on the field even after Metagross explodes. <b>Serene Grace</b> doubles Body Slam’s paralysis chance to 60%, and Wish heals half a partner’s max HP the turn after.'),
          ]),
     dict(id='eevee', name='Eeveelution Team', tag='This version’s starters',
          blurb='Every Gen 3 Eeveelution, plus Eevee itself. Your starter is an Eevee, Espeon or Umbreon, and the rest can be caught (see the Pokédex). '
